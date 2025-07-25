@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skyline - Offline Edition</title>
+  <style>
+    body {
+      background: linear-gradient(skyblue, white);
+      font-family: "Press Start 2P", monospace;
+      padding: 20px;
+      color: #333;
+    }
+    h1, h2, p, label, button {
+      background-color: gray;
+      color: limegreen;
+      border: ridge 5px silver;
+      padding: 8px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      display: block;
+    }
+    input[type="number"], input[type="text"] {
+      padding: 8px;
+      margin: 5px 0;
+      border: ridge 3px gray;
+      width: 80%;
+    }
+    #game, #player-names, #instructions, #latest-update, #game-over {
+      display: none;
+    }
+    pre {
+      white-space: pre-wrap;
+      background-color: #f0f8ff;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    .button-container button {
+      margin: 5px;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1>🌟 Skyline: Offline Edition 🌟</h1>
+  <button onclick="toggleInstructions()">Show Instructions</button>
+  <div id="instructions">
+    <p>🎯 Rules:</p>
+    <ul>
+      <li>Each player makes a guess each round.</li>
+      <li>The lowest unique guess wins.</li>
+      <li>Each player can win only once.</li>
+      <li>Game ends when all but one player has won.</li>
+    </ul>
+  </div>
+
+  <div id="player-setup">
+    <label for="numPlayers">Enter Number of Players:</label>
+    <input type="number" id="numPlayers" min="2" max="20">
+    <button onclick="setupPlayers()">Next</button>
+  </div>
+
+  <div id="player-names">
+    <form id="playerForm"></form>
+    <button onclick="startGame()">Start Game</button>
+  </div>
+
+  <div id="game">
+    <div id="round-info"></div>
+    <div id="guesses"></div>
+    <button onclick="playRound()">Play Round</button>
+  </div>
+
+  <div id="game-over">
+    <button onclick="restartGame()">Restart Game</button>
+  </div>
+
+  <pre id="output"></pre>
+
+  <script>
+    function toggleInstructions() {
+      const el = document.getElementById("instructions");
+      el.style.display = el.style.display === "none" ? "block" : "none";
+    }
+
+    class Player {
+      constructor(name) {
+        this.name = name;
+        this.roundsWon = 0;
+        this.amount = 0;
+        this.guesses = [];
+      }
+      makeGuess(guess) {
+        this.guesses.push(guess);
+      }
+    }
+
+    let players = [];
+    let roundNumber = 1;
+    const MAX_AMOUNT = 10000;
+
+    function setupPlayers() {
+      const num = document.getElementById('numPlayers').value;
+      const form = document.getElementById('playerForm');
+      form.innerHTML = '';
+      for (let i = 0; i < num; i++) {
+        form.innerHTML += `<label>Player ${i + 1} Name:</label><input type="text" id="player${i}" required><br>`;
+      }
+      document.getElementById('player-setup').style.display = 'none';
+      document.getElementById('player-names').style.display = 'block';
+    }
+
+    function startGame() {
+      const form = document.getElementById('playerForm');
+      const inputs = form.getElementsByTagName('input');
+      players = [];
+      for (let input of inputs) {
+        players.push(new Player(input.value));
+      }
+      document.getElementById('player-names').style.display = 'none';
+      document.getElementById('game').style.display = 'block';
+      setupRound();
+    }
+
+    function setupRound() {
+      const info = document.getElementById('round-info');
+      const guesses = document.getElementById('guesses');
+      info.innerHTML = `Round ${roundNumber}`;
+      guesses.innerHTML = '';
+      players.forEach((player, i) => {
+        if (player.roundsWon === 0) {
+          guesses.innerHTML += `<label>${player.name}'s Guess:</label><input type="number" id="guess${i}" required><br>`;
+        }
+      });
+    }
+
+    function playRound() {
+      const inputs = document.getElementById('guesses').getElementsByTagName('input');
+      const eligible = players.filter(p => p.roundsWon === 0);
+      const guesses = [];
+
+      for (let i = 0; i < inputs.length; i++) {
+        const guess = parseInt(inputs[i].value);
+        eligible[i].makeGuess(guess);
+        guesses.push(guess);
+      }
+
+      const uniqueGuesses = guesses.filter((g, i, arr) => arr.indexOf(g) === arr.lastIndexOf(g));
+      if (uniqueGuesses.length === 0) {
+        document.getElementById('output').textContent += `No unique guesses in round ${roundNumber}. Try again.\n`;
+        return;
+      }
+
+      const winningGuess = Math.min(...uniqueGuesses);
+      const winner = eligible.find(p => p.guesses[p.guesses.length - 1] === winningGuess);
+
+      winner.roundsWon++;
+      winner.amount += winningGuess * players.length;
+      if (winner.amount > MAX_AMOUNT) winner.amount = MAX_AMOUNT;
+
+      document.getElementById('output').textContent += `🏆 Round ${roundNumber} Winner: ${winner.name} wins ${winningGuess * players.length}\n`;
+
+      roundNumber++;
+      const remainingPlayers = players.filter(p => p.roundsWon === 0);
+      if (remainingPlayers.length <= 1) {
+        endGame();
+        return;
+      }
+      setupRound();
+    }
+
+    function endGame() {
+      const lastPlayer = players.find(p => p.roundsWon === 0);
+      lastPlayer.amount = MAX_AMOUNT; // Final winner gets maximum amount
+      lastPlayer.roundsWon = 1; // Mark as having won
+      
+      document.getElementById('output').textContent += `\n🎉 Final Winner: ${lastPlayer.name} gets the maximum pot of ${MAX_AMOUNT}!\n\nFinal Results:\n`;
+      players.sort((a, b) => b.amount - a.amount).forEach(p => {
+        document.getElementById('output').textContent += `${p.name}: €${p.amount} won, Rounds Won: ${p.roundsWon}\n`;
+      });
+      
+      // Hide game interface and show restart button
+      document.getElementById('game').style.display = 'none';
+      document.getElementById('game-over').style.display = 'block';
+    }
+
+    function restartGame() {
+      // Reset all game variables
+      players = [];
+      roundNumber = 1;
+      
+      // Clear output
+      document.getElementById('output').textContent = '';
+      
+      // Reset all forms
+      document.getElementById('numPlayers').value = '';
+      document.getElementById('playerForm').innerHTML = '';
+      document.getElementById('guesses').innerHTML = '';
+      document.getElementById('round-info').innerHTML = '';
+      
+      // Show initial setup screen
+      document.getElementById('game').style.display = 'none';
+      document.getElementById('game-over').style.display = 'none';
+      document.getElementById('player-names').style.display = 'none';
+      document.getElementById('player-setup').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
