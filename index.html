@@ -6,6 +6,7 @@
   <title>Skyline - Offline Edition</title>
   <style>
     body {
+      min-height: 100vh;
       background: linear-gradient(skyblue, white);
       font-family: "Press Start 2P", monospace;
       padding: 20px;
@@ -43,7 +44,10 @@
 </head>
 <body>
   <h1>🌟 Skyline: Offline Edition 🌟</h1>
-  <button onclick="toggleInstructions()">Show Instructions</button>
+  <div style="display:flex; gap:12px; justify-content:center; margin-bottom:10px;">
+    <button onclick="toggleInstructions()">Show Instructions</button>
+    <button onclick="restartGame()">Restart Game</button>
+  </div>
   <div id="instructions">
     <p>🎯 Rules:</p>
     <ul>
@@ -72,7 +76,7 @@
   </div>
 
   <div id="game-over">
-    <button onclick="restartGame()">Restart Game</button>
+    <!-- Restart button now shown at top, so removed from here -->
   </div>
 
   <pre id="output"></pre>
@@ -89,6 +93,7 @@
         this.roundsWon = 0;
         this.amount = 0;
         this.guesses = [];
+        this.winningRounds = [];
       }
       makeGuess(guess) {
         this.guesses.push(guess);
@@ -155,8 +160,11 @@
       const winner = eligible.find(p => p.guesses[p.guesses.length - 1] === winningGuess);
 
       winner.roundsWon++;
-      winner.amount += winningGuess * players.length;
+      // Winner gets their guess times the number of bets (players who bet this round)
+      const betsThisRound = eligible.length;
+      winner.amount += winningGuess * betsThisRound;
       if (winner.amount > MAX_AMOUNT) winner.amount = MAX_AMOUNT;
+      winner.winningRounds.push(roundNumber);
 
       document.getElementById('output').textContent += `🏆 Round ${roundNumber} Winner: ${winner.name} wins ${winningGuess * players.length}\n`;
 
@@ -171,14 +179,48 @@
 
     function endGame() {
       const lastPlayer = players.find(p => p.roundsWon === 0);
-      lastPlayer.amount = MAX_AMOUNT; // Final winner gets maximum amount
+      // Final winner gets their last guess times the number of players
+      const lastGuess = lastPlayer.guesses[lastPlayer.guesses.length - 1] || 0;
+      // Final winner gets their last guess times the number of bets (players who bet in the final round)
+      const betsFinalRound = players.filter(p => p.winningRounds.length === 0).length;
+      lastPlayer.amount += lastGuess * betsFinalRound;
       lastPlayer.roundsWon = 1; // Mark as having won
-      
-      document.getElementById('output').textContent += `\n🎉 Final Winner: ${lastPlayer.name} gets the maximum pot of ${MAX_AMOUNT}!\n\nFinal Results:\n`;
-      players.sort((a, b) => b.amount - a.amount).forEach(p => {
-        document.getElementById('output').textContent += `${p.name}: €${p.amount} won, Rounds Won: ${p.roundsWon}\n`;
+      lastPlayer.winningRounds.push(roundNumber);
+
+      document.getElementById('output').textContent += `\n🎉 Final Winner: ${lastPlayer.name} gets ${lastGuess * players.length}!\n\nFinal Results:\n`;
+      // Sort players by the round number of their first win (chronologically)
+      players.slice().sort((a, b) => {
+        const aFirst = a.winningRounds.length > 0 ? a.winningRounds[0] : Infinity;
+        const bFirst = b.winningRounds.length > 0 ? b.winningRounds[0] : Infinity;
+        return aFirst - bFirst;
+      }).forEach(p => {
+        let winDetails = '';
+        let winAmount = '';
+        if (p.winningRounds.length > 0) {
+          winDetails = p.winningRounds.map((roundIdx, i) => {
+            // The guess for the winning round is at guesses[roundIdx-1]
+            const bet = p.guesses[roundIdx-1];
+            return `Round ${roundIdx}: bet €${bet}`;
+          }).join(', ');
+          // For single round win, show the correct win amount
+          if (p.winningRounds.length === 1) {
+            const bet = p.guesses[p.winningRounds[0]-1];
+            winAmount = `€${bet * players.length} won`;
+          } else {
+            // For multiple wins, show all amounts
+            winAmount = p.winningRounds.map(roundIdx => {
+              const bet = p.guesses[roundIdx-1];
+              return `€${bet * players.length}`;
+            }).join(', ');
+            winAmount += ' won';
+          }
+        } else {
+          winDetails = 'None';
+          winAmount = '€0 won';
+        }
+        document.getElementById('output').textContent += `Rounds won: ${p.winningRounds.join(', ') || 'None'} | ${p.name}: ${winAmount}, Rounds Won: ${p.roundsWon} (${winDetails})\n`;
       });
-      
+
       // Hide game interface and show restart button
       document.getElementById('game').style.display = 'none';
       document.getElementById('game-over').style.display = 'block';
