@@ -1,0 +1,40 @@
+body {
+  min-height: 100vh;
+  background: linear-gradient(skyblue, white);
+  font-family: "Press Start 2P", monospace;
+  padding: 20px;
+  color: #333;
+}
+h1, h2, p, label, button {
+  background-color: gray;
+  color: limegreen;
+  border: ridge 5px silver;
+  padding: 8px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  display: block;
+}
+input[type="number"], input[type="text"] {
+  padding: 8px;
+  margin: 5px 0;
+  border: ridge 3px gray;
+  width: 80%;
+}
+#game, #player-names, #instructions, #latest-update, #game-over {
+  display: none;
+}
+pre {
+  white-space: pre-wrap;
+  background-color: #f0f8ff;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+.button-container button {
+  margin: 5px;
+}
+.flex-header {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
