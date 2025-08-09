@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skyline - Offline Edition</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1>🌟 Skyline: Web-App  🌟</h1>
+  <div class="flex-header">
+    <button onclick="toggleInstructions()">Show Instructions</button>
+    <button onclick="restartGame()">Restart Game</button>
+  </div>
+  <div id="instructions">
+    <p>🎯 Rules:</p>
+    <ul>
+      <li>Each player makes a guess each round.</li>
+      <li>The lowest unique guess wins.</li>
+      <li>Each player can win only once.</li>
+      <li>Game ends when all but one player has won.</li>
+    </ul>
+  </div>
+
+  <div id="player-setup">
+    <label for="numPlayers">Enter Number of Players:</label>
+    <input type="number" id="numPlayers" min="2" max="20">
+    <button onclick="setupPlayers()">Next</button>
+  </div>
+
+  <div id="player-names">
+    <form id="playerForm"></form>
+    <button onclick="startGame()">Start Game</button>
+  </div>
+
+  <div id="game">
+    <div id="round-info"></div>
+    <div id="guesses"></div>
+    <button onclick="playRound()">Play Round</button>
+  </div>
+
+  <div id="game-over">
+    <!-- Restart button now shown at top, so removed from here -->
+  </div>
+
+  <pre id="output"></pre>
+
+  <script>
+    function toggleInstructions() {
+      const el = document.getElementById("instructions");
+      el.style.display = el.style.display === "none" ? "block" : "none";
+    }
+
+    class Player {
+      constructor(name) {
+        this.name = name;
+        this.roundsWon = 0;
+        this.amount = 0;
+        this.guesses = [];
+        this.winningRounds = [];
+      }
+      makeGuess(guess) {
+        this.guesses.push(guess);
+      }
+    }
+
+    let players = [];
+    let roundNumber = 1;
+    const MAX_AMOUNT = 10000;
+
+    function setupPlayers() {
+      const num = document.getElementById('numPlayers').value;
+      const form = document.getElementById('playerForm');
+      form.innerHTML = '';
+      for (let i = 0; i < num; i++) {
+        form.innerHTML += `<label>Player ${i + 1} Name:</label><input type="text" id="player${i}" required><br>`;
+      }
+      document.getElementById('player-setup').style.display = 'none';
+      document.getElementById('player-names').style.display = 'block';
+    }
+
+    function startGame() {
+      const form = document.getElementById('playerForm');
+      const inputs = form.getElementsByTagName('input');
+      players = [];
+      for (let input of inputs) {
+        players.push(new Player(input.value));
+      }
+      document.getElementById('player-names').style.display = 'none';
+      document.getElementById('game').style.display = 'block';
+      setupRound();
+    }
+
+    function setupRound() {
+      const info = document.getElementById('round-info');
+      const guesses = document.getElementById('guesses');
+      info.innerHTML = `Round ${roundNumber}`;
+      guesses.innerHTML = '';
+      players.forEach((player, i) => {
+        if (player.roundsWon === 0) {
+          guesses.innerHTML += `<label>${player.name}'s Guess:</label><input type="number" id="guess${i}" required><br>`;
+        }
+      });
+    }
+
+    function playRound() {
+      const inputs = document.getElementById('guesses').getElementsByTagName('input');
+      const eligible = players.filter(p => p.roundsWon === 0);
+      const guesses = [];
+
+      for (let i = 0; i < inputs.length; i++) {
+        const guess = parseInt(inputs[i].value);
+        eligible[i].makeGuess(guess);
+        guesses.push(guess);
+      }
+
+      const uniqueGuesses = guesses.filter((g, i, arr) => arr.indexOf(g) === arr.lastIndexOf(g));
+      if (uniqueGuesses.length === 0) {
+        document.getElementById('output').textContent += `No unique guesses in round ${roundNumber}. Try again.\n`;
+        return;
+      }
+
+      const winningGuess = Math.min(...uniqueGuesses);
+      const winner = eligible.find(p => p.guesses[p.guesses.length - 1] === winningGuess);
+
+      winner.roundsWon++;
+      // Winner gets their guess times the number of bets (players who bet this round)
+      const betsThisRound = eligible.length;
+      winner.amount += winningGuess * betsThisRound;
+      if (winner.amount > MAX_AMOUNT) winner.amount = MAX_AMOUNT;
+      winner.winningRounds.push(roundNumber);
+
+      document.getElementById('output').textContent += `🏆 Round ${roundNumber} Winner: ${winner.name} wins ${winningGuess * players.length}\n`;
+
+      roundNumber++;
+      const remainingPlayers = players.filter(p => p.roundsWon === 0);
+      if (remainingPlayers.length <= 1) {
+        endGame();
+        return;
+      }
+      setupRound();
+    }
+
+    function endGame() {
+      const lastPlayer = players.find(p => p.roundsWon === 0);
+      // Final winner gets their last guess times the number of players
+      const lastGuess = lastPlayer.guesses[lastPlayer.guesses.length - 1] || 0;
+      // Final winner gets their last guess times the number of bets (players who bet in the final round)
+      const betsFinalRound = players.filter(p => p.winningRounds.length === 0).length;
+      lastPlayer.amount += lastGuess * betsFinalRound;
+      lastPlayer.roundsWon = 1; // Mark as having won
+      lastPlayer.winningRounds.push(roundNumber);
+
+      document.getElementById('output').textContent += `\n🎉 Final Winner: ${lastPlayer.name} gets ${lastGuess * players.length}!\n\nFinal Results:\n`;
+      // Sort players by the round number of their first win (chronologically)
+      players.slice().sort((a, b) => {
+        const aFirst = a.winningRounds.length > 0 ? a.winningRounds[0] : Infinity;
+        const bFirst = b.winningRounds.length > 0 ? b.winningRounds[0] : Infinity;
+        return aFirst - bFirst;
+      }).forEach(p => {
+        let winDetails = '';
+        let winAmount = '';
+        if (p.winningRounds.length > 0) {
+          winDetails = p.winningRounds.map((roundIdx, i) => {
+            // The guess for the winning round is at guesses[roundIdx-1]
+            const bet = p.guesses[roundIdx-1];
+            return `Round ${roundIdx}: bet €${bet}`;
+          }).join(', ');
+          // For single round win, show the correct win amount
+          if (p.winningRounds.length === 1) {
+            const bet = p.guesses[p.winningRounds[0]-1];
+            winAmount = `€${bet * players.length} won`;
+          } else {
+            // For multiple wins, show all amounts
+            winAmount = p.winningRounds.map(roundIdx => {
+              const bet = p.guesses[roundIdx-1];
+              return `€${bet * players.length}`;
+            }).join(', ');
+            winAmount += ' won';
+          }
+        } else {
+          winDetails = 'None';
+          winAmount = '€0 won';
+        }
+        document.getElementById('output').textContent += `Rounds won: ${p.winningRounds.join(', ') || 'None'} | ${p.name}: ${winAmount}, Rounds Won: ${p.roundsWon} (${winDetails})\n`;
+      });
+
+      // Hide game interface and show restart button
+      document.getElementById('game').style.display = 'none';
+      document.getElementById('game-over').style.display = 'block';
+    }
+
+    function restartGame() {
+      // Reset all game variables
+      players = [];
+      roundNumber = 1;
+      
+      // Clear output
+      document.getElementById('output').textContent = '';
+      
+      // Reset all forms
+      document.getElementById('numPlayers').value = '';
+      document.getElementById('playerForm').innerHTML = '';
+      document.getElementById('guesses').innerHTML = '';
+      document.getElementById('round-info').innerHTML = '';
+      
+      // Show initial setup screen
+      document.getElementById('game').style.display = 'none';
+      document.getElementById('game-over').style.display = 'none';
+      document.getElementById('player-names').style.display = 'none';
+      document.getElementById('player-setup').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

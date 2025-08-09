@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
-    :root { --bg:#0f1222; --card:#171a2b; --ink:#e9ecff; --muted:#9aa2d0; --accent:#7cf; --grid:#243056; }
+    :root { --bg:#0f1222; --card:#171a2b; --ink:#e9ecff; --muted:#9aa2d0; --accent:#7cf; }
     *{box-sizing:border-box}
     body{margin:0;padding:24px;color:var(--ink);background:linear-gradient(180deg,#0a0d1a,#0f1222 35%,#0a0d1a);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,"Noto Sans",Arial,sans-serif}
     h1{font-family:"Press Start 2P",monospace;font-size:20px;text-align:center;margin:0 0 16px}
@@ -20,15 +20,13 @@
     #instructions ul{margin:8px 0 0 18px}
     #round-info{font-weight:700;margin-bottom:4px}
     #round-note{color:var(--muted);margin-bottom:8px}
-    #guesses .row{display:grid;grid-template-columns:1fr 200px;gap:10px;align-items:center;margin:8px 0}
-    .hint{font-size:12px;color:#ffd580}
-    #output{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;color:#cfe3ff;margin-top:10px}
+    #guesses .row{display:grid;grid-template-columns:1fr 160px;gap:10px;align-items:center;margin:8px 0}
+    #output{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;color:#cfe3ff}
     .scoreboard table{width:100%;border-collapse:collapse;margin-top:8px}
     .scoreboard th,.scoreboard td{padding:8px;border-bottom:1px solid #273057;text-align:left;font-size:14px}
     .ok{color:#98f5a9}.warn{color:#ffd580}.err{color:#ff9aa2}
     .hidden{display:none !important}
     .flag{font-size:20px}
-    canvas{background:#0e1020;border:1px solid var(--grid);border-radius:12px}
   </style>
 </head>
 <body>
@@ -47,13 +45,12 @@
       <li>Each player can win only once.</li>
       <li><b>Payments each round:</b> everyone (including the winner) pays the winning guess; the winner receives the total pot.</li>
       <li>When only one player hasn’t won, an <b>extra final round</b> runs where that last player chooses a bet; then the game <b>finishes</b> 🏁.</li>
-      <li>If a round has <b>no unique guesses</b>, affected players must re-enter with a bet <b>lower than their previous bet</b>.</li>
     </ul>
   </div>
 
   <div id="player-setup" class="card">
-    <label for="numPlayers">Enter Number of Players (2–100)</label>
-    <input type="number" id="numPlayers" min="2" max="100" />
+    <label for="numPlayers">Enter Number of Players (2–20)</label>
+    <input type="number" id="numPlayers" min="2" max="20" />
     <div style="margin-top:10px"><button id="btnSetupPlayers">Next</button></div>
   </div>
 
@@ -71,19 +68,21 @@
       <button id="btnReenter">Re-enter Guesses</button>
     </div>
 
-    <div class="scoreboard" id="scoreboard" style="margin-top:12px"></div>
-  </div>
+    <div style="margin-top:16px">
+      <canvas id="guessChart" height="180"></canvas>
+    </div>
 
-  <!-- Graph + Game Log together -->
-  <div id="logwrap" class="card hidden">
-    <canvas id="guessChart" height="220"></canvas>
-    <div style="color:#9aa2d0;margin:10px 0 6px">Game Log</div>
-    <pre id="output"></pre>
+    <div class="scoreboard" id="scoreboard"></div>
   </div>
 
   <div id="game-finished" class="card hidden">
     <div class="ok"><span class="flag">🏁</span> <b>Game Finished</b></div>
     <div class="warn">Use “Restart Game” above to play again.</div>
+  </div>
+
+  <div class="card">
+    <div style="color:var(--muted);margin-bottom:6px">Game Log</div>
+    <pre id="output"></pre>
   </div>
 
   <script>
@@ -92,7 +91,7 @@
       constructor(name){
         this.name = name;
         this.roundsWon = 0;    // 0 until they win once
-        this.balance = 0;
+        this.balance = 0;      // can go negative
         this.guesses = [];     // per round index
         this.winningRounds = [];
       }
@@ -103,9 +102,6 @@
     let players = [];
     let roundNumber = 1;
     let finalMode = false; // when true: only the last remaining player guesses
-    let redoMode = false;  // re-entry required because previous round had no uniques
-    // For redoMode: enforce newGuess < prevGuess for these players (player -> prevGuess)
-    const redoConstraint = new Map();
 
     // ===== DOM helpers =====
     const $ = s => document.querySelector(s);
@@ -135,11 +131,11 @@
     // ===== Chart setup =====
     let chart;
     function palette(n){
+      // distinct-ish palette; wrap if n > list length
       const base = [
         "#4e79a7","#f28e2b","#e15759","#76b7b2","#59a14f","#edc949",
         "#af7aa1","#ff9da7","#9c755f","#bab0ab","#86b1f2","#f4a259",
-        "#c75146","#2ca58d","#8ab17d","#b07aa1","#7f7fff","#00bcd4",
-        "#ffd166","#06d6a0","#ef476f"
+        "#c75146","#2ca58d","#8ab17d","#b07aa1"
       ];
       const out=[]; for(let i=0;i<n;i++) out.push(base[i%base.length]);
       return out;
@@ -167,6 +163,7 @@
     }
     function updateChart(){
       const c = ensureChart();
+      // labels: 1..roundNumber-1 if we just completed a round; include current round slot for visibility
       const maxRounds = Math.max(1, ...players.map(p => p.guesses.length));
       c.data.labels = Array.from({length:maxRounds}, (_,i)=> `R${i+1}`);
       const colors = palette(players.length);
@@ -183,8 +180,8 @@
     // ===== Flow =====
     function setupPlayers(){
       const num = parseInt($("#numPlayers").value,10);
-      if(!Number.isInteger(num) || num<2 || num>100){
-        log("Please enter a valid number of players (2–100).","warn"); return;
+      if(!Number.isInteger(num) || num<2 || num>20){
+        log("Please enter a valid number of players (2–20).","warn"); return;
       }
       const form=$("#playerForm");
       form.innerHTML="";
@@ -209,38 +206,29 @@
       players=names.map(n => new Player(n));
       roundNumber=1;
       finalMode=false;
-      redoMode=false;
-      redoConstraint.clear();
-
       show("#player-names", false);
       show("#game", true);
-      show("#logwrap", true);
       setupRound();
       updateChart();
     }
 
     function setupRound(reenter=false){
       const eligible = players.filter(p => p.roundsWon === 0);
-      finalMode = eligible.length === 1 && !redoMode; // final extra round only when not in a redo
+      finalMode = eligible.length === 1; // trigger final extra round when one remains
 
       $("#round-info").textContent = finalMode ? `Final Round (Round ${roundNumber})` : `Round ${roundNumber}`;
       $("#round-note").textContent = finalMode
         ? `Only ${eligible[0].name} chooses a guess this round. All players still pay the winning amount.`
-        : (redoMode ? `Re-enter required: your new bet must be lower than your previous bet.` : `Only players who haven’t won yet may guess.`);
+        : `Only players who haven’t won yet may guess.`;
 
       const g=$("#guesses"); g.innerHTML="";
-      const toPrompt = finalMode ? eligible : eligible;
-
+      const toPrompt = finalMode ? eligible : eligible; // same set, but text differs
       toPrompt.forEach((p, i) => {
-        const prev = p.lastGuess();
-        const needsLower = redoMode && redoConstraint.has(p);
-        const maxAttr = needsLower && Number.isFinite(prev) ? `max="${prev-1}"` : "";
-        const hint = needsLower && Number.isFinite(prev) ? `<div class="hint">New bet must be &lt; ${prev}</div>` : "";
         const row=document.createElement("div");
         row.className="row";
         row.innerHTML=`
-          <div><b>${p.name}</b>’s guess ${hint}</div>
-          <input type="number" step="1" min="0" ${maxAttr} id="guess${i}" placeholder="e.g. 7" required />
+          <div><b>${p.name}</b>’s guess</div>
+          <input type="number" step="1" min="0" id="guess${i}" placeholder="e.g. 7" required />
         `;
         g.appendChild(row);
       });
@@ -252,23 +240,13 @@
       const eligible = players.filter(p => p.roundsWon === 0);
       const inputs=[...document.querySelectorAll("#guesses input")];
 
-      // collect guesses
+      // collect guesses from eligible (or last player in finalMode)
       const guesses=[];
       for(let i=0;i<inputs.length;i++){
         const raw=inputs[i].value.trim();
         if(raw===""){ log(`Missing guess for ${eligible[i].name}.`,"warn"); return; }
         const val=Number(raw);
         if(!Number.isInteger(val) || val<0){ log(`${eligible[i].name} must enter a non-negative integer.`,"warn"); return; }
-
-        // enforce redo constraint (must be lower than previous) if applicable
-        if(redoMode && redoConstraint.has(eligible[i])){
-          const prev = redoConstraint.get(eligible[i]);
-          if(!(val < prev)){
-            log(`${eligible[i].name}: new bet must be lower than your previous bet (${prev}).`,"err");
-            return;
-          }
-        }
-
         eligible[i].makeGuess(val);
         guesses.push(val);
       }
@@ -276,36 +254,23 @@
       let winner, winningGuess;
 
       if(finalMode){
+        // Final extra round: only the last remaining player makes a guess and wins.
         winner = eligible[0];
         winningGuess = winner.lastGuess() ?? 0;
       } else {
+        // Normal round: lowest unique among eligible wins
         const unique = guesses.filter((g,i,arr)=> arr.indexOf(g)===arr.lastIndexOf(g));
-        if(unique.length===0){
-          // NO UNIQUE: set redo mode and constraints for all eligible players
-          redoMode = true;
-          redoConstraint.clear();
-          for(let i=0;i<eligible.length;i++){
-            const prev = eligible[i].lastGuess();
-            redoConstraint.set(eligible[i], prev);
-            log(`🔁 ${eligible[i].name}: no unique bet — place a new bet < ${prev}`, "warn");
-          }
-          setupRound(true);
-          return;
-        }
+        if(unique.length===0){ log(`No unique guesses in round ${roundNumber}. Re-enter guesses.`,"err"); return; }
         winningGuess = Math.min(...unique);
         winner = eligible.find(p => p.lastGuess() === winningGuess);
       }
-
-      // clear any redo constraints we might have been carrying
-      redoMode = false;
-      redoConstraint.clear();
 
       // Payments: everyone pays winningGuess; winner receives pot
       const totalPlayers = players.length;
       for(const p of players){ p.balance -= winningGuess; }
       winner.balance += winningGuess * totalPlayers;
 
-      // Mark win (only once)
+      // Mark win (only once per player)
       if(winner.roundsWon === 0){
         winner.roundsWon = 1;
         winner.winningRounds.push(roundNumber);
@@ -321,13 +286,17 @@
       const remaining = players.filter(p => p.roundsWon === 0);
 
       if(finalMode){
+        // Final round just completed – finish the game.
         finishGame();
         return;
       }
+
+      // If only one remains, prepare the extra final round next
       if(remaining.length === 1){
-        setupRound(false); // will flip to finalMode next time
+        setupRound(false); // this will set finalMode=true and prompt last player
         return;
       }
+
       setupRound(false);
     }
 
@@ -338,13 +307,13 @@
           <td>${escapeHtml(p.name)}</td>
           <td>${p.roundsWon}</td>
           <td>${p.balance}</td>
-          <td>${p.winningRounds.length ? p.winningRounds[0] : "-"}</td>
+          <td>${p.winningRounds.join(", ") || "-"}</td>
         </tr>`
       ).join("");
       el.innerHTML = `
         <div class="scoreboard">
           <table>
-            <thead><tr><th>Player</th><th>Rounds Won</th><th>Balance (€)</th><th>Winning round</th></tr></thead>
+            <thead><tr><th>Player</th><th>Rounds Won</th><th>Balance (€)</th><th>Winning Rounds</th></tr></thead>
             <tbody>${rows}</tbody>
           </table>
         </div>
@@ -361,8 +330,7 @@
 
       log(`\n🏁 Game Finished\n`, "ok");
       for(const p of ordered){
-        const wr = p.winningRounds.length ? p.winningRounds[0] : "None";
-        log(`• ${p.name} — Balance: €${p.balance} | Winning round: ${wr}`);
+        log(`• ${p.name} — Balance: €${p.balance} | Rounds Won: ${p.winningRounds.join(", ") || "None"}`);
       }
 
       renderScoreboard();
@@ -371,7 +339,7 @@
     }
 
     function restartGame(){
-      players=[]; roundNumber=1; finalMode=false; redoMode=false; redoConstraint.clear();
+      players=[]; roundNumber=1; finalMode=false;
       $("#output").textContent="";
       $("#numPlayers").value="";
       $("#playerForm").innerHTML="";
@@ -381,7 +349,6 @@
       $("#scoreboard").innerHTML="";
       if(chart){ chart.destroy(); chart=null; }
       show("#game", false);
-      show("#logwrap", false);
       show("#game-finished", false);
       show("#player-names", false);
       show("#player-setup", true);

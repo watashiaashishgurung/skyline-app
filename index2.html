@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skyline - Offline Edition</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg:#0f1222; --card:#171a2b; --ink:#e9ecff; --muted:#9aa2d0; --accent:#7cf; }
+    * { box-sizing:border-box }
+    body {
+      margin:0; padding:24px; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, sans-serif;
+      background:linear-gradient(180deg,#0a0d1a, #0f1222 35%, #0a0d1a);
+      color:var(--ink);
+    }
+    h1 { font-family:"Press Start 2P", monospace; font-size:20px; text-align:center; margin:0 0 16px }
+    .flex-header { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:12px }
+    button {
+      background:var(--card); border:1px solid #2a2f4b; color:var(--ink); padding:10px 14px; border-radius:12px; cursor:pointer;
+    }
+    button:hover { border-color:var(--accent) }
+    .card {
+      max-width:860px; margin:12px auto; background:var(--card); border:1px solid #202544; border-radius:16px; padding:16px;
+      box-shadow: 0 6px 24px rgba(0,0,0,.35);
+    }
+    label { display:block; margin:10px 0 6px; color:var(--muted) }
+    input[type="number"], input[type="text"] {
+      width:100%; background:#0e1020; color:var(--ink); border:1px solid #2a2f4b; border-radius:10px; padding:10px;
+    }
+    #instructions ul { margin:8px 0 0 18px }
+    #round-info { font-weight:600; margin-bottom:8px }
+    #guesses .row { display:grid; grid-template-columns: 1fr 160px; gap:10px; align-items:center; margin:8px 0 }
+    #output { white-space:pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; color:#cfe3ff }
+    .muted { color:var(--muted) }
+    .grid { display:grid; gap:8px }
+    .scoreboard table { width:100%; border-collapse:collapse; margin-top:8px }
+    .scoreboard th, .scoreboard td { padding:8px; border-bottom:1px solid #273057; text-align:left; font-size:14px }
+    .ok { color:#98f5a9 }
+    .warn { color:#ffd580 }
+    .err { color:#ff9aa2 }
+    .hidden { display:none !important; }
+  </style>
+</head>
+<body>
+  <h1>🌟 Skyline: Web-App 🌟</h1>
+
+  <div class="flex-header">
+    <button id="btnInstructions">Show Instructions</button>
+    <button id="btnRestartTop">Restart Game</button>
+  </div>
+
+  <div id="instructions" class="card hidden">
+    <p>🎯 <b>Rules</b></p>
+    <ul>
+      <li>Each player makes a guess each round.</li>
+      <li>The <b>lowest unique</b> guess wins.</li>
+      <li>Each player can win only once.</li>
+      <li>Game ends when all but one player has won.</li>
+      <li>Payout = <code>winning guess × players who bet this round</code>.</li>
+    </ul>
+  </div>
+
+  <div id="player-setup" class="card">
+    <label for="numPlayers">Enter Number of Players (2–20)</label>
+    <input type="number" id="numPlayers" min="2" max="20" />
+    <div style="margin-top:10px">
+      <button id="btnSetupPlayers">Next</button>
+    </div>
+  </div>
+
+  <div id="player-names" class="card hidden">
+    <form id="playerForm" class="grid"></form>
+    <div style="margin-top:10px">
+      <button id="btnStart">Start Game</button>
+    </div>
+  </div>
+
+  <div id="game" class="card hidden">
+    <div id="round-info"></div>
+    <div class="muted" id="round-note"></div>
+    <div id="guesses" style="margin:10px 0"></div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap">
+      <button id="btnPlay">Play Round</button>
+      <button id="btnSkipNoUnique" title="If no unique guesses, you can re-enter guesses.">Re-enter Guesses</button>
+    </div>
+
+    <div class="scoreboard" id="scoreboard"></div>
+  </div>
+
+  <div id="game-over" class="card hidden">
+    <div class="ok"><b>Game Over</b></div>
+    <div class="muted">Use “Restart Game” above to play again.</div>
+  </div>
+
+  <div class="card">
+    <div class="muted" style="margin-bottom:6px">Game Log</div>
+    <pre id="output"></pre>
+  </div>
+
+  <script>
+    // --- State ---
+    class Player {
+      constructor(name) {
+        this.name = name;
+        this.roundsWon = 0;        // 0 until they win; then 1
+        this.amount = 0;           // cumulative payout
+        this.guesses = [];         // per-round guesses (index = round-1)
+        this.winningRounds = [];   // indices of rounds they won
+      }
+      makeGuess(n) { this.guesses.push(n); }
+    }
+
+    let players = [];
+    let roundNumber = 1;
+    const MAX_AMOUNT = 10000;
+
+    // --- DOM helpers ---
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => document.querySelectorAll(sel);
+    const show = (id, on=true) => {
+      const el = typeof id === "string" ? $(id) : id;
+      if (!el) return;
+      el.classList[on ? "remove" : "add"]("hidden");
+    };
+
+    // --- UI Bindings ---
+    $("#btnInstructions").addEventListener("click", () => {
+      const box = $("#instructions");
+      const isHidden = box.classList.contains("hidden");
+      show(box, isHidden);
+      $("#btnInstructions").textContent = isHidden ? "Hide Instructions" : "Show Instructions";
+    });
+
+    $("#btnRestartTop").addEventListener("click", restartGame);
+    $("#btnSetupPlayers").addEventListener("click", setupPlayers);
+    $("#btnStart").addEventListener("click", startGame);
+    $("#btnPlay").addEventListener("click", playRound);
+    $("#btnSkipNoUnique").addEventListener("click", () => setupRound(true));
+
+    // --- Flow ---
+    function setupPlayers() {
+      const num = parseInt($("#numPlayers").value, 10);
+      if (!Number.isInteger(num) || num < 2 || num > 20) {
+        log(`⚠️ Please enter a valid number of players (2–20).`, "warn");
+        return;
+      }
+      const form = $("#playerForm");
+      form.innerHTML = "";
+      for (let i = 0; i < num; i++) {
+        const row = document.createElement("div");
+        row.innerHTML = `
+          <label>Player ${i + 1} Name</label>
+          <input type="text" id="player${i}" placeholder="Name" required />
+        `;
+        form.appendChild(row);
+      }
+      show("#player-setup", false);
+      show("#player-names", true);
+    }
+
+    function startGame() {
+      const inputs = Array.from($("#playerForm").querySelectorAll("input"));
+      const names = inputs.map(i => (i.value || "").trim());
+      if (names.some(n => n.length === 0)) {
+        log(`⚠️ Please fill all player names.`, "warn");
+        return;
+      }
+      players = names.map(n => new Player(n));
+      roundNumber = 1;
+
+      show("#player-names", false);
+      show("#game", true);
+      setupRound();
+    }
+
+    function setupRound(reenter = false) {
+      const info = $("#round-info");
+      const note = $("#round-note");
+      const g = $("#guesses");
+      info.textContent = `Round ${roundNumber}`;
+      note.textContent = "Only players who haven’t won yet can guess.";
+      g.innerHTML = "";
+
+      const eligible = players.filter(p => p.roundsWon === 0);
+      eligible.forEach((p, idx) => {
+        const wrap = document.createElement("div");
+        wrap.className = "row";
+        wrap.innerHTML = `
+          <div><b>${p.name}</b>’s guess</div>
+          <input type="number" step="1" min="0" id="guess${idx}" placeholder="e.g. 7" required />
+        `;
+        g.appendChild(wrap);
+      });
+
+      if (!reenter) renderScoreboard();
+    }
+
+    function playRound() {
+      const inputs = Array.from($("#guesses").querySelectorAll("input"));
+      const eligible = players.filter(p => p.roundsWon === 0);
+
+      // Validate and collect guesses
+      const guesses = [];
+      for (let i = 0; i < inputs.length; i++) {
+        const raw = inputs[i].value.trim();
+        if (raw === "") return log(`⚠️ Missing guess for ${eligible[i].name}.`, "warn");
+        const val = Number(raw);
+        if (!Number.isFinite(val) || !Number.isInteger(val) || val < 0) {
+          return log(`⚠️ ${eligible[i].name} must enter a non-negative integer.`, "warn");
+        }
+        eligible[i].makeGuess(val);
+        guesses.push(val);
+      }
+
+      const uniqueGuesses = guesses.filter((g, i, arr) => arr.indexOf(g) === arr.lastIndexOf(g));
+      if (uniqueGuesses.length === 0) {
+        log(`⛔ No unique guesses in round ${roundNumber}. Re-enter guesses.`, "err");
+        return;
+      }
+
+      const winningGuess = Math.min(...uniqueGuesses);
+      // find the eligible player whose last guess equals winningGuess
+      const winner = eligible.find(p => p.guesses[p.guesses.length - 1] === winningGuess);
+
+      // Mark win & payout by rule: guess × number of eligible (bettors)
+      const bettors = eligible.length;
+      const payout = winningGuess * bettors;
+      winner.roundsWon = 1;
+      winner.winningRounds.push(roundNumber);
+      winner.amount = Math.min(MAX_AMOUNT, winner.amount + payout);
+
+      log(`🏆 Round ${roundNumber} winner: ${winner.name} wins €${payout} (guess ${winningGuess} × ${bettors} bettors).`, "ok");
+      roundNumber++;
+
+      const remaining = players.filter(p => p.roundsWon === 0);
+      if (remaining.length <= 1) return endGame();
+      setupRound();
+    }
+
+    function endGame() {
+      const lastPlayer = players.find(p => p.roundsWon === 0);
+      // If they never entered a guess in the final visible round (edge case), treat it as 0
+      const lastGuess = lastPlayer.guesses[lastPlayer.guesses.length - 1] ?? 0;
+
+      // Bettors in the final round are those who had not yet won prior to the final resolution
+      const bettorsFinal = players.filter(p => p.winningRounds.length === 0 || p === lastPlayer).length;
+      const payout = lastGuess * bettorsFinal;
+
+      lastPlayer.amount = Math.min(MAX_AMOUNT, lastPlayer.amount + payout);
+      lastPlayer.roundsWon = 1;
+      lastPlayer.winningRounds.push(roundNumber);
+
+      log(`\n🎉 Final winner: ${lastPlayer.name} gets €${payout} (guess ${lastGuess} × ${bettorsFinal} bettors).`, "ok");
+      log(`\nFinal Results:\n`);
+
+      // Show results in chronological order of first win
+      const ordered = players.slice().sort((a, b) => {
+        const af = a.winningRounds[0] ?? Infinity;
+        const bf = b.winningRounds[0] ?? Infinity;
+        return af - bf;
+      });
+
+      for (const p of ordered) {
+        const wonRounds = p.winningRounds.join(", ") || "None";
+        log(`• ${p.name} — Rounds Won: ${wonRounds} | Total: €${p.amount}`);
+      }
+
+      renderScoreboard(true);
+      show("#game", false);
+      show("#game-over", true);
+    }
+
+    function renderScoreboard(final = false) {
+      const el = $("#scoreboard");
+      const t = [];
+      t.push(`<table>
+        <thead>
+          <tr><th>Player</th><th>Rounds Won</th><th>Total (€)</th><th>Winning Rounds</th></tr>
+        </thead><tbody>`);
+      for (const p of players) {
+        t.push(`<tr>
+          <td>${escapeHtml(p.name)}</td>
+          <td>${p.roundsWon}</td>
+          <td>${p.amount}</td>
+          <td>${p.winningRounds.join(", ") || "-"}</td>
+        </tr>`);
+      }
+      t.push(`</tbody></table>`);
+      if (final) t.push(`<div class="ok" style="margin-top:6px">✅ Game finished</div>`);
+      el.innerHTML = t.join("");
+    }
+
+    function restartGame() {
+      players = [];
+      roundNumber = 1;
+      $("#output").textContent = "";
+      $("#numPlayers").value = "";
+      $("#playerForm").innerHTML = "";
+      $("#guesses").innerHTML = "";
+      $("#round-info").innerHTML = "";
+      $("#round-note").innerHTML = "";
+      $("#scoreboard").innerHTML = "";
+      show("#game", false);
+      show("#game-over", false);
+      show("#player-names", false);
+      show("#player-setup", true);
+    }
+
+    function log(msg, level="") {
+      const out = $("#output");
+      const prefix = level === "ok" ? "✅ " : level === "warn" ? "⚠️ " : level === "err" ? "⛔ " : "";
+      out.textContent += `${prefix}${msg}\n`;
+      out.scrollTop = out.scrollHeight;
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+  </script>
+</body>
+</html>
