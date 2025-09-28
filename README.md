@@ -38,7 +38,7 @@ Skyline is a quick, local (offline) party / classroom game: each round every pla
 | UX | Dynamic hints & input caps during re‑entry rounds (must guess lower than previous). |
 | Flow | Automatic switch into clearly labeled Final Round when only one player left. |
 | Validation | Stricter integer / non‑negative checks and enforcement of redo constraints. |
-| Stability | Minor bug fixes around: (a) clearing redo constraints after a successful round, (b) chart teardown on restart, (c) preventing empty name submissions, (d) ensuring balances update consistently in final round. |
+| Stability | Minor bug fixes around: (a) clearing redo constraints after a successful round, (b) chart teardown on restart, (c) preventing empty name submissions, (d) ensuring balances update consistently in final round, (e) corrected sudden death (final lone player) resolution logic. |
 | Accessibility | Improved button labels / contrast and scroll anchoring of log output. |
 
 > Tip: If you want fully offline usage without network, download `index.html` and bundle a local copy of Chart.js; otherwise the CDN link is fine when cached.
