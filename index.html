@@ -47,7 +47,7 @@
       <li>Each player can win only once.</li>
       <li><b>Payments each round:</b> everyone (including the winner) pays the winning guess; the winner receives the total pot.</li>
       <li>When only one player hasn’t won, an <b>extra final round</b> runs where that last player chooses a bet; then the game <b>finishes</b> 🏁.</li>
-      <li>If a round has <b>no unique guesses</b>, affected players must re-enter with a bet <b>lower than their previous bet</b>.</li>
+  <li>If two or more players tie for the <b>lowest guess</b>, only those tied players must re-enter with a bet <b>lower than their previous bet</b>. This repeats until a single lowest guess remains (the winner).</li>
     </ul>
   </div>
 
@@ -102,10 +102,12 @@
 
     let players = [];
     let roundNumber = 1;
-    let finalMode = false; // when true: only the last remaining player guesses
-    let redoMode = false;  // re-entry required because previous round had no uniques
-    // For redoMode: enforce newGuess < prevGuess for these players (player -> prevGuess)
-    const redoConstraint = new Map();
+  let finalMode = false; // when true: only the last remaining player guesses
+  // Tie-break (lowest duplicate) mode state
+  let tieMode = false;          // true while resolving a lowest-guess tie
+  let tiePlayers = [];          // subset of players currently in tie-break
+  // For tieMode: enforce newGuess < previous guess for those still tied
+  const tieConstraint = new Map(); // player -> previous (current lowest tied) guess
 
     // ===== DOM helpers =====
     const $ = s => document.querySelector(s);
@@ -208,9 +210,10 @@
       }
       players=names.map(n => new Player(n));
       roundNumber=1;
-      finalMode=false;
-      redoMode=false;
-      redoConstraint.clear();
+  finalMode=false;
+  tieMode=false;
+  tiePlayers=[];
+  tieConstraint.clear();
 
       show("#player-names", false);
       show("#game", true);
@@ -220,20 +223,26 @@
     }
 
     function setupRound(reenter=false){
-      const eligible = players.filter(p => p.roundsWon === 0);
-      finalMode = eligible.length === 1 && !redoMode; // final extra round only when not in a redo
+      const baseEligible = players.filter(p => p.roundsWon === 0);
+      finalMode = !tieMode && baseEligible.length === 1; // no tie-break in progress
 
       $("#round-info").textContent = finalMode ? `Final Round (Round ${roundNumber})` : `Round ${roundNumber}`;
-      $("#round-note").textContent = finalMode
-        ? `Only ${eligible[0].name} chooses a guess this round. All players still pay the winning amount.`
-        : (redoMode ? `Re-enter required: your new bet must be lower than your previous bet.` : `Only players who haven’t won yet may guess.`);
+
+      if(finalMode){
+        $("#round-note").textContent = `Only ${baseEligible[0].name} chooses a guess this round. All players still pay the winning amount.`;
+      } else if(tieMode){
+        const currentLowest = tiePlayers.length ? tiePlayers[0].lastGuess() : "?";
+        $("#round-note").textContent = `Tie-break: only tied lowest players re-enter with a bet lower than ${currentLowest}.`;
+      } else {
+        $("#round-note").textContent = `Only players who haven’t won yet may guess.`;
+      }
 
       const g=$("#guesses"); g.innerHTML="";
-      const toPrompt = finalMode ? eligible : eligible;
+      const toPrompt = tieMode ? tiePlayers : baseEligible;
 
       toPrompt.forEach((p, i) => {
         const prev = p.lastGuess();
-        const needsLower = redoMode && redoConstraint.has(p);
+        const needsLower = tieMode && tieConstraint.has(p);
         const maxAttr = needsLower && Number.isFinite(prev) ? `max="${prev-1}"` : "";
         const hint = needsLower && Number.isFinite(prev) ? `<div class="hint">New bet must be &lt; ${prev}</div>` : "";
         const row=document.createElement("div");
@@ -249,56 +258,76 @@
     }
 
     function playRound(){
-      const eligible = players.filter(p => p.roundsWon === 0);
+      const baseEligible = players.filter(p => p.roundsWon === 0);
+      const activeEligible = tieMode ? tiePlayers : baseEligible;
       const inputs=[...document.querySelectorAll("#guesses input")];
 
-      // collect guesses
-      const guesses=[];
+      // Collect guesses
+      const submitted=[];
       for(let i=0;i<inputs.length;i++){
         const raw=inputs[i].value.trim();
-        if(raw===""){ log(`Missing guess for ${eligible[i].name}.`,"warn"); return; }
+        if(raw===""){ log(`Missing guess for ${activeEligible[i].name}.`,`warn`); return; }
         const val=Number(raw);
-        if(!Number.isInteger(val) || val<0){ log(`${eligible[i].name} must enter a non-negative integer.`,"warn"); return; }
+        if(!Number.isInteger(val) || val<0){ log(`${activeEligible[i].name} must enter a non-negative integer.`,`warn`); return; }
 
-        // enforce redo constraint (must be lower than previous) if applicable
-        if(redoMode && redoConstraint.has(eligible[i])){
-          const prev = redoConstraint.get(eligible[i]);
-          if(!(val < prev)){
-            log(`${eligible[i].name}: new bet must be lower than your previous bet (${prev}).`,"err");
-            return;
+        if(tieMode){
+          const prevLimit = tieConstraint.get(activeEligible[i]);
+            // previous baseline they must go below
+          if(!(val < prevLimit)){
+            log(`${activeEligible[i].name}: new bet must be lower than your previous tied bet (${prevLimit}).`,`err`); return;
           }
+          // Replace last guess (do not extend rounds)
+          activeEligible[i].guesses[activeEligible[i].guesses.length-1] = val;
+        } else {
+          activeEligible[i].makeGuess(val);
         }
-
-        eligible[i].makeGuess(val);
-        guesses.push(val);
+        submitted.push(val);
       }
 
       let winner, winningGuess;
 
       if(finalMode){
-        winner = eligible[0];
+        winner = activeEligible[0];
         winningGuess = winner.lastGuess() ?? 0;
+      } else if(tieMode){
+        // Evaluate tie-break iteration among current tie players
+        const minNow = Math.min(...tiePlayers.map(p => p.lastGuess()));
+        const stillTied = tiePlayers.filter(p => p.lastGuess() === minNow);
+        if(stillTied.length > 1){
+          // Continue tie-break with only those still tied
+            tiePlayers = stillTied;
+            tieConstraint.clear();
+            for(const p of tiePlayers){ tieConstraint.set(p, p.lastGuess()); }
+            log(`🔁 Still tied at ${minNow}. Only tied players re-enter with a lower bet.`, "warn");
+            setupRound(true);
+            return;
+        } else {
+          // Tie resolved
+          winner = stillTied[0];
+          winningGuess = winner.lastGuess();
+          tieMode = false;
+          tiePlayers = [];
+          tieConstraint.clear();
+        }
       } else {
-        const unique = guesses.filter((g,i,arr)=> arr.indexOf(g)===arr.lastIndexOf(g));
-        if(unique.length===0){
-          // NO UNIQUE: set redo mode and constraints for all eligible players
-          redoMode = true;
-          redoConstraint.clear();
-          for(let i=0;i<eligible.length;i++){
-            const prev = eligible[i].lastGuess();
-            redoConstraint.set(eligible[i], prev);
-            log(`🔁 ${eligible[i].name}: no unique bet — place a new bet < ${prev}`, "warn");
+        // Normal round resolution
+        const minGuess = Math.min(...submitted);
+        const minPlayers = activeEligible.filter(p => p.lastGuess() === minGuess);
+        if(minPlayers.length > 1){
+          // Initiate tie-break with only those at lowest
+          tieMode = true;
+          tiePlayers = minPlayers;
+          tieConstraint.clear();
+          for(const p of tiePlayers){ tieConstraint.set(p, p.lastGuess()); }
+          for(const p of tiePlayers){
+            log(`🔁 ${p.name}: tied lowest at ${minGuess} — enter a new lower bet.`, "warn");
           }
           setupRound(true);
           return;
         }
-        winningGuess = Math.min(...unique);
-        winner = eligible.find(p => p.lastGuess() === winningGuess);
+        winner = minPlayers[0];
+        winningGuess = minGuess;
       }
-
-      // clear any redo constraints we might have been carrying
-      redoMode = false;
-      redoConstraint.clear();
 
       // Payments: everyone pays winningGuess; winner receives pot
       const totalPlayers = players.length;
@@ -371,7 +400,7 @@
     }
 
     function restartGame(){
-      players=[]; roundNumber=1; finalMode=false; redoMode=false; redoConstraint.clear();
+  players=[]; roundNumber=1; finalMode=false; tieMode=false; tiePlayers=[]; tieConstraint.clear();
       $("#output").textContent="";
       $("#numPlayers").value="";
       $("#playerForm").innerHTML="";
