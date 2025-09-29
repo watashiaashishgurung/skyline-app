@@ -67,4 +67,3 @@ In the unlikely even if one player is not able to afford to play. There are plen
 
 Goodluck !
 Anny feedback is webcome!
-
