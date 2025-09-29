@@ -29,10 +29,181 @@
     .hidden{display:none !important}
     .flag{font-size:20px}
     canvas{background:#0e1020;border:1px solid var(--grid);border-radius:12px}
+
+    /* Smooth show/hide for cards */
+    .card {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.4s ease;
+    }
+    .card:not(.hidden) {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Button hover pulse */
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 12px var(--accent);
+      transition: all 0.2s ease;
+    }
+
+    /* Round info flip */
+    #round-info {
+      display: inline-block;
+      animation: roundFlip 0.6s ease;
+    }
+    @keyframes roundFlip {
+      from { transform: rotateX(90deg); opacity: 0; }
+      to { transform: rotateX(0deg); opacity: 1; }
+    }
+
+    /* Log fade-in */
+    #output {
+      transition: all 0.3s ease;
+    }
+    #output span.new {
+      animation: fadePop 0.5s ease;
+    }
+    @keyframes fadePop {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Bubble Score Counter */
+    #bubble-score {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--card);
+      border: 1px solid #2a2f4b;
+      border-radius: 12px;
+      padding: 12px;
+      z-index: 1000;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.4);
+    }
+    
+    #bubble-score .score-title {
+      color: var(--accent);
+      margin-bottom: 5px;
+    }
+    
+    #bubble-score .score-line {
+      color: var(--ink);
+      margin: 3px 0;
+    }
+    
+    #bubble-score .bubbles-left {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    /* Multi-colored bubble animation */
+    .bubbles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.7;
+      animation: bubbleFloat 8s infinite linear;
+      pointer-events: auto;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .bubble:hover {
+      transform: scale(1.2);
+      opacity: 0.9;
+    }
+
+    .bubble.popped {
+      animation: bubblePop 0.4s ease-out forwards;
+    }
+
+    @keyframes bubblePop {
+      0% {
+        transform: scale(1);
+        opacity: 0.7;
+      }
+      50% {
+        transform: scale(1.5);
+        opacity: 0.3;
+      }
+      100% {
+        transform: scale(0);
+        opacity: 0;
+      }
+    }
+
+    .bubble:nth-child(1) { width: 20px; height: 20px; background: linear-gradient(45deg, #ff6b6b, #ff8e8e); animation-delay: 0s; left: 10%; }
+    .bubble:nth-child(2) { width: 15px; height: 15px; background: linear-gradient(45deg, #4ecdc4, #44a08d); animation-delay: 1s; left: 20%; }
+    .bubble:nth-child(3) { width: 25px; height: 25px; background: linear-gradient(45deg, #45b7d1, #96c93d); animation-delay: 2s; left: 30%; }
+    .bubble:nth-child(4) { width: 18px; height: 18px; background: linear-gradient(45deg, #f093fb, #f5576c); animation-delay: 3s; left: 40%; }
+    .bubble:nth-child(5) { width: 22px; height: 22px; background: linear-gradient(45deg, #ffecd2, #fcb69f); animation-delay: 4s; left: 50%; }
+    .bubble:nth-child(6) { width: 16px; height: 16px; background: linear-gradient(45deg, #a8edea, #fed6e3); animation-delay: 5s; left: 60%; }
+    .bubble:nth-child(7) { width: 30px; height: 30px; background: linear-gradient(45deg, #d299c2, #fef9d7); animation-delay: 6s; left: 70%; }
+    .bubble:nth-child(8) { width: 12px; height: 12px; background: linear-gradient(45deg, #89f7fe, #66a6ff); animation-delay: 7s; left: 80%; }
+    .bubble:nth-child(9) { width: 28px; height: 28px; background: linear-gradient(45deg, #fdbb2d, #22c1c3); animation-delay: 1.5s; left: 15%; }
+    .bubble:nth-child(10) { width: 14px; height: 14px; background: linear-gradient(45deg, #ee9ca7, #ffdde1); animation-delay: 2.5s; left: 85%; }
+    .bubble:nth-child(11) { width: 19px; height: 19px; background: linear-gradient(45deg, #667eea, #764ba2); animation-delay: 0.5s; left: 5%; }
+    .bubble:nth-child(12) { width: 26px; height: 26px; background: linear-gradient(45deg, #f093fb, #f5576c); animation-delay: 3.5s; left: 25%; }
+
+    @keyframes bubbleFloat {
+      0% {
+        bottom: -50px;
+        transform: translateX(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.7;
+      }
+      90% {
+        opacity: 0.7;
+      }
+      100% {
+        bottom: 100vh;
+        transform: translateX(100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 <body>
+  <!-- Multi-colored bubble animation -->
+  <div class="bubbles">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+  </div>
+
   <h1>🌟 Skyline: Web-App 🌟</h1>
+
+  <!-- Bubble Score Counter -->
+  <div id="bubble-score">
+    <div class="score-title">🎯 BUBBLE SCORE</div>
+    <div class="score-line">Score: <span id="score-value">0</span></div>
+    <div class="bubbles-left">Bubbles Left: <span id="bubbles-left">12</span></div>
+  </div>
 
   <div class="flex-header">
     <button id="btnInstructions">Show Instructions</button>
@@ -108,6 +279,241 @@
   let tiePlayers = [];          // subset of players currently in tie-break
   // For tieMode: enforce newGuess < previous guess for those still tied
   const tieConstraint = new Map(); // player -> previous (current lowest tied) guess
+
+    // ===== Bubble Interaction =====
+    // Audio context for sound effects
+    let audioContext;
+    
+    // Bubble scoring system
+    let bubbleScore = 0;
+    let poppedBubbles = new Set(); // Track which bubbles have been popped
+    const totalBubbles = 12;
+    
+    // Points based on bubble size (smaller = more points)
+    const bubblePoints = {
+      12: 50,  // smallest bubbles = most points
+      13: 45,
+      14: 40,
+      15: 35,
+      16: 30,
+      17: 25,
+      18: 20,
+      19: 15,
+      20: 10,
+      21: 10,
+      22: 8,
+      24: 8,
+      25: 6,
+      26: 6,
+      28: 4,
+      30: 2   // largest bubbles = least points
+    };
+    
+    function updateScore(points) {
+      bubbleScore += points;
+      document.getElementById('score-value').textContent = bubbleScore;
+      document.getElementById('bubbles-left').textContent = totalBubbles - poppedBubbles.size;
+    }
+    
+    function getBubblePoints(bubbleElement) {
+      const style = window.getComputedStyle(bubbleElement);
+      const width = parseInt(style.width);
+      return bubblePoints[width] || 10; // default points if size not found
+    }
+    
+    function initAudio() {
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      } catch (e) {
+        console.log('Web Audio API not supported');
+      }
+    }
+    
+    function playPopSound() {
+      if (!audioContext) return;
+      
+      // Create a pop sound effect
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      // Connect nodes
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      // Configure the pop sound
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.1);
+      
+      // Volume envelope for pop effect
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+      
+      // Start and stop the sound
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.1);
+    }
+    
+    function playSparkleSound() {
+      if (!audioContext) return;
+      
+      // Create a higher pitched sparkle sound
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      // Higher frequency for sparkle effect
+      oscillator.frequency.setValueAtTime(1200, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(2000, audioContext.currentTime + 0.05);
+      oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.15);
+      
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.15);
+    }
+
+    function initBubbles() {
+      const bubbles = document.querySelectorAll('.bubble');
+      
+      bubbles.forEach((bubble, index) => {
+        bubble.addEventListener('click', function(e) {
+          // Check if this bubble has already been popped
+          if (poppedBubbles.has(index)) return;
+          
+          // Mark bubble as popped
+          poppedBubbles.add(index);
+          
+          // Calculate and add points
+          const points = getBubblePoints(this);
+          updateScore(points);
+          
+          // Play pop sound
+          playPopSound();
+          
+          // Add popped class for animation
+          this.classList.add('popped');
+          
+          // Remove the bubble permanently after animation completes
+          setTimeout(() => {
+            this.remove();
+            
+            // Check if all bubbles are popped
+            if (poppedBubbles.size === totalBubbles) {
+              showGameComplete();
+            }
+          }, 400);
+          
+          // Show points popup
+          createPointsEffect(e.clientX, e.clientY, points);
+          createPopEffect(e.clientX, e.clientY);
+        });
+      });
+    }
+
+    function showGameComplete() {
+      const completeDiv = document.createElement('div');
+      completeDiv.innerHTML = `
+        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                    background: var(--card); border: 2px solid var(--accent); border-radius: 16px; 
+                    padding: 24px; z-index: 2000; text-align: center; font-family: 'Press Start 2P', monospace;">
+          <div style="color: var(--accent); font-size: 16px; margin-bottom: 16px;">🎉 ALL BUBBLES POPPED! 🎉</div>
+          <div style="color: var(--ink); margin-bottom: 12px;">Final Score: ${bubbleScore}</div>
+          <div style="color: var(--muted); font-size: 10px; margin-bottom: 16px;">Refresh page to play again</div>
+          <button onclick="location.reload()" style="background: var(--accent); color: #000; border: none; 
+                         padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 10px;">
+            🔄 Play Again
+          </button>
+        </div>
+      `;
+      document.body.appendChild(completeDiv);
+    }
+
+    function createPointsEffect(x, y, points) {
+      const pointsDiv = document.createElement('div');
+      pointsDiv.innerHTML = `+${points}`;
+      pointsDiv.style.cssText = `
+        position: fixed;
+        left: ${x}px;
+        top: ${y - 30}px;
+        font-size: 16px;
+        font-weight: bold;
+        color: var(--accent);
+        pointer-events: none;
+        z-index: 1001;
+        animation: pointsFloat 1s ease-out forwards;
+        transform: translate(-50%, -50%);
+        font-family: 'Press Start 2P', monospace;
+      `;
+      
+      // Add points animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes pointsFloat {
+          0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+          100% { opacity: 0; transform: translate(-50%, -50%) translateY(-40px) scale(1.2); }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      document.body.appendChild(pointsDiv);
+      setTimeout(() => {
+        pointsDiv.remove();
+        style.remove();
+      }, 1000);
+    }
+
+    function createPopEffect(x, y) {
+      // Play sparkle sound
+      setTimeout(() => playSparkleSound(), 100);
+      
+      const pop = document.createElement('div');
+      pop.innerHTML = '✨';
+      pop.style.cssText = `
+        position: fixed;
+        left: ${x}px;
+        top: ${y}px;
+        font-size: 20px;
+        pointer-events: none;
+        z-index: 1000;
+        animation: sparkle 0.6s ease-out forwards;
+        transform: translate(-50%, -50%);
+      `;
+      
+      // Add sparkle animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes sparkle {
+          0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+          100% { opacity: 0; transform: translate(-50%, -50%) scale(2); }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      document.body.appendChild(pop);
+      setTimeout(() => {
+        pop.remove();
+        style.remove();
+      }, 600);
+    }
+
+    // Initialize bubbles and audio when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      initAudio();
+      initBubbles();
+      
+      // Initialize audio context on first user interaction (required by browsers)
+      document.addEventListener('click', function initAudioOnFirstClick() {
+        if (audioContext && audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+        document.removeEventListener('click', initAudioOnFirstClick);
+      }, { once: true });
+    });
 
     // ===== DOM helpers =====
     const $ = s => document.querySelector(s);
