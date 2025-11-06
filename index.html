@@ -16,6 +16,7 @@
     button{background:var(--card);border:1px solid #2a2f4b;color:var(--ink);padding:10px 14px;border-radius:12px;cursor:pointer}
     button:hover{border-color:var(--accent)}
   .card{max-width:980px;margin:12px auto;background:linear-gradient(160deg,#3b2417,#2a1a12 85%);border:1px solid #5a3a28;border-radius:16px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+    .button-container{margin-top:10px}
     label{display:block;margin:10px 0 6px;color:var(--muted)}
   input[type="number"],input[type="text"]{width:100%;background:#2d1c13;color:var(--ink);border:1px solid #5a3a28;border-radius:10px;padding:10px}
     #instructions ul{margin:8px 0 0 18px}
@@ -25,7 +26,8 @@
   .hint{font-size:12px;color:#ffb347}
     #output{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;color:#cfe3ff;margin-top:10px}
     .scoreboard table{width:100%;border-collapse:collapse;margin-top:8px}
-    .scoreboard th,.scoreboard td{padding:8px;border-bottom:1px solid #273057;text-align:left;font-size:14px}
+      .scoreboard th,.scoreboard td{padding:8px;border-bottom:1px solid #273057;text-align:left;font-size:14px}
+      .scoreboard + .scoreboard{margin-top:12px}
   .ok{color:#7ddc82}.warn{color:#ffb347}.err{color:#ff9aa2}
     .hidden{display:none !important}
     .flag{font-size:20px}
@@ -101,9 +103,25 @@
       font-size: 10px;
     }
 
+    /* Leaf Counter HUD */
+    #leaf-counter {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: var(--card);
+      border: 1px solid #ff8c42;
+      border-radius: 12px;
+      padding: 12px 16px;
+      z-index: 1000;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.4);
+      color: var(--accent);
+    }
+
   /* Leaf physics (JS-driven) */
-  .leaves{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;overflow:hidden}
-  .leaf{position:fixed;font-size:clamp(18px,3vw,46px);opacity:.95;filter:drop-shadow(0 4px 6px rgba(0,0,0,.4));will-change:transform;transition:filter .3s ease}
+  .leaves{position:fixed;top:0;left:0;width:100%;height:100%;z-index:999;overflow:hidden;pointer-events:none}
+  .leaf{position:fixed;font-size:clamp(18px,3vw,46px);opacity:.95;filter:drop-shadow(0 4px 6px rgba(0,0,0,.4));will-change:transform;transition:filter .3s ease;cursor:pointer;pointer-events:auto}
   .leaf.resting{opacity:.85}
   .leaf.captured{opacity:.55;filter:drop-shadow(0 0 8px rgba(255,140,66,.7))}
   body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 30% 20%,rgba(255,140,66,.12),transparent 60%),radial-gradient(circle at 70% 40%,rgba(255,179,71,.1),transparent 65%);z-index:0}
@@ -137,13 +155,118 @@
     to { transform: rotate(360deg); }
   }
   .victory{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:10;background:rgba(0,0,0,.55);font-family:"Press Start 2P",monospace;color:var(--accent);text-align:center}
+  
+  /* Leaf catch notification */
+  .time-bonus {
+    position: fixed;
+    font-family: "Press Start 2P", monospace;
+    font-size: 18px;
+    color: #ff8c42;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 1001;
+    animation: bonusFloat 1s ease-out forwards;
+    text-shadow: 0 0 8px rgba(255,140,66,0.8), 0 2px 4px rgba(0,0,0,0.6);
+  }
+  
+  @keyframes bonusFloat {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    50% { opacity: 1; transform: translateY(-30px) scale(1.2); }
+    100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
+  }
+
+  /* Game Over / Victory Overlay */
+  .game-message-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    background: rgba(0, 0, 0, 0.85);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+  }
+
+  .game-message-box {
+    background: linear-gradient(160deg, #3b2417, #2a1a12 85%);
+    border: 3px solid #ff8c42;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    font-family: "Press Start 2P", monospace;
+    color: var(--ink);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    animation: popIn 0.5s ease;
+    max-width: 500px;
+  }
+
+  .game-message-title {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #ff8c42;
+  }
+
+  .game-message-subtitle {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #d8b8a0;
+  }
+
+  .game-message-button {
+    margin-top: 20px;
+    padding: 12px 24px;
+    background: #ff8c42;
+    border: none;
+    border-radius: 10px;
+    font-family: "Press Start 2P", monospace;
+    font-size: 12px;
+    color: #2a1a12;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .game-message-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255,140,66,0.8);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes popIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* Celebration confetti */
+  .confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    pointer-events: none;
+    z-index: 1999;
+    animation: confettiFall 3s linear forwards;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
   </style>
 </head>
 <body>
   <!-- Falling Autumn Leaves Layer -->
   <div class="leaves" id="leaves"></div>
 
-  <h1>� Skyline: Autumn Edition 🍁</h1>
+  <!-- Leaf Counter -->
+  <div id="leaf-counter">🍁 Leaves: <span id="leaf-count">0</span></div>
+
+  <h1>🍂 Skyline: Autumn Edition 🍁</h1>
 
   <div class="flex-header">
     <button id="btnInstructions">Show Instructions</button>
@@ -161,45 +284,42 @@
   <li>If two or more players tie for the <b>lowest guess</b>, only those tied players must re-enter with a bet <b>lower than their previous bet</b>. This repeats until a single lowest guess remains (the winner).</li>
     </ul>
   </div>
-
   <div id="player-setup" class="card">
     <label for="numPlayers">Enter Number of Players (2–100)</label>
     <input type="number" id="numPlayers" min="2" max="100" />
-    <div style="margin-top:10px"><button id="btnSetupPlayers">Next</button></div>
+    <div class="button-container"><button id="btnSetupPlayers">Next</button></div>
   </div>
-
+  </div>
   <div id="player-names" class="card hidden">
     <form id="playerForm"></form>
-    <div style="margin-top:10px"><button id="btnStart">Start Game</button></div>
+    <div class="button-container"><button id="btnStart">Start Game</button></div>
+  </div>
   </div>
 
-  <div id="game" class="card hidden">
     <div id="round-info"></div>
     <div id="round-note"></div>
     <div id="guesses"></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 0">
+    <div class="button-container flex-buttons hidden" id="round-buttons">
       <button id="btnPlay">Play Round</button>
       <button id="btnReenter">Re-enter Guesses</button>
     </div>
-
-    <div class="scoreboard" id="scoreboard" style="margin-top:12px"></div>
+    <div class="scoreboard" id="scoreboard"></div>
   </div>
-
+  </div>
   <!-- Graph + Game Log together -->
   <div id="logwrap" class="card hidden">
     <canvas id="guessChart" height="220"></canvas>
-    <div style="color:#9aa2d0;margin:10px 0 6px">Game Log</div>
+    <div class="log-title">Game Log</div>
     <pre id="output"></pre>
+  </div>
   </div>
 
   <div id="game-finished" class="card hidden">
     <div class="ok"><span class="flag">🏁</span> <b>Game Finished</b></div>
-    <div class="warn">Use “Restart Game” above to play again.</div>
+    <div class="warn">Use "Restart Game" above to play again.</div>
   </div>
 
-
-
-  <title>Colorful Memory Match Game (Inline)</title>
+  <!-- Colorful Memory Match Game Section -->
   <style>
     /* Scoped styles to avoid clashing with Skyline app */
     #memory-mini * { box-sizing: border-box; }
@@ -330,9 +450,8 @@
       }
     }
   </style>
-</head>
-<body>
-  <!-- Drop this <section> anywhere inside Skyline's index.html -->
+
+  <!-- Memory Game HTML -->
   <section id="memory-mini" aria-label="Colorful Memory Match Game">
     <div class="wrap">
       <h2>Colorful Memory Match Game</h2>
@@ -342,7 +461,7 @@
         </div>
         <aside class="side">
           <p id="score" class="pill" aria-live="polite">Score: 0</p>
-          <p id="timer" class="pill" aria-live="polite">Time Left: 30</p>
+          <p id="timer" class="pill" aria-live="polite">Time Left: 10</p>
           <button id="startbtn">Start / Restart</button>
         </aside>
       </div>
@@ -356,7 +475,7 @@
       let cards = shuffle(base.concat(base)); // 24
       let selected = [];
       let score = 0;
-      let timer = 30;
+      let timer = 10;
       let ticking = null;
       let lockBoard = false; // prevent rapid clicking while checking
 
@@ -364,6 +483,40 @@
       const grid  = document.getElementById('game-container');
       const elScore = document.getElementById('score');
       const elTimer = document.getElementById('timer');
+
+      function showGameMessage(title, subtitle, emoji) {
+        const overlay = document.createElement('div');
+        overlay.className = 'game-message-overlay';
+        overlay.innerHTML = `
+          <div class="game-message-box">
+            <div class="game-message-title">${emoji} ${title}</div>
+            <div class="game-message-subtitle">${subtitle}</div>
+            <button class="game-message-button" onclick="this.closest('.game-message-overlay').remove()">OK</button>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+        
+        // If victory, add confetti
+        if (title.includes('Victory') || title.includes('Win')) {
+          createConfetti();
+        }
+      }
+
+      function createConfetti() {
+        const colors = ['#ff8c42', '#ffb347', '#ff6b6b', '#4ecdc4', '#45b7d1', '#f7dc6f', '#bb8fce'];
+        for (let i = 0; i < 50; i++) {
+          setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDelay = Math.random() * 0.5 + 's';
+            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 3000);
+          }, i * 30);
+        }
+      }
 
       function renderCards() {
         grid.innerHTML = '';
@@ -418,19 +571,23 @@
         selected = [];
         lockBoard = false;
 
-        // Optional: end early if all matched
+        // Check if all matched
         const remaining = grid.querySelectorAll('.card:not(.matched)').length;
         if (remaining === 0) {
           stopTimer();
           btn.disabled = false;
-          alert('You matched them all! Final score: ' + score);
+          setTimeout(() => {
+            showGameMessage('Victory!', `You matched all cards! Final Score: ${score}`, '🎉');
+          }, 500);
         }
       }
 
       function start() {
         // reset state
         stopTimer();
-        timer = 30;
+        // Base 10 seconds + collected leaves
+        var leafCount = window.leafCollectedCount || 0;
+        timer = 10 + leafCount;
         elTimer.textContent = 'Time Left: ' + timer;
         score = 0;
         elScore.textContent = 'Score: ' + score;
@@ -439,9 +596,24 @@
         lockBoard = false;
         cards = shuffle(base.concat(base));
         renderCards();
+
         // listener attached once globally; no duplicates
         tick();
       }
+
+      // Expose a tiny API so leaves can add time safely
+      window.colorfulMemory = {
+        addTime(sec = 1) {
+          try {
+            if (typeof sec !== 'number') sec = 1;
+          } catch(e){ sec = 1; }
+          if (typeof elTimer !== 'undefined' && typeof timer !== 'undefined') {
+            timer += sec;
+            if (timer < 0) timer = 0;
+            elTimer.textContent = 'Time Left: ' + timer;
+          }
+        }
+      };
 
       function tick() {
         ticking = setInterval(() => {
@@ -450,7 +622,7 @@
           if (timer <= 0) {
             stopTimer();
             btn.disabled = false;
-            alert('Game Over!');
+            showGameMessage('Game Over!', 'Time ran out! Try again.', '⏱️');
           }
         }, 1000);
       }
@@ -521,7 +693,7 @@
 
         // Initialize falling leaves when page loads
         document.addEventListener('DOMContentLoaded', () => {
-      spawnLeaves(21); // Add 21 falling leaves
+      spawnLeaves(30); // Add 21 falling leaves
     });
 
     // ===== DOM helpers =====
@@ -633,6 +805,7 @@
       show("#player-names", false);
       show("#game", true);
       show("#logwrap", true);
+      show("#round-buttons", true);
       setupRound();
       updateChart();
     }
@@ -669,7 +842,24 @@
         g.appendChild(row);
       });
 
+      // Disable buttons initially until all guesses are entered
+      $("#btnPlay").disabled = true;
+      $("#btnReenter").disabled = true;
+
+      // Add input listeners to enable buttons when all fields are filled
+      const guessInputs = document.querySelectorAll("#guesses input");
+      guessInputs.forEach(input => {
+        input.addEventListener('input', checkAllGuessesEntered);
+      });
+
       if(!reenter){ renderScoreboard(); }
+    }
+
+    function checkAllGuessesEntered() {
+      const inputs = [...document.querySelectorAll("#guesses input")];
+      const allFilled = inputs.length > 0 && inputs.every(i => i.value.trim() !== "");
+      $("#btnPlay").disabled = !allFilled;
+      $("#btnReenter").disabled = !allFilled;
     }
 
     function playRound(){
@@ -832,6 +1022,56 @@
     }
 
     function escapeHtml(s){ return s.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  </script>
+
+  <script>
+    // Global leaf collection counter
+    window.leafCollectedCount = 0;
+    
+    // Click-to-catch: each leaf adds +1s to the memory timer and is removed
+    (function(){
+      var leavesRoot = document.getElementById('leaves');
+      var leafCountEl = document.getElementById('leaf-count');
+      if (!leavesRoot) return;
+      
+      function showBonus(x, y) {
+        var bonus = document.createElement('div');
+        bonus.className = 'time-bonus';
+        bonus.textContent = '+1s ⏱️';
+        bonus.style.left = x + 'px';
+        bonus.style.top = y + 'px';
+        document.body.appendChild(bonus);
+        setTimeout(function(){ 
+          if (bonus && bonus.parentNode) bonus.parentNode.removeChild(bonus); 
+        }, 1000);
+      }
+      
+      leavesRoot.addEventListener('click', function(e){
+        var leaf = e.target.closest ? e.target.closest('.leaf') : null;
+        if (!leaf || leaf.classList.contains('captured')) return;
+        
+        // Get click position
+        var rect = leaf.getBoundingClientRect();
+        var x = rect.left + rect.width / 2;
+        var y = rect.top + rect.height / 2;
+        
+        leaf.classList.add('captured');
+        showBonus(x, y);
+        
+        // Increment collected leaf count
+        window.leafCollectedCount++;
+        if (leafCountEl) {
+          leafCountEl.textContent = window.leafCollectedCount;
+        }
+        
+        // If memory game is running, add time to it
+        if (window.colorfulMemory && typeof window.colorfulMemory.addTime === 'function') {
+          window.colorfulMemory.addTime(1);
+        }
+        
+        setTimeout(function(){ if (leaf && leaf.parentNode) leaf.parentNode.removeChild(leaf); }, 400);
+      });
+    })();
   </script>
 </body>
 </html>
