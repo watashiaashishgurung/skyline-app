@@ -7,28 +7,29 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
-    :root { --bg:#0f1222; --card:#171a2b; --ink:#e9ecff; --muted:#9aa2d0; --accent:#7cf; --grid:#243056; }
+    /* Autumn theme palette */
+    :root { --bg:#2a1a12; --card:#3b2417; --ink:#ffeedd; --muted:#d8b8a0; --accent:#ff8c42; --grid:#5a3a28; }
     *{box-sizing:border-box}
-    body{margin:0;padding:24px;color:var(--ink);background:linear-gradient(180deg,#0a0d1a,#0f1222 35%,#0a0d1a);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,"Noto Sans",Arial,sans-serif}
-    h1{font-family:"Press Start 2P",monospace;font-size:20px;text-align:center;margin:0 0 16px}
+  body{margin:0;padding:24px;color:var(--ink);background:linear-gradient(180deg,#2a1a12,#3b2417 45%,#2a1a12);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,"Noto Sans",Arial,sans-serif;overflow-x:hidden}
+  h1{font-family:"Press Start 2P",monospace;font-size:20px;text-align:center;margin:0 0 16px;color:var(--accent)}
     .flex-header{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
     button{background:var(--card);border:1px solid #2a2f4b;color:var(--ink);padding:10px 14px;border-radius:12px;cursor:pointer}
     button:hover{border-color:var(--accent)}
-    .card{max-width:980px;margin:12px auto;background:var(--card);border:1px solid #202544;border-radius:16px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.35)}
+  .card{max-width:980px;margin:12px auto;background:linear-gradient(160deg,#3b2417,#2a1a12 85%);border:1px solid #5a3a28;border-radius:16px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
     label{display:block;margin:10px 0 6px;color:var(--muted)}
-    input[type="number"],input[type="text"]{width:100%;background:#0e1020;color:var(--ink);border:1px solid #2a2f4b;border-radius:10px;padding:10px}
+  input[type="number"],input[type="text"]{width:100%;background:#2d1c13;color:var(--ink);border:1px solid #5a3a28;border-radius:10px;padding:10px}
     #instructions ul{margin:8px 0 0 18px}
     #round-info{font-weight:700;margin-bottom:4px}
     #round-note{color:var(--muted);margin-bottom:8px}
     #guesses .row{display:grid;grid-template-columns:1fr 200px;gap:10px;align-items:center;margin:8px 0}
-    .hint{font-size:12px;color:#ffd580}
+  .hint{font-size:12px;color:#ffb347}
     #output{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;color:#cfe3ff;margin-top:10px}
     .scoreboard table{width:100%;border-collapse:collapse;margin-top:8px}
     .scoreboard th,.scoreboard td{padding:8px;border-bottom:1px solid #273057;text-align:left;font-size:14px}
-    .ok{color:#98f5a9}.warn{color:#ffd580}.err{color:#ff9aa2}
+  .ok{color:#7ddc82}.warn{color:#ffb347}.err{color:#ff9aa2}
     .hidden{display:none !important}
     .flag{font-size:20px}
-    canvas{background:#0e1020;border:1px solid var(--grid);border-radius:12px}
+  canvas{background:#2d1c13;border:1px solid var(--grid);border-radius:12px}
 
     /* Smooth show/hide for cards */
     .card {
@@ -100,110 +101,49 @@
       font-size: 10px;
     }
 
-    /* Multi-colored bubble animation */
-    .bubbles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 1;
-      overflow: hidden;
-    }
-
-    .bubble {
-      position: absolute;
-      border-radius: 50%;
-      opacity: 0.7;
-      animation: bubbleFloat 8s infinite linear;
-      pointer-events: auto;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .bubble:hover {
-      transform: scale(1.2);
-      opacity: 0.9;
-    }
-
-    .bubble.popped {
-      animation: bubblePop 0.4s ease-out forwards;
-    }
-
-    @keyframes bubblePop {
-      0% {
-        transform: scale(1);
-        opacity: 0.7;
-      }
-      50% {
-        transform: scale(1.5);
-        opacity: 0.3;
-      }
-      100% {
-        transform: scale(0);
-        opacity: 0;
-      }
-    }
-
-    .bubble:nth-child(1) { width: 20px; height: 20px; background: linear-gradient(45deg, #ff6b6b, #ff8e8e); animation-delay: 0s; left: 10%; }
-    .bubble:nth-child(2) { width: 15px; height: 15px; background: linear-gradient(45deg, #4ecdc4, #44a08d); animation-delay: 1s; left: 20%; }
-    .bubble:nth-child(3) { width: 25px; height: 25px; background: linear-gradient(45deg, #45b7d1, #96c93d); animation-delay: 2s; left: 30%; }
-    .bubble:nth-child(4) { width: 18px; height: 18px; background: linear-gradient(45deg, #f093fb, #f5576c); animation-delay: 3s; left: 40%; }
-    .bubble:nth-child(5) { width: 22px; height: 22px; background: linear-gradient(45deg, #ffecd2, #fcb69f); animation-delay: 4s; left: 50%; }
-    .bubble:nth-child(6) { width: 16px; height: 16px; background: linear-gradient(45deg, #a8edea, #fed6e3); animation-delay: 5s; left: 60%; }
-    .bubble:nth-child(7) { width: 30px; height: 30px; background: linear-gradient(45deg, #d299c2, #fef9d7); animation-delay: 6s; left: 70%; }
-    .bubble:nth-child(8) { width: 12px; height: 12px; background: linear-gradient(45deg, #89f7fe, #66a6ff); animation-delay: 7s; left: 80%; }
-    .bubble:nth-child(9) { width: 28px; height: 28px; background: linear-gradient(45deg, #fdbb2d, #22c1c3); animation-delay: 1.5s; left: 15%; }
-    .bubble:nth-child(10) { width: 14px; height: 14px; background: linear-gradient(45deg, #ee9ca7, #ffdde1); animation-delay: 2.5s; left: 85%; }
-    .bubble:nth-child(11) { width: 19px; height: 19px; background: linear-gradient(45deg, #667eea, #764ba2); animation-delay: 0.5s; left: 5%; }
-    .bubble:nth-child(12) { width: 26px; height: 26px; background: linear-gradient(45deg, #f093fb, #f5576c); animation-delay: 3.5s; left: 25%; }
-
-    @keyframes bubbleFloat {
-      0% {
-        bottom: -50px;
-        transform: translateX(0) rotate(0deg);
-        opacity: 0;
-      }
-      10% {
-        opacity: 0.7;
-      }
-      90% {
-        opacity: 0.7;
-      }
-      100% {
-        bottom: 100vh;
-        transform: translateX(100px) rotate(360deg);
-        opacity: 0;
-      }
-    }
+  /* Leaf physics (JS-driven) */
+  .leaves{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;overflow:hidden}
+  .leaf{position:fixed;font-size:clamp(18px,3vw,46px);opacity:.95;filter:drop-shadow(0 4px 6px rgba(0,0,0,.4));will-change:transform;transition:filter .3s ease}
+  .leaf.resting{opacity:.85}
+  .leaf.captured{opacity:.55;filter:drop-shadow(0 0 8px rgba(255,140,66,.7))}
+  body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 30% 20%,rgba(255,140,66,.12),transparent 60%),radial-gradient(circle at 70% 40%,rgba(255,179,71,.1),transparent 65%);z-index:0}
+  .leaf-hud{position:fixed;top:16px;left:16px;z-index:5;background:rgba(58,36,23,.6);padding:10px 14px;border:1px solid #ff8c42;border-radius:12px;font-family:"Press Start 2P",monospace;font-size:11px;color:var(--ink);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+  .net{position:fixed;bottom:140px;left:50%;transform:translateX(-50%);width:140px;height:80px;border:3px solid #ff8c42;border-radius:18px;background:rgba(255,140,66,.15);z-index:4;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;font-size:32px}
+  .ground{position:fixed;bottom:0;left:0;width:100%;height:140px;background:linear-gradient(to top,rgba(91,58,40,.55),rgba(91,58,40,.25),transparent 90%);z-index:2;pointer-events:none}
+  
+  /* Leaf physics animations */
+  .leaf {
+    animation: leafFall var(--fallDur, 20s) linear infinite;
+  }
+  .leaf .drift {
+    animation: leafDrift var(--driftDur, 6s) ease-in-out infinite alternate;
+  }
+  .leaf .spin {
+    animation: leafSpin var(--spinDur, 4s) linear infinite;
+  }
+  
+  @keyframes leafFall {
+    from { transform: translateY(-10vh); }
+    to { transform: translateY(calc(100vh + 140px)); }
+  }
+  
+  @keyframes leafDrift {
+    from { transform: translateX(-20px); }
+    to { transform: translateX(20px); }
+  }
+  
+  @keyframes leafSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .victory{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:10;background:rgba(0,0,0,.55);font-family:"Press Start 2P",monospace;color:var(--accent);text-align:center}
   </style>
 </head>
 <body>
-  <!-- Multi-colored bubble animation -->
-  <div class="bubbles">
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-  </div>
+  <!-- Falling Autumn Leaves Layer -->
+  <div class="leaves" id="leaves"></div>
 
-  <h1>🌟 Skyline: Web-App 🌟</h1>
-
-  <!-- Bubble Score Counter -->
-  <div id="bubble-score">
-    <div class="score-title">🎯 BUBBLE SCORE</div>
-    <div class="score-line">Score: <span id="score-value">0</span></div>
-    <div class="bubbles-left">Bubbles Left: <span id="bubbles-left">12</span></div>
-  </div>
+  <h1>� Skyline: Autumn Edition 🍁</h1>
 
   <div class="flex-header">
     <button id="btnInstructions">Show Instructions</button>
@@ -257,6 +197,279 @@
     <div class="warn">Use “Restart Game” above to play again.</div>
   </div>
 
+
+
+  <title>Colorful Memory Match Game (Inline)</title>
+  <style>
+    /* Scoped styles to avoid clashing with Skyline app */
+    #memory-mini * { box-sizing: border-box; }
+    #memory-mini {
+      --bg: #2a1a12;
+      --card: #3b2417;
+      --panel: #2d1c13;
+      --accent: #ff8c42;
+      --ink: #ffeedd;
+      --muted: #d8b8a0;
+      --grid: #5a3a28;
+      --ok: #ff8c42;
+      font-family: Arial, sans-serif;
+      width: 100%;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+    }
+    #memory-mini .wrap {
+      background: linear-gradient(160deg, #3b2417, #2a1a12 85%);
+      border: 1px solid #5a3a28;
+      border-radius: 16px;
+      padding: 16px;
+      width: min(880px, 96vw);
+      color: var(--ink);
+      box-shadow: 0 6px 24px rgba(0,0,0,.4);
+    }
+    #memory-mini h2 {
+      margin: 0 0 8px 0;
+      text-align: center;
+      font-size: 1.6rem;
+      line-height: 1.2;
+      color: var(--accent);
+      font-family: "Press Start 2P", monospace;
+    }
+    #memory-mini .box {
+      background: transparent;
+      border-radius: 12px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: start;
+    }
+    #memory-mini #game-container {
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      gap: 10px;
+      background: var(--panel);
+      border: 1px solid var(--grid);
+      padding: 10px;
+      border-radius: 10px;
+      justify-content: center;
+    }
+    #memory-mini .card {
+      width: 100px;
+      height: 100px;
+      background: var(--card);
+      border: 1px solid var(--grid);
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      cursor: pointer;
+      border-radius: 8px;
+      color: var(--ink);
+      -webkit-user-select: none;
+      user-select: none;
+      transition: transform 0.12s ease, background-color 0.2s ease, border-color 0.2s ease;
+    }
+    #memory-mini .card:hover {
+      border-color: var(--accent);
+      transform: scale(1.02);
+    }
+    #memory-mini .card:active { transform: scale(0.98); }
+    #memory-mini .card.matched {
+      background: var(--accent);
+      color: var(--bg);
+      cursor: default;
+      border-color: var(--accent);
+    }
+    #memory-mini .side {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      justify-items: center;
+      min-width: 180px;
+    }
+    #memory-mini .pill {
+      border: 1px solid var(--grid);
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: 1rem;
+      background: var(--card);
+      width: 100%;
+      text-align: center;
+      color: var(--ink);
+    }
+    #memory-mini #startbtn {
+      padding: 10px 16px;
+      background: var(--card);
+      color: var(--ink);
+      border: 1px solid var(--grid);
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    #memory-mini #startbtn:hover {
+      border-color: var(--accent);
+      transform: scale(1.05);
+      box-shadow: 0 0 12px var(--accent);
+    }
+    #memory-mini #startbtn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      #memory-mini #game-container {
+        grid-template-columns: repeat(4, 72px);
+        gap: 8px;
+      }
+      #memory-mini .card {
+        width: 72px; height: 72px;
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Drop this <section> anywhere inside Skyline's index.html -->
+  <section id="memory-mini" aria-label="Colorful Memory Match Game">
+    <div class="wrap">
+      <h2>Colorful Memory Match Game</h2>
+      <div class="box">
+        <div id="game-container" aria-live="polite" aria-label="Game board">
+          <!-- Cards are injected by JS -->
+        </div>
+        <aside class="side">
+          <p id="score" class="pill" aria-live="polite">Score: 0</p>
+          <p id="timer" class="pill" aria-live="polite">Time Left: 30</p>
+          <button id="startbtn">Start / Restart</button>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    (function () {
+      // Keep original behavior: 12 entries, then duplicated -> 24 cards (4 of each color)
+      const base = ['red','blue','green','purple','orange','pink','red','blue','green','purple','orange','pink'];
+      let cards = shuffle(base.concat(base)); // 24
+      let selected = [];
+      let score = 0;
+      let timer = 30;
+      let ticking = null;
+      let lockBoard = false; // prevent rapid clicking while checking
+
+      const btn   = document.getElementById('startbtn');
+      const grid  = document.getElementById('game-container');
+      const elScore = document.getElementById('score');
+      const elTimer = document.getElementById('timer');
+
+      function renderCards() {
+        grid.innerHTML = '';
+        for (const color of cards) {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.dataset.color = color;
+          card.textContent = '?';
+          grid.appendChild(card);
+        }
+      }
+
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      function handleCardClick(e) {
+        const card = e.target;
+        if (!card.classList.contains('card')) return;
+        if (card.classList.contains('matched')) return;
+        if (lockBoard) return;
+
+        // prevent selecting the same card twice
+        if (selected.length === 1 && selected[0] === card) return;
+
+        card.textContent = card.dataset.color;
+        card.style.backgroundColor = card.dataset.color;
+        selected.push(card);
+
+        if (selected.length === 2) {
+          lockBoard = true;
+          setTimeout(checkMatch, 450);
+        }
+      }
+
+      function checkMatch() {
+        const [a, b] = selected;
+        if (a && b && a.dataset.color === b.dataset.color) {
+          a.classList.add('matched');
+          b.classList.add('matched');
+          score += 2;
+          elScore.textContent = 'Score: ' + score;
+        } else {
+          // flip back
+          if (a) { a.textContent = '?'; a.style.backgroundColor = ''; }
+          if (b) { b.textContent = '?'; b.style.backgroundColor = ''; }
+        }
+        selected = [];
+        lockBoard = false;
+
+        // Optional: end early if all matched
+        const remaining = grid.querySelectorAll('.card:not(.matched)').length;
+        if (remaining === 0) {
+          stopTimer();
+          btn.disabled = false;
+          alert('You matched them all! Final score: ' + score);
+        }
+      }
+
+      function start() {
+        // reset state
+        stopTimer();
+        timer = 30;
+        elTimer.textContent = 'Time Left: ' + timer;
+        score = 0;
+        elScore.textContent = 'Score: ' + score;
+        btn.disabled = true;
+        selected = [];
+        lockBoard = false;
+        cards = shuffle(base.concat(base));
+        renderCards();
+        // listener attached once globally; no duplicates
+        tick();
+      }
+
+      function tick() {
+        ticking = setInterval(() => {
+          timer--;
+          elTimer.textContent = 'Time Left: ' + timer;
+          if (timer <= 0) {
+            stopTimer();
+            btn.disabled = false;
+            alert('Game Over!');
+          }
+        }, 1000);
+      }
+
+      function stopTimer() {
+        if (ticking) clearInterval(ticking);
+        ticking = null;
+      }
+
+      // Attach listeners (once)
+      grid.addEventListener('click', handleCardClick);
+      btn.addEventListener('click', start);
+
+      // First render (board is empty until Start)
+      renderCards();
+    })();
+  </script>
+
+
   <script>
     // ===== State =====
     class Player {
@@ -280,239 +493,35 @@
   // For tieMode: enforce newGuess < previous guess for those still tied
   const tieConstraint = new Map(); // player -> previous (current lowest tied) guess
 
-    // ===== Bubble Interaction =====
-    // Audio context for sound effects
-    let audioContext;
-    
-    // Bubble scoring system
-    let bubbleScore = 0;
-    let poppedBubbles = new Set(); // Track which bubbles have been popped
-    const totalBubbles = 12;
-    
-    // Points based on bubble size (smaller = more points)
-    const bubblePoints = {
-      12: 50,  // smallest bubbles = most points
-      13: 45,
-      14: 40,
-      15: 35,
-      16: 30,
-      17: 25,
-      18: 20,
-      19: 15,
-      20: 10,
-      21: 10,
-      22: 8,
-      24: 8,
-      25: 6,
-      26: 6,
-      28: 4,
-      30: 2   // largest bubbles = least points
-    };
-    
-    function updateScore(points) {
-      bubbleScore += points;
-      document.getElementById('score-value').textContent = bubbleScore;
-      document.getElementById('bubbles-left').textContent = totalBubbles - poppedBubbles.size;
+    // ===== Autumn Leaves Animation =====
+    function spawnLeaves(count=20){
+      const container=document.getElementById('leaves');
+      if(!container) return;
+      for(let i=0;i<count;i++) addLeaf(container);
     }
-    
-    function getBubblePoints(bubbleElement) {
-      const style = window.getComputedStyle(bubbleElement);
-      const width = parseInt(style.width);
-      return bubblePoints[width] || 10; // default points if size not found
-    }
-    
-    function initAudio() {
-      try {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      } catch (e) {
-        console.log('Web Audio API not supported');
-      }
-    }
-    
-    function playPopSound() {
-      if (!audioContext) return;
-      
-      // Create a pop sound effect
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      // Connect nodes
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      // Configure the pop sound
-      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.1);
-      
-      // Volume envelope for pop effect
-      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-      
-      // Start and stop the sound
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.1);
-    }
-    
-    function playSparkleSound() {
-      if (!audioContext) return;
-      
-      // Create a higher pitched sparkle sound
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      // Higher frequency for sparkle effect
-      oscillator.frequency.setValueAtTime(1200, audioContext.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(2000, audioContext.currentTime + 0.05);
-      oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.15);
-      
-      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + 0.01);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
-      
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.15);
-    }
+    const glyphs=["🍁","🍂","🍃"];
+    function rand(min,max){return Math.random()*(max-min)+min}
+    function addLeaf(container){
+      const leaf=document.createElement('span');
+      leaf.className='leaf';
+      const drift=document.createElement('span');
+      drift.className='drift';
+      const spin=document.createElement('span');
+      spin.className='spin';
+      spin.textContent=glyphs[Math.floor(Math.random()*glyphs.length)];
+      drift.appendChild(spin); leaf.appendChild(drift);
 
-    function initBubbles() {
-      const bubbles = document.querySelectorAll('.bubble');
-      
-      bubbles.forEach((bubble, index) => {
-        bubble.addEventListener('click', function(e) {
-          // Check if this bubble has already been popped
-          if (poppedBubbles.has(index)) return;
-          
-          // Mark bubble as popped
-          poppedBubbles.add(index);
-          
-          // Calculate and add points
-          const points = getBubblePoints(this);
-          updateScore(points);
-          
-          // Play pop sound
-          playPopSound();
-          
-          // Add popped class for animation
-          this.classList.add('popped');
-          
-          // Remove the bubble permanently after animation completes
-          setTimeout(() => {
-            this.remove();
-            
-            // Check if all bubbles are popped
-            if (poppedBubbles.size === totalBubbles) {
-              showGameComplete();
-            }
-          }, 400);
-          
-          // Show points popup
-          createPointsEffect(e.clientX, e.clientY, points);
-          createPopEffect(e.clientX, e.clientY);
-        });
-      });
-    }
-
-    function showGameComplete() {
-      const completeDiv = document.createElement('div');
-      completeDiv.innerHTML = `
-        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                    background: var(--card); border: 2px solid var(--accent); border-radius: 16px; 
-                    padding: 24px; z-index: 2000; text-align: center; font-family: 'Press Start 2P', monospace;">
-          <div style="color: var(--accent); font-size: 16px; margin-bottom: 16px;">🎉 ALL BUBBLES POPPED! 🎉</div>
-          <div style="color: var(--ink); margin-bottom: 12px;">Final Score: ${bubbleScore}</div>
-          <div style="color: var(--muted); font-size: 10px; margin-bottom: 16px;">Refresh page to play again</div>
-          <button onclick="location.reload()" style="background: var(--accent); color: #000; border: none; 
-                         padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 10px;">
-            🔄 Play Again
-          </button>
-        </div>
-      `;
-      document.body.appendChild(completeDiv);
-    }
-
-    function createPointsEffect(x, y, points) {
-      const pointsDiv = document.createElement('div');
-      pointsDiv.innerHTML = `+${points}`;
-      pointsDiv.style.cssText = `
-        position: fixed;
-        left: ${x}px;
-        top: ${y - 30}px;
-        font-size: 16px;
-        font-weight: bold;
-        color: var(--accent);
-        pointer-events: none;
-        z-index: 1001;
-        animation: pointsFloat 1s ease-out forwards;
-        transform: translate(-50%, -50%);
-        font-family: 'Press Start 2P', monospace;
-      `;
-      
-      // Add points animation
-      const style = document.createElement('style');
-      style.textContent = `
-        @keyframes pointsFloat {
-          0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-          100% { opacity: 0; transform: translate(-50%, -50%) translateY(-40px) scale(1.2); }
+      leaf.style.left = rand(-5, 105) + '%';
+      leaf.style.setProperty('--fallDur', rand(15, 25) + 's');
+      leaf.style.setProperty('--driftDur', rand(4, 8) + 's');
+      leaf.style.setProperty('--spinDur', rand(3, 6) + 's');
+      leaf.style.animationDelay = rand(0, 5) + 's';
+      container.appendChild(leaf);
         }
-      `;
-      document.head.appendChild(style);
-      
-      document.body.appendChild(pointsDiv);
-      setTimeout(() => {
-        pointsDiv.remove();
-        style.remove();
-      }, 1000);
-    }
 
-    function createPopEffect(x, y) {
-      // Play sparkle sound
-      setTimeout(() => playSparkleSound(), 100);
-      
-      const pop = document.createElement('div');
-      pop.innerHTML = '✨';
-      pop.style.cssText = `
-        position: fixed;
-        left: ${x}px;
-        top: ${y}px;
-        font-size: 20px;
-        pointer-events: none;
-        z-index: 1000;
-        animation: sparkle 0.6s ease-out forwards;
-        transform: translate(-50%, -50%);
-      `;
-      
-      // Add sparkle animation
-      const style = document.createElement('style');
-      style.textContent = `
-        @keyframes sparkle {
-          0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-          100% { opacity: 0; transform: translate(-50%, -50%) scale(2); }
-        }
-      `;
-      document.head.appendChild(style);
-      
-      document.body.appendChild(pop);
-      setTimeout(() => {
-        pop.remove();
-        style.remove();
-      }, 600);
-    }
-
-    // Initialize bubbles and audio when page loads
-    document.addEventListener('DOMContentLoaded', () => {
-      initAudio();
-      initBubbles();
-      
-      // Initialize audio context on first user interaction (required by browsers)
-      document.addEventListener('click', function initAudioOnFirstClick() {
-        if (audioContext && audioContext.state === 'suspended') {
-          audioContext.resume();
-        }
-        document.removeEventListener('click', initAudioOnFirstClick);
-      }, { once: true });
+        // Initialize falling leaves when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+      spawnLeaves(21); // Add 21 falling leaves
     });
 
     // ===== DOM helpers =====
