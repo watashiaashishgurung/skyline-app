@@ -7,23 +7,23 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
-    /* Autumn theme palette */
-    :root { --bg:#2a1a12; --card:#3b2417; --ink:#ffeedd; --muted:#d8b8a0; --accent:#ff8c42; --grid:#5a3a28; }
+    /* Christmas theme palette */
+    :root { --bg:#0a3d0a; --card:#8b0000; --ink:#ffffff; --muted:#b8d4b8; --accent:#ffd700; --grid:#165016; }
     *{box-sizing:border-box}
-  body{margin:0;padding:24px;color:var(--ink);background:linear-gradient(180deg,#2a1a12,#3b2417 45%,#2a1a12);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,"Noto Sans",Arial,sans-serif;overflow-x:hidden}
+  body{margin:0;padding:24px;color:var(--ink);background:linear-gradient(180deg,#0a3d0a,#8b0000 45%,#0a3d0a);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,"Noto Sans",Arial,sans-serif;overflow-x:hidden}
   h1{font-family:"Press Start 2P",monospace;font-size:20px;text-align:center;margin:0 0 16px;color:var(--accent)}
     .flex-header{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
     button{background:var(--card);border:1px solid #2a2f4b;color:var(--ink);padding:10px 14px;border-radius:12px;cursor:pointer}
     button:hover{border-color:var(--accent)}
-  .card{max-width:980px;margin:12px auto;background:linear-gradient(160deg,#3b2417,#2a1a12 85%);border:1px solid #5a3a28;border-radius:16px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+  .card{max-width:980px;margin:12px auto;background:linear-gradient(160deg,#8b0000,#0a3d0a 85%);border:1px solid #165016;border-radius:16px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
     .button-container{margin-top:10px}
     label{display:block;margin:10px 0 6px;color:var(--muted)}
-  input[type="number"],input[type="text"]{width:100%;background:#2d1c13;color:var(--ink);border:1px solid #5a3a28;border-radius:10px;padding:10px}
+  input[type="number"],input[type="text"]{width:100%;background:#0d5c0d;color:var(--ink);border:1px solid #165016;border-radius:10px;padding:10px}
     #instructions ul{margin:8px 0 0 18px}
     #round-info{font-weight:700;margin-bottom:4px}
     #round-note{color:var(--muted);margin-bottom:8px}
     #guesses .row{display:grid;grid-template-columns:1fr 200px;gap:10px;align-items:center;margin:8px 0}
-  .hint{font-size:12px;color:#ffb347}
+  .hint{font-size:12px;color:#ffd700}
     #output{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;color:#cfe3ff;margin-top:10px}
     .scoreboard table{width:100%;border-collapse:collapse;margin-top:8px}
       .scoreboard th,.scoreboard td{padding:8px;border-bottom:1px solid #273057;text-align:left;font-size:14px}
@@ -31,7 +31,7 @@
   .ok{color:#7ddc82}.warn{color:#ffb347}.err{color:#ff9aa2}
     .hidden{display:none !important}
     .flag{font-size:20px}
-  canvas{background:#2d1c13;border:1px solid var(--grid);border-radius:12px}
+  canvas{background:#0d5c0d;border:1px solid var(--grid);border-radius:12px}
 
     /* Smooth show/hide for cards */
     .card {
@@ -103,13 +103,13 @@
       font-size: 10px;
     }
 
-    /* Leaf Counter HUD */
+    /* Snowflake Counter HUD */
     #leaf-counter {
       position: fixed;
       top: 20px;
       left: 20px;
       background: var(--card);
-      border: 1px solid #ff8c42;
+      border: 1px solid #ffd700;
       border-radius: 12px;
       padding: 12px 16px;
       z-index: 1000;
@@ -119,17 +119,17 @@
       color: var(--accent);
     }
 
-  /* Leaf physics (JS-driven) */
+  /* Snowflake physics (JS-driven) */
   .leaves{position:fixed;top:0;left:0;width:100%;height:100%;z-index:999;overflow:hidden;pointer-events:none}
-  .leaf{position:fixed;font-size:clamp(18px,3vw,46px);opacity:.95;filter:drop-shadow(0 4px 6px rgba(0,0,0,.4));will-change:transform;transition:filter .3s ease;cursor:pointer;pointer-events:auto}
+  .leaf{position:fixed;font-size:clamp(18px,3vw,46px);opacity:.95;filter:drop-shadow(0 4px 6px rgba(255,255,255,.6));will-change:transform;transition:filter .3s ease;cursor:pointer;pointer-events:auto}
   .leaf.resting{opacity:.85}
-  .leaf.captured{opacity:.55;filter:drop-shadow(0 0 8px rgba(255,140,66,.7))}
-  body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 30% 20%,rgba(255,140,66,.12),transparent 60%),radial-gradient(circle at 70% 40%,rgba(255,179,71,.1),transparent 65%);z-index:0}
-  .leaf-hud{position:fixed;top:16px;left:16px;z-index:5;background:rgba(58,36,23,.6);padding:10px 14px;border:1px solid #ff8c42;border-radius:12px;font-family:"Press Start 2P",monospace;font-size:11px;color:var(--ink);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
-  .net{position:fixed;bottom:140px;left:50%;transform:translateX(-50%);width:140px;height:80px;border:3px solid #ff8c42;border-radius:18px;background:rgba(255,140,66,.15);z-index:4;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;font-size:32px}
-  .ground{position:fixed;bottom:0;left:0;width:100%;height:140px;background:linear-gradient(to top,rgba(91,58,40,.55),rgba(91,58,40,.25),transparent 90%);z-index:2;pointer-events:none}
+  .leaf.captured{opacity:.55;filter:drop-shadow(0 0 8px rgba(255,215,0,.9))}
+  body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 30% 20%,rgba(255,215,0,.12),transparent 60%),radial-gradient(circle at 70% 40%,rgba(255,255,255,.1),transparent 65%);z-index:0}
+  .leaf-hud{position:fixed;top:16px;left:16px;z-index:5;background:rgba(10,61,10,.6);padding:10px 14px;border:1px solid #ffd700;border-radius:12px;font-family:"Press Start 2P",monospace;font-size:11px;color:var(--ink);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+  .net{position:fixed;bottom:140px;left:50%;transform:translateX(-50%);width:140px;height:80px;border:3px solid #ffd700;border-radius:18px;background:rgba(255,215,0,.15);z-index:4;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;font-size:32px}
+  .ground{position:fixed;bottom:0;left:0;width:100%;height:140px;background:linear-gradient(to top,rgba(255,255,255,.15),rgba(255,255,255,.05),transparent 90%);z-index:2;pointer-events:none}
   
-  /* Leaf physics animations */
+  /* Snowflake physics animations */
   .leaf {
     animation: leafFall var(--fallDur, 20s) linear infinite;
   }
@@ -156,17 +156,17 @@
   }
   .victory{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:10;background:rgba(0,0,0,.55);font-family:"Press Start 2P",monospace;color:var(--accent);text-align:center}
   
-  /* Leaf catch notification */
+  /* Snowflake catch notification */
   .time-bonus {
     position: fixed;
     font-family: "Press Start 2P", monospace;
     font-size: 18px;
-    color: #ff8c42;
+    color: #ffd700;
     font-weight: bold;
     pointer-events: none;
     z-index: 1001;
     animation: bonusFloat 1s ease-out forwards;
-    text-shadow: 0 0 8px rgba(255,140,66,0.8), 0 2px 4px rgba(0,0,0,0.6);
+    text-shadow: 0 0 8px rgba(255,215,0,0.8), 0 2px 4px rgba(0,0,0,0.6);
   }
   
   @keyframes bonusFloat {
@@ -175,7 +175,7 @@
     100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
   }
 
-  /* Game Over / Victory Overlay */
+  /* Game Over / Victory Overlay - WINTER THEME */
   .game-message-overlay {
     position: fixed;
     inset: 0;
@@ -183,53 +183,58 @@
     align-items: center;
     justify-content: center;
     z-index: 2000;
-    background: rgba(0, 0, 0, 0.85);
-    -webkit-backdrop-filter: blur(5px);
-    backdrop-filter: blur(5px);
+    background: rgba(10, 61, 10, 0.85);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     animation: fadeIn 0.3s ease;
   }
 
   .game-message-box {
-    background: linear-gradient(160deg, #3b2417, #2a1a12 85%);
-    border: 3px solid #ff8c42;
+    background: linear-gradient(135deg, rgba(102,126,234,0.9), rgba(118,75,162,0.9));
+    border: 3px solid #ffd700;
     border-radius: 20px;
     padding: 40px;
     text-align: center;
     font-family: "Press Start 2P", monospace;
-    color: var(--ink);
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    color: #ffffff;
+    box-shadow: 0 10px 40px rgba(0,188,212,0.6), 0 0 60px rgba(255,215,0,0.3);
     animation: popIn 0.5s ease;
     max-width: 500px;
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
   }
 
   .game-message-title {
     font-size: 32px;
     margin-bottom: 20px;
-    color: #ff8c42;
+    color: #ffd700;
+    text-shadow: 0 0 20px rgba(255,215,0,0.8);
   }
 
   .game-message-subtitle {
     font-size: 14px;
     margin-bottom: 10px;
-    color: #d8b8a0;
+    color: #B2EBF2;
   }
 
   .game-message-button {
     margin-top: 20px;
     padding: 12px 24px;
-    background: #ff8c42;
-    border: none;
+    background: linear-gradient(135deg, #E0F7FA, #B2EBF2);
+    border: 2px solid #00BCD4;
     border-radius: 10px;
     font-family: "Press Start 2P", monospace;
     font-size: 12px;
-    color: #2a1a12;
+    color: #0097A7;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,188,212,0.4);
   }
 
   .game-message-button:hover {
     transform: scale(1.1);
-    box-shadow: 0 0 20px rgba(255,140,66,0.8);
+    box-shadow: 0 6px 20px rgba(0,188,212,0.6), 0 0 30px rgba(255,215,0,0.4);
+    background: linear-gradient(135deg, #B2EBF2, #80DEEA);
   }
 
   @keyframes fadeIn {
@@ -257,16 +262,111 @@
     0% { transform: translateY(0) rotate(0deg); opacity: 1; }
     100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
   }
+
+  /* Christmas Decorations */
+  .christmas-ornament {
+    position: fixed;
+    font-size: 40px;
+    animation: swing 3s ease-in-out infinite;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+    z-index: 10;
+  }
+
+  @keyframes swing {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+
+  .ornament-1 { top: 10px; left: 10%; animation-delay: 0s; }
+  .ornament-2 { top: 10px; right: 10%; animation-delay: 0.5s; }
+  .ornament-3 { top: 50%; left: 5%; animation-delay: 1s; }
+  .ornament-4 { top: 50%; right: 5%; animation-delay: 1.5s; }
+
+  .christmas-lights {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    z-index: 100;
+    display: flex;
+    justify-content: space-around;
+    pointer-events: none;
+  }
+
+  .light {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-top: 10px;
+    box-shadow: 0 0 10px currentColor;
+    animation: twinkle 1.5s ease-in-out infinite;
+  }
+
+  .light:nth-child(odd) { animation-delay: 0s; }
+  .light:nth-child(even) { animation-delay: 0.75s; }
+
+  .light.red { background: #ff0000; color: #ff0000; }
+  .light.green { background: #00ff00; color: #00ff00; }
+  .light.blue { background: #4169e1; color: #4169e1; }
+  .light.yellow { background: #ffd700; color: #ffd700; }
+  .light.white { background: #ffffff; color: #ffffff; }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .christmas-star {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 50px;
+    animation: starPulse 2s ease-in-out infinite;
+    z-index: 100;
+    filter: drop-shadow(0 0 10px #ffd700);
+  }
+
+  @keyframes starPulse {
+    0%, 100% { transform: translateX(-50%) scale(1); filter: drop-shadow(0 0 10px #ffd700); }
+    50% { transform: translateX(-50%) scale(1.2); filter: drop-shadow(0 0 20px #ffd700); }
+  }
   </style>
 </head>
 <body>
-  <!-- Falling Autumn Leaves Layer -->
+  <!-- Christmas Lights -->
+  <div class="christmas-lights">
+    <div class="light red"></div>
+    <div class="light green"></div>
+    <div class="light blue"></div>
+    <div class="light yellow"></div>
+    <div class="light red"></div>
+    <div class="light white"></div>
+    <div class="light green"></div>
+    <div class="light blue"></div>
+    <div class="light yellow"></div>
+    <div class="light red"></div>
+    <div class="light green"></div>
+    <div class="light white"></div>
+  </div>
+
+  <!-- Christmas Star -->
+  <div class="christmas-star">⭐</div>
+
+  <!-- Christmas Ornaments -->
+  <div class="christmas-ornament ornament-1">🔴</div>
+  <div class="christmas-ornament ornament-2">🎄</div>
+  <div class="christmas-ornament ornament-3">🔔</div>
+  <div class="christmas-ornament ornament-4">🎁</div>
+
+  <!-- Falling Christmas Snowflakes Layer -->
   <div class="leaves" id="leaves"></div>
 
-  <!-- Leaf Counter -->
-  <div id="leaf-counter">🍁 Leaves: <span id="leaf-count">0</span></div>
+  <!-- Snowflake Counter -->
+  <div id="leaf-counter">❄️ Snowflakes: <span id="leaf-count">0</span></div>
 
-  <h1>🍂 Skyline: Autumn Edition 🍁</h1>
+  <h1>� Skyline: Christmas Edition �</h1>
 
   <div class="flex-header">
     <button id="btnInstructions">Show Instructions</button>
@@ -321,17 +421,17 @@
 
   <!-- Colorful Memory Match Game Section -->
   <style>
-    /* Scoped styles to avoid clashing with Skyline app */
+    /* Scoped styles to avoid clashing with Skyline app - WINTER ICE THEME */
     #memory-mini * { box-sizing: border-box; }
     #memory-mini {
-      --bg: #2a1a12;
-      --card: #3b2417;
-      --panel: #2d1c13;
-      --accent: #ff8c42;
-      --ink: #ffeedd;
-      --muted: #d8b8a0;
-      --grid: #5a3a28;
-      --ok: #ff8c42;
+      --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --card: linear-gradient(135deg, #E0F7FA, #B2EBF2);
+      --panel: linear-gradient(135deg, rgba(224,247,250,0.3), rgba(178,235,242,0.3));
+      --accent: #ffd700;
+      --ink: #ffffff;
+      --muted: #B2EBF2;
+      --grid: #00BCD4;
+      --ok: linear-gradient(135deg, #00BCD4, #0097A7);
       font-family: Arial, sans-serif;
       width: 100%;
       display: grid;
@@ -339,13 +439,15 @@
       padding: 1rem;
     }
     #memory-mini .wrap {
-      background: linear-gradient(160deg, #3b2417, #2a1a12 85%);
-      border: 1px solid #5a3a28;
+      background: linear-gradient(135deg, rgba(102,126,234,0.7) 0%, rgba(118,75,162,0.7) 100%);
+      border: 2px solid rgba(255,255,255,0.2);
       border-radius: 16px;
       padding: 16px;
       width: min(880px, 96vw);
       color: var(--ink);
-      box-shadow: 0 6px 24px rgba(0,0,0,.4);
+      box-shadow: 0 8px 32px rgba(0,188,212,0.25);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
     }
     #memory-mini h2 {
       margin: 0 0 8px 0;
@@ -354,6 +456,7 @@
       line-height: 1.2;
       color: var(--accent);
       font-family: "Press Start 2P", monospace;
+      text-shadow: 0 0 10px rgba(255,255,255,0.5);
     }
     #memory-mini .box {
       background: transparent;
@@ -367,17 +470,20 @@
       display: grid;
       grid-template-columns: repeat(4, 100px);
       gap: 10px;
-      background: var(--panel);
-      border: 1px solid var(--grid);
+      background: linear-gradient(135deg, rgba(224,247,250,0.15), rgba(178,235,242,0.15));
+      border: 2px solid rgba(255,255,255,0.2);
       padding: 10px;
       border-radius: 10px;
       justify-content: center;
+      -webkit-backdrop-filter: blur(15px);
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 32px rgba(0,188,212,0.2);
     }
     #memory-mini .card {
       width: 100px;
       height: 100px;
-      background: var(--card);
-      border: 1px solid var(--grid);
+      background: linear-gradient(135deg, rgba(224,247,250,0.4), rgba(178,235,242,0.4));
+      border: 2px solid rgba(255,255,255,0.3);
       display: grid;
       place-items: center;
       font-size: 20px;
@@ -386,18 +492,23 @@
       color: var(--ink);
       -webkit-user-select: none;
       user-select: none;
-      transition: transform 0.12s ease, background-color 0.2s ease, border-color 0.2s ease;
+      transition: transform 0.12s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 8px rgba(0,188,212,0.2);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
     }
     #memory-mini .card:hover {
-      border-color: var(--accent);
-      transform: scale(1.02);
+      border-color: rgba(255,215,0,0.6);
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0,188,212,0.4);
     }
     #memory-mini .card:active { transform: scale(0.98); }
     #memory-mini .card.matched {
-      background: var(--accent);
-      color: var(--bg);
+      background: linear-gradient(135deg, rgba(0,188,212,0.8), rgba(0,151,167,0.8));
+      color: #fff;
       cursor: default;
-      border-color: var(--accent);
+      border-color: rgba(0,188,212,0.6);
+      box-shadow: 0 0 20px rgba(0,188,212,0.6);
     }
     #memory-mini .side {
       display: grid;
@@ -407,29 +518,34 @@
       min-width: 180px;
     }
     #memory-mini .pill {
-      border: 1px solid var(--grid);
+      border: 2px solid rgba(178,235,242,0.5);
       border-radius: 12px;
       padding: 8px 14px;
       font-size: 1rem;
-      background: var(--card);
+      background: rgba(255,255,255,0.08);
       width: 100%;
       text-align: center;
       color: var(--ink);
+      -webkit-backdrop-filter: blur(15px);
+      backdrop-filter: blur(15px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     #memory-mini #startbtn {
       padding: 10px 16px;
-      background: var(--card);
-      color: var(--ink);
-      border: 1px solid var(--grid);
+      background: linear-gradient(135deg, #E0F7FA, #B2EBF2);
+      color: #0097A7;
+      border: 2px solid #00BCD4;
       font-weight: 700;
       border-radius: 12px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0,188,212,0.3);
     }
     #memory-mini #startbtn:hover {
       border-color: var(--accent);
       transform: scale(1.05);
-      box-shadow: 0 0 12px var(--accent);
+      box-shadow: 0 6px 16px rgba(0,188,212,0.5);
+      background: linear-gradient(135deg, #B2EBF2, #80DEEA);
     }
     #memory-mini #startbtn:disabled {
       opacity: 0.6;
@@ -452,9 +568,9 @@
   </style>
 
   <!-- Memory Game HTML -->
-  <section id="memory-mini" aria-label="Colorful Memory Match Game">
+  <section id="memory-mini" aria-label="Icy Memory Match Game">
     <div class="wrap">
-      <h2>Colorful Memory Match Game</h2>
+      <h2>❄️ Icy Memory Match Game 🎁</h2>
       <div class="box">
         <div id="game-container" aria-live="polite" aria-label="Game board">
           <!-- Cards are injected by JS -->
@@ -503,7 +619,7 @@
       }
 
       function createConfetti() {
-        const colors = ['#ff8c42', '#ffb347', '#ff6b6b', '#4ecdc4', '#45b7d1', '#f7dc6f', '#bb8fce'];
+        const colors = ['#E0F7FA', '#B2EBF2', '#80DEEA', '#4DD0E1', '#00BCD4', '#ffd700', '#ffffff'];
         for (let i = 0; i < 50; i++) {
           setTimeout(() => {
             const confetti = document.createElement('div');
@@ -524,7 +640,7 @@
           const card = document.createElement('div');
           card.className = 'card';
           card.dataset.color = color;
-          card.textContent = '?';
+          card.textContent = '🎁';
           grid.appendChild(card);
         }
       }
@@ -548,6 +664,10 @@
 
         card.textContent = card.dataset.color;
         card.style.backgroundColor = card.dataset.color;
+        card.style.opacity = '1';
+        card.style.fontSize = '10px';
+        card.style.fontWeight = 'bold';
+        card.style.textShadow = '0 1px 2px rgba(0,0,0,0.5)';
         selected.push(card);
 
         if (selected.length === 2) {
@@ -565,8 +685,22 @@
           elScore.textContent = 'Score: ' + score;
         } else {
           // flip back
-          if (a) { a.textContent = '?'; a.style.backgroundColor = ''; }
-          if (b) { b.textContent = '?'; b.style.backgroundColor = ''; }
+          if (a) { 
+            a.textContent = '🎁'; 
+            a.style.backgroundColor = ''; 
+            a.style.opacity = ''; 
+            a.style.fontSize = '';
+            a.style.fontWeight = '';
+            a.style.textShadow = '';
+          }
+          if (b) { 
+            b.textContent = '🎁'; 
+            b.style.backgroundColor = ''; 
+            b.style.opacity = ''; 
+            b.style.fontSize = '';
+            b.style.fontWeight = '';
+            b.style.textShadow = '';
+          }
         }
         selected = [];
         lockBoard = false;
@@ -665,13 +799,13 @@
   // For tieMode: enforce newGuess < previous guess for those still tied
   const tieConstraint = new Map(); // player -> previous (current lowest tied) guess
 
-    // ===== Autumn Leaves Animation =====
+    // ===== Christmas Snowflakes Animation =====
     function spawnLeaves(count=20){
       const container=document.getElementById('leaves');
       if(!container) return;
       for(let i=0;i<count;i++) addLeaf(container);
     }
-    const glyphs=["🍁","🍂","🍃"];
+    const glyphs=["❄️","☃️","⛄"];
     function rand(min,max){return Math.random()*(max-min)+min}
     function addLeaf(container){
       const leaf=document.createElement('span');
@@ -691,9 +825,9 @@
       container.appendChild(leaf);
         }
 
-        // Initialize falling leaves when page loads
+        // Initialize falling snowflakes when page loads
         document.addEventListener('DOMContentLoaded', () => {
-      spawnLeaves(30); // Add 21 falling leaves
+      spawnLeaves(30); // Add 30 falling snowflakes
     });
 
     // ===== DOM helpers =====
@@ -1025,10 +1159,10 @@
   </script>
 
   <script>
-    // Global leaf collection counter
+    // Global snowflake collection counter
     window.leafCollectedCount = 0;
     
-    // Click-to-catch: each leaf adds +1s to the memory timer and is removed
+    // Click-to-catch: each snowflake adds +1s to the memory timer and is removed
     (function(){
       var leavesRoot = document.getElementById('leaves');
       var leafCountEl = document.getElementById('leaf-count');
@@ -1058,7 +1192,7 @@
         leaf.classList.add('captured');
         showBonus(x, y);
         
-        // Increment collected leaf count
+        // Increment collected snowflake count
         window.leafCollectedCount++;
         if (leafCountEl) {
           leafCountEl.textContent = window.leafCollectedCount;
