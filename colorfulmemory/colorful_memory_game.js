@@ -1,6 +1,6 @@
-// Explanation: This file contains the game logic for the colorful memory game.
+// Explanation: This file contains the game logic for the icy memory game.
 
-const colors = ['red', 'blue', 'green', 'purple', 'orange', 'pink', 'red', 'blue', 'green', 'purple', 'orange', 'pink'];
+const colors = ['#E0F7FA', '#B2EBF2', '#80DEEA', '#4DD0E1', '#26C6DA', '#00BCD4', '#E0F7FA', '#B2EBF2', '#80DEEA', '#4DD0E1', '#26C6DA', '#00BCD4'];
 let cards = shuffle(colors.concat(colors));
 let selectedCards = [];
 let score = 0;
@@ -20,7 +20,7 @@ function generateCards() {
         const card = document.createElement('div');
         card.classList.add('card');
         card.dataset.color = color;
-        card.textContent = '?';
+        card.textContent = '🎁';
         gameContainer.appendChild(card);
     }
 }
@@ -42,7 +42,7 @@ function handleCardClick(event) {
     if (!card.classList.contains('card') || card.classList.contains('matched')) {
         return;
     }
-    card.textContent = card.dataset.color;
+    card.textContent = '';
     card.style.backgroundColor = card.dataset.color;
     selectedCards.push(card);
     if (selectedCards.length === 2) {
@@ -60,10 +60,10 @@ function checkMatch() {
         score += 2;
         scoreElement.textContent = `Score: ${score}`;
     } else {
-        card1.textContent = '?';
-        card2.textContent = '?';
-        card1.style.backgroundColor = '#ddd';
-        card2.style.backgroundColor = '#ddd';
+        card1.textContent = '🎁';
+        card2.textContent = '🎁';
+        card1.style.backgroundColor = '';
+        card2.style.backgroundColor = '';
     }
     selectedCards = [];
 }
