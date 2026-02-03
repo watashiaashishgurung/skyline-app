@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Skyline – Night Jam Edition</title>
+  <title>Skyline – Valentine's Jam Edition</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
-    /* Night Jam theme palette */
-    :root { --bg:#0a0f2c; --card:#1a1438; --ink:#f5f7ff; --muted:#a9b3d1; --accent:#ffd166; --grid:#2b2e4a; }
+    /* Valentine theme palette */
+    :root { --bg:#2b0a1a; --card:#40122a; --ink:#fff0f6; --muted:#f5c1d7; --accent:#ff4d88; --grid:#5a2240; }
     *{box-sizing:border-box}
-  body{margin:0;padding:24px;color:var(--ink);background:linear-gradient(180deg,#0a0f2c 0%,#1a1438 45%,#0a0f2c 100%);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,"Noto Sans",Arial,sans-serif;overflow-x:hidden}
+  body{margin:0;padding:24px;color:var(--ink);background:linear-gradient(180deg,#2b0a1a 0%,#40122a 45%,#2b0a1a 100%);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,"Noto Sans",Arial,sans-serif;overflow-x:hidden}
   h1{font-family:"Press Start 2P",monospace;font-size:20px;text-align:center;margin:0 0 16px;color:var(--accent)}
     .flex-header{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
     button{background:var(--card);border:1px solid #2a2f4b;color:var(--ink);padding:10px 14px;border-radius:12px;cursor:pointer}
@@ -122,8 +122,8 @@
 
   /* Snowflake physics (JS-driven) */
   .leaves{position:fixed;top:0;left:0;width:100%;height:100%;z-index:999;overflow:hidden;pointer-events:none}
-  .leaf{position:fixed;font-size:clamp(18px,3vw,46px);opacity:.95;filter:drop-shadow(0 4px 6px rgba(64,224,208,.7));will-change:transform;transition:filter .3s ease;cursor:pointer;pointer-events:auto}
-  .leaf.captured{opacity:.6;filter:drop-shadow(0 0 10px rgba(255,209,102,.9))}
+  .leaf{position:fixed;font-size:clamp(18px,3vw,46px);opacity:.95;filter:drop-shadow(0 4px 6px rgba(255,105,135,.7));will-change:transform;transition:filter .3s ease;cursor:pointer;pointer-events:auto}
+  .leaf.captured{opacity:.6;filter:drop-shadow(0 0 10px rgba(255,77,136,.9))}
   body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 30% 20%,rgba(255,215,0,.12),transparent 60%),radial-gradient(circle at 70% 40%,rgba(255,255,255,.1),transparent 65%);z-index:0}
   .leaf-hud{position:fixed;top:16px;left:16px;z-index:5;background:rgba(10,61,10,.6);padding:10px 14px;border:1px solid #ffd700;border-radius:12px;font-family:"Press Start 2P",monospace;font-size:11px;color:var(--ink);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
   .net{position:fixed;bottom:140px;left:50%;transform:translateX(-50%);width:140px;height:80px;border:3px solid #ffd700;border-radius:18px;background:rgba(255,215,0,.15);z-index:4;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;font-size:32px}
@@ -161,7 +161,7 @@
     position: fixed;
     font-family: "Press Start 2P", monospace;
     font-size: 18px;
-    color: #ffd700;
+    color: #ff4d88;
     font-weight: bold;
     pointer-events: none;
     z-index: 1001;
@@ -175,7 +175,7 @@
     100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
   }
 
-  /* Game Over / Victory Overlay - WINTER THEME */
+  /* Game Over / Victory Overlay - VALENTINE THEME */
   .game-message-overlay {
     position: fixed;
     inset: 0;
@@ -190,14 +190,14 @@
   }
 
   .game-message-box {
-    background: linear-gradient(135deg, rgba(64,224,208,0.12), rgba(127,255,212,0.12));
-    border: 3px solid #ffd166;
+    background: linear-gradient(135deg, rgba(255,182,193,0.15), rgba(255,105,135,0.15));
+    border: 3px solid #ff4d88;
     border-radius: 20px;
     padding: 40px;
     text-align: center;
     font-family: "Press Start 2P", monospace;
     color: #ffffff;
-    box-shadow: 0 10px 40px rgba(0,188,212,0.6), 0 0 60px rgba(255,215,0,0.3);
+    box-shadow: 0 10px 40px rgba(255,105,135,0.5), 0 0 60px rgba(255,182,193,0.3);
     animation: popIn 0.5s ease;
     max-width: 500px;
     -webkit-backdrop-filter: blur(15px);
@@ -207,34 +207,33 @@
   .game-message-title {
     font-size: 32px;
     margin-bottom: 20px;
-    color: #ffd700;
+    color: #ff4d88;
     text-shadow: 0 0 20px rgba(255,215,0,0.8);
   }
 
   .game-message-subtitle {
     font-size: 14px;
     margin-bottom: 10px;
-    color: #B2EBF2;
+    color: #ff85a2;
   }
 
   .game-message-button {
     margin-top: 20px;
     padding: 12px 24px;
-    background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
-    border: 2px solid #40e0d0;
+    background: linear-gradient(135deg, #ffc0cb, #ff85a2);
+    border: 2px solid #ff4d88;
     border-radius: 10px;
     font-family: "Press Start 2P", monospace;
     font-size: 12px;
-    color: #0a0f2c;
+    color: #2b0a1a;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0,188,212,0.4);
+    box-shadow: 0 4px 15px rgba(255,105,135,0.4);
   }
-
   .game-message-button:hover {
     transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(0,188,212,0.6), 0 0 30px rgba(255,215,0,0.4);
-    background: linear-gradient(135deg, #b2ebf2, #80dea);
+    box-shadow: 0 6px 20px rgba(255,105,135,0.6), 0 0 30px rgba(255,182,193,0.4);
+    background: linear-gradient(135deg, #ff85a2, #ff6b8a);
   }
 
   @keyframes fadeIn {
@@ -265,7 +264,7 @@
 
   /* Top equalizer (replaces holiday lights) */
   .equalizer{position:fixed;top:0;left:0;right:0;height:54px;display:flex;gap:6px;justify-content:space-evenly;align-items:flex-end;z-index:100;pointer-events:none;padding:4px 10px}
-  .equalizer .bar{width:10px;background:linear-gradient(180deg,#40e0d0,#7fffd4);border-radius:6px;box-shadow:0 0 10px rgba(127,255,212,.6)}
+  .equalizer .bar{width:10px;background:linear-gradient(180deg,#ff4d88,#ff85a2);border-radius:6px;box-shadow:0 0 10px rgba(255,77,136,.6)}
   .equalizer .bar:nth-child(odd){animation:beat 1.3s ease-in-out infinite}
   .equalizer .bar:nth-child(even){animation:beat 1.6s ease-in-out infinite .2s}
   @keyframes beat{0%,100%{height:20%}50%{height:90%}}
@@ -352,15 +351,15 @@
   <!-- Floating Musical Notes Layer (was snowflakes) -->
   <div class="leaves" id="leaves"></div>
 
-  <!-- Note Counter -->
-  <div id="leaf-counter">♪ Notes: <span id="leaf-count">0</span></div>
+  <!-- Heart Counter -->
+  <div id="leaf-counter">♥ Hearts: <span id="leaf-count">0</span></div>
 
-  <h1>🎵 Skyline: Night Jam Edition 🎶</h1>
+  <h1>💖 Skyline: Valentine's Jam 💘</h1>
 
   <div class="flex-header">
     <button id="btnInstructions">Show Instructions</button>
     <button id="btnRestartTop">Restart Game</button>
-    <!-- Removed audio controls: btnAudio, btnSymphony, Beethoven URL and Play, volume slider -->
+    <button id="btnStoryPopup">read the story of the legendery heron</button>
   </div>
 
   <div id="instructions" class="card hidden">
@@ -414,14 +413,14 @@
     /* Scoped styles to avoid clashing with Skyline app - WINTER ICE THEME */
     #memory-mini * { box-sizing: border-box; }
     #memory-mini {
-      --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --card: linear-gradient(135deg, #E0F7FA, #B2EBF2);
-      --panel: linear-gradient(135deg, rgba(224,247,250,0.3), rgba(178,235,242,0.3));
-      --accent: #ffd700;
-      --ink: #ffffff;
-      --muted: #B2EBF2;
-      --grid: #00BCD4;
-      --ok: linear-gradient(135deg, #00BCD4, #0097A7);
+      --bg: linear-gradient(135deg, #ff85a2 0%, #ff6b8a 100%);
+      --card: linear-gradient(135deg, #ffc0cb, #ff85a2);
+      --panel: linear-gradient(135deg, rgba(255,192,203,0.3), rgba(255,133,162,0.3));
+      --accent: #ff4d88;
+      --ink: #fff0f6;
+      --muted: #ffd6e7;
+      --grid: #ff99ac;
+      --ok: linear-gradient(135deg, #ff4d88, #ff6b8a);
       font-family: Arial, sans-serif;
       width: 100%;
       display: grid;
@@ -429,13 +428,13 @@
       padding: 1rem;
     }
     #memory-mini .wrap {
-      background: linear-gradient(135deg, rgba(102,126,234,0.7) 0%, rgba(118,75,162,0.7) 100%);
-      border: 2px solid rgba(255,255,255,0.2);
+      background: linear-gradient(135deg, rgba(255,133,162,0.7) 0%, rgba(255,107,138,0.7) 100%);
+      border: 2px solid rgba(255,240,246,0.2);
       border-radius: 16px;
       padding: 16px;
       width: min(880px, 96vw);
       color: var(--ink);
-      box-shadow: 0 8px 32px rgba(0,188,212,0.25);
+      box-shadow: 0 8px 32px rgba(255,105,135,0.25);
       -webkit-backdrop-filter: blur(20px);
       backdrop-filter: blur(20px);
     }
@@ -488,9 +487,9 @@
       backdrop-filter: blur(10px);
     }
     #memory-mini .card:hover {
-      border-color: rgba(255,215,0,0.6);
+      border-color: rgba(255,77,136,0.6);
       transform: scale(1.05);
-      box-shadow: 0 6px 12px rgba(0,188,212,0.4);
+      box-shadow: 0 6px 12px rgba(255,105,135,0.4);
     }
     #memory-mini .card:active { transform: scale(0.98); }
     #memory-mini .card.matched {
@@ -558,9 +557,9 @@
   </style>
 
   <!-- Memory Game HTML -->
-  <section id="memory-mini" aria-label="Lo‑Fi Memory Match Game">
+  <section id="memory-mini" aria-label="Cupid’s Memory Match Game">
     <div class="wrap">
-      <h2>🎧 Lo‑Fi Memory Match 🎵</h2>
+      <h2>💘 Cupid’s Memory Match 💞</h2>
       <div class="box">
         <div id="game-container" aria-live="polite" aria-label="Game board">
           <!-- Cards are injected by JS -->
@@ -609,7 +608,7 @@
       }
 
       function createConfetti() {
-        const colors = ['#E0F7FA', '#B2EBF2', '#80DEEA', '#4DD0E1', '#00BCD4', '#ffd700', '#ffffff'];
+        const colors = ['#ff6b8a', '#ff4d88', '#ffc0cb', '#ff85a2', '#ffd6e7', '#ffffff', '#ff99ac'];
         for (let i = 0; i < 50; i++) {
           setTimeout(() => {
             const confetti = document.createElement('div');
@@ -630,7 +629,7 @@
           const card = document.createElement('div');
           card.className = 'card';
           card.dataset.color = color;
-          card.textContent = '🎁';
+          card.textContent = '💝';
           grid.appendChild(card);
         }
       }
@@ -676,7 +675,7 @@
         } else {
           // flip back
           if (a) { 
-            a.textContent = '🎁'; 
+            a.textContent = '💝'; 
             a.style.backgroundColor = ''; 
             a.style.opacity = ''; 
             a.style.fontSize = '';
@@ -684,7 +683,7 @@
             a.style.textShadow = '';
           }
           if (b) { 
-            b.textContent = '🎁'; 
+            b.textContent = '💝'; 
             b.style.backgroundColor = ''; 
             b.style.opacity = ''; 
             b.style.fontSize = '';
@@ -795,7 +794,7 @@
       if(!container) return;
       for(let i=0;i<count;i++) addLeaf(container);
     }
-    const glyphs=["♪","♫","♩","♬"];
+    const glyphs=["❤","💖","💘","💝"];
     function rand(min,max){return Math.random()*(max-min)+min}
     function addLeaf(container){
       const leaf=document.createElement('span');
@@ -815,7 +814,7 @@
       container.appendChild(leaf);
     }
 
-    // Initialize falling musical notes when page loads
+    // Initialize falling hearts when page loads
     document.addEventListener('DOMContentLoaded', () => { spawnLeaves(30); });
 
     // ===== DOM helpers =====
@@ -842,6 +841,16 @@
     $("#btnStart").addEventListener("click", startGame);
     $("#btnPlay").addEventListener("click", playRound);
     $("#btnReenter").addEventListener("click", () => setupRound(true));
+
+    // Popup window for story
+    $("#btnStoryPopup").addEventListener("click", () => {
+      const url = "https://watashiaashishgurung.github.io/gitfiles/";
+      const w = 820, h = 640;
+      const left = Math.max(0, Math.round((screen.width - w) / 2));
+      const top  = Math.max(0, Math.round((screen.height - h) / 2));
+      const features = `popup=yes,width=${w},height=${h},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes`;
+      window.open(url, "gitfilesPopup", features);
+    });
 
     // ===== Chart setup =====
     let chart;
@@ -1151,10 +1160,10 @@
   </script>
 
   <script>
-    // Global note collection counter (was snowflakes)
+    // Global heart collection counter
     window.leafCollectedCount = 0;
 
-    // Click-to-catch: each note adds +1s to the memory timer and is removed
+    // Click-to-catch: each heart adds +1s to the memory timer and is removed
     (function(){
       var leavesRoot = document.getElementById('leaves');
       var leafCountEl = document.getElementById('leaf-count');
@@ -1163,7 +1172,7 @@
       function showBonus(x, y) {
         var bonus = document.createElement('div');
         bonus.className = 'time-bonus';
-        bonus.textContent = '+1s 🎵';
+        bonus.textContent = '+1s ❤️';
         bonus.style.left = x + 'px';
         bonus.style.top = y + 'px';
         document.body.appendChild(bonus);

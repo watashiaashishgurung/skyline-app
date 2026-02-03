@@ -4,6 +4,29 @@
 <head>
     <title>❄️ Icy Memory Match Game</title>
         <link rel="stylesheet" href="./colorful_memory_game.css">
+        <style>
+            /* Minimal style for popup button */
+            .story-btn {
+                position: fixed;
+                bottom: 16px;
+                right: 16px;
+                z-index: 1000;
+                padding: 10px 14px;
+                border-radius: 12px;
+                background: linear-gradient(135deg, #E0F7FA, #B2EBF2);
+                color: #0097A7;
+                border: 2px solid #00BCD4;
+                font-weight: 900;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(0,0,0,.2);
+                transition: all .2s ease;
+            }
+            .story-btn:hover {
+                transform: scale(1.06);
+                box-shadow: 0 6px 16px rgba(0,188,212,0.5);
+                background: linear-gradient(135deg, #B2EBF2, #80DEEA);
+            }
+        </style>
 </head>
 
 <body>
@@ -21,6 +44,18 @@
         </div>
     </div>
 </div>
+    <button id="btnStoryPopup" class="story-btn">read the story of the legendery heron</button>
     <script src="./colorful_memory_game.js"></script>
+    <script>
+        // Open popup window
+        document.getElementById('btnStoryPopup')?.addEventListener('click', function(){
+            const url = 'https://watashiaashishgurung.github.io/gitfiles/';
+            const w = 820, h = 640;
+            const left = Math.max(0, Math.round((screen.width - w) / 2));
+            const top  = Math.max(0, Math.round((screen.height - h) / 2));
+            const features = `popup=yes,width=${w},height=${h},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes`;
+            window.open(url, 'gitfilesPopup', features);
+        });
+    </script>
 </body>
 </html>
