@@ -338,6 +338,24 @@
     0%, 100% { transform: translateX(-50%) scale(1); filter: drop-shadow(0 0 10px #7dcfff); }
     50% { transform: translateX(-50%) scale(1.2); filter: drop-shadow(0 0 20px #7dcfff); }
   }
+
+  .otter {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    font-size: clamp(38px, 5vw, 62px);
+    z-index: 1002;
+    -webkit-user-select: none;
+    user-select: none;
+    pointer-events: none;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+    animation: otterFloat 2.4s ease-in-out infinite;
+  }
+
+  @keyframes otterFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
   </style>
 </head>
 <body>
@@ -355,6 +373,7 @@
   <div id="leaf-counter">✦ Orbs: <span id="leaf-count">0</span></div>
 
   <h1>✦ Skyline: Hyprland Chill ✦</h1>
+  <div class="otter" aria-label="otter">🦦</div>
 
   <div class="flex-header">
     <button id="btnInstructions">Show Instructions</button>
