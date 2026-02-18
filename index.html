@@ -3,29 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Skyline – Valentine's Jam Edition</title>
+  <title>Skyline – Hyprland Chill Edition</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
-    /* Valentine theme palette */
-    :root { --bg:#2b0a1a; --card:#40122a; --ink:#fff0f6; --muted:#f5c1d7; --accent:#ff4d88; --grid:#5a2240; }
+    /* Relaxed Hyprland palette */
+    :root { --bg:#0a1020; --card:#121a2f; --ink:#d9e6ff; --muted:#9db0d5; --accent:#89b4fa; --accent-2:#7dcfff; --grid:#26324f; }
     *{box-sizing:border-box}
-  body{margin:0;padding:24px;color:var(--ink);background:linear-gradient(180deg,#2b0a1a 0%,#40122a 45%,#2b0a1a 100%);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,"Noto Sans",Arial,sans-serif;overflow-x:hidden}
+  body{margin:0;padding:24px;color:var(--ink);background:linear-gradient(180deg,rgba(10,16,32,.72) 0%,rgba(18,26,47,.70) 45%,rgba(10,16,32,.76) 100%),url("wallpaper/Fantasy-Lake1.png") center/cover fixed no-repeat;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,"Noto Sans",Arial,sans-serif;overflow-x:hidden}
   h1{font-family:"Press Start 2P",monospace;font-size:20px;text-align:center;margin:0 0 16px;color:var(--accent)}
     .flex-header{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
-    button{background:var(--card);border:1px solid #2a2f4b;color:var(--ink);padding:10px 14px;border-radius:12px;cursor:pointer}
+    button{background:var(--card);border:1px solid var(--grid);color:var(--ink);padding:10px 14px;border-radius:12px;cursor:pointer}
     button:hover{border-color:var(--accent)}
-  .card{max-width:980px;margin:12px auto;background:linear-gradient(160deg,#1a1438,#0a0f2c 85%);border:1px solid var(--grid);border-radius:16px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+  .card{max-width:980px;margin:12px auto;background:linear-gradient(160deg,#121b34,#0b1326 85%);border:1px solid var(--grid);border-radius:16px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
     .button-container{margin-top:10px}
     label{display:block;margin:10px 0 6px;color:var(--muted)}
-  input[type="number"],input[type="text"]{width:100%;background:#0f1533;color:var(--ink);border:1px solid var(--grid);border-radius:10px;padding:10px}
-    input[type="number"]:focus,input[type="text"]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,209,102,0.15)}
+  input[type="number"],input[type="text"]{width:100%;background:#0f1730;color:var(--ink);border:1px solid var(--grid);border-radius:10px;padding:10px}
+    input[type="number"]:focus,input[type="text"]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(137,180,250,0.2)}
     #instructions ul{margin:8px 0 0 18px}
     #round-info{font-weight:700;margin-bottom:4px}
     #round-note{color:var(--muted);margin-bottom:8px}
     #guesses .row{display:grid;grid-template-columns:1fr 200px;gap:10px;align-items:center;margin:8px 0}
-  .hint{font-size:12px;color:#ffd700}
-    #output{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;color:#cfe3ff;margin-top:10px}
+  .hint{font-size:12px;color:var(--accent-2)}
+    #output{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;color:#b9d6ff;margin-top:10px}
     .scoreboard table{width:100%;border-collapse:collapse;margin-top:8px}
       .scoreboard th,.scoreboard td{padding:8px;border-bottom:1px solid #273057;text-align:left;font-size:14px}
       .scoreboard + .scoreboard{margin-top:12px}
@@ -80,7 +80,7 @@
       top: 20px;
       right: 20px;
       background: var(--card);
-      border: 1px solid #2a2f4b;
+      border: 1px solid var(--grid);
       border-radius: 12px;
       padding: 12px;
       z-index: 1000;
@@ -104,30 +104,30 @@
       font-size: 10px;
     }
 
-    /* Snowflake Counter HUD */
+    /* Orb Counter HUD */
     #leaf-counter {
       position: fixed;
       top: 20px;
       left: 20px;
       background: var(--card);
-      border: 1px solid #ffd700;
+      border: 1px solid var(--accent-2);
       border-radius: 12px;
       padding: 12px 16px;
       z-index: 1000;
       font-family: 'Press Start 2P', monospace;
       font-size: 14px;
       box-shadow: 0 4px 12px rgba(0,0,0,.4);
-      color: var(--accent);
+      color: var(--accent-2);
     }
 
   /* Snowflake physics (JS-driven) */
   .leaves{position:fixed;top:0;left:0;width:100%;height:100%;z-index:999;overflow:hidden;pointer-events:none}
-  .leaf{position:fixed;font-size:clamp(18px,3vw,46px);opacity:.95;filter:drop-shadow(0 4px 6px rgba(255,105,135,.7));will-change:transform;transition:filter .3s ease;cursor:pointer;pointer-events:auto}
-  .leaf.captured{opacity:.6;filter:drop-shadow(0 0 10px rgba(255,77,136,.9))}
-  body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 30% 20%,rgba(255,215,0,.12),transparent 60%),radial-gradient(circle at 70% 40%,rgba(255,255,255,.1),transparent 65%);z-index:0}
-  .leaf-hud{position:fixed;top:16px;left:16px;z-index:5;background:rgba(10,61,10,.6);padding:10px 14px;border:1px solid #ffd700;border-radius:12px;font-family:"Press Start 2P",monospace;font-size:11px;color:var(--ink);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
-  .net{position:fixed;bottom:140px;left:50%;transform:translateX(-50%);width:140px;height:80px;border:3px solid #ffd700;border-radius:18px;background:rgba(255,215,0,.15);z-index:4;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;font-size:32px}
-  .ground{position:fixed;bottom:0;left:0;width:100%;height:140px;background:linear-gradient(to top,rgba(255,255,255,.15),rgba(255,255,255,.05),transparent 90%);z-index:2;pointer-events:none}
+  .leaf{position:fixed;font-size:clamp(18px,3vw,46px);opacity:.95;filter:drop-shadow(0 4px 6px rgba(125,207,255,.55));will-change:transform;transition:filter .3s ease;cursor:pointer;pointer-events:auto}
+  .leaf.captured{opacity:.6;filter:drop-shadow(0 0 10px rgba(137,180,250,.9))}
+  body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 30% 20%,rgba(125,207,255,.14),transparent 60%),radial-gradient(circle at 70% 40%,rgba(137,180,250,.12),transparent 65%);z-index:0}
+  .leaf-hud{position:fixed;top:16px;left:16px;z-index:5;background:rgba(9,15,29,.55);padding:10px 14px;border:1px solid var(--accent-2);border-radius:12px;font-family:"Press Start 2P",monospace;font-size:11px;color:var(--ink);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+  .net{position:fixed;bottom:140px;left:50%;transform:translateX(-50%);width:140px;height:80px;border:3px solid var(--accent-2);border-radius:18px;background:rgba(125,207,255,.16);z-index:4;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;font-size:32px}
+  .ground{position:fixed;bottom:0;left:0;width:100%;height:140px;background:linear-gradient(to top,rgba(137,180,250,.18),rgba(125,207,255,.08),transparent 90%);z-index:2;pointer-events:none}
   
   /* Snowflake physics animations */
   .leaf {
@@ -161,12 +161,12 @@
     position: fixed;
     font-family: "Press Start 2P", monospace;
     font-size: 18px;
-    color: #ff4d88;
+    color: var(--accent-2);
     font-weight: bold;
     pointer-events: none;
     z-index: 1001;
     animation: bonusFloat 1s ease-out forwards;
-    text-shadow: 0 0 8px rgba(255,215,0,0.8), 0 2px 4px rgba(0,0,0,0.6);
+    text-shadow: 0 0 8px rgba(125,207,255,0.65), 0 2px 4px rgba(0,0,0,0.6);
   }
   
   @keyframes bonusFloat {
@@ -175,7 +175,7 @@
     100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
   }
 
-  /* Game Over / Victory Overlay - VALENTINE THEME */
+  /* Game Over / Victory Overlay - HYPRLAND CHILL THEME */
   .game-message-overlay {
     position: fixed;
     inset: 0;
@@ -183,21 +183,21 @@
     align-items: center;
     justify-content: center;
     z-index: 2000;
-    background: rgba(10, 15, 44, 0.85);
+    background: rgba(8, 12, 24, 0.85);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     animation: fadeIn 0.3s ease;
   }
 
   .game-message-box {
-    background: linear-gradient(135deg, rgba(255,182,193,0.15), rgba(255,105,135,0.15));
-    border: 3px solid #ff4d88;
+    background: linear-gradient(135deg, rgba(137,180,250,0.18), rgba(125,207,255,0.18));
+    border: 3px solid var(--accent);
     border-radius: 20px;
     padding: 40px;
     text-align: center;
     font-family: "Press Start 2P", monospace;
     color: #ffffff;
-    box-shadow: 0 10px 40px rgba(255,105,135,0.5), 0 0 60px rgba(255,182,193,0.3);
+    box-shadow: 0 10px 40px rgba(125,207,255,0.35), 0 0 60px rgba(137,180,250,0.24);
     animation: popIn 0.5s ease;
     max-width: 500px;
     -webkit-backdrop-filter: blur(15px);
@@ -207,33 +207,33 @@
   .game-message-title {
     font-size: 32px;
     margin-bottom: 20px;
-    color: #ff4d88;
-    text-shadow: 0 0 20px rgba(255,215,0,0.8);
+    color: var(--accent-2);
+    text-shadow: 0 0 20px rgba(125,207,255,0.55);
   }
 
   .game-message-subtitle {
     font-size: 14px;
     margin-bottom: 10px;
-    color: #ff85a2;
+    color: var(--muted);
   }
 
   .game-message-button {
     margin-top: 20px;
     padding: 12px 24px;
-    background: linear-gradient(135deg, #ffc0cb, #ff85a2);
-    border: 2px solid #ff4d88;
+    background: linear-gradient(135deg, #8aadf4, #7dcfff);
+    border: 2px solid var(--accent-2);
     border-radius: 10px;
     font-family: "Press Start 2P", monospace;
     font-size: 12px;
-    color: #2b0a1a;
+    color: #07101f;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(255,105,135,0.4);
+    box-shadow: 0 4px 15px rgba(125,207,255,0.35);
   }
   .game-message-button:hover {
     transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(255,105,135,0.6), 0 0 30px rgba(255,182,193,0.4);
-    background: linear-gradient(135deg, #ff85a2, #ff6b8a);
+    box-shadow: 0 6px 20px rgba(125,207,255,0.5), 0 0 30px rgba(137,180,250,0.35);
+    background: linear-gradient(135deg, #7dcfff, #89b4fa);
   }
 
   @keyframes fadeIn {
@@ -264,13 +264,13 @@
 
   /* Top equalizer (replaces holiday lights) */
   .equalizer{position:fixed;top:0;left:0;right:0;height:54px;display:flex;gap:6px;justify-content:space-evenly;align-items:flex-end;z-index:100;pointer-events:none;padding:4px 10px}
-  .equalizer .bar{width:10px;background:linear-gradient(180deg,#ff4d88,#ff85a2);border-radius:6px;box-shadow:0 0 10px rgba(255,77,136,.6)}
+  .equalizer .bar{width:10px;background:linear-gradient(180deg,#89b4fa,#7dcfff);border-radius:6px;box-shadow:0 0 10px rgba(125,207,255,.55)}
   .equalizer .bar:nth-child(odd){animation:beat 1.3s ease-in-out infinite}
   .equalizer .bar:nth-child(even){animation:beat 1.6s ease-in-out infinite .2s}
   @keyframes beat{0%,100%{height:20%}50%{height:90%}}
 
-  /* Christmas Decorations */
-  .christmas-ornament {
+  /* Ambient Decorations */
+  .ambient-ornament {
     position: fixed;
     font-size: 40px;
     animation: swing 3s ease-in-out infinite;
@@ -288,7 +288,7 @@
   .ornament-3 { top: 50%; left: 5%; animation-delay: 1s; }
   .ornament-4 { top: 50%; right: 5%; animation-delay: 1.5s; }
 
-  .christmas-lights {
+  .ambient-lights {
     position: fixed;
     top: 0;
     left: 0;
@@ -312,10 +312,10 @@
   .light:nth-child(odd) { animation-delay: 0s; }
   .light:nth-child(even) { animation-delay: 0.75s; }
 
-  .light.red { background: #ff0000; color: #ff0000; }
-  .light.green { background: #00ff00; color: #00ff00; }
-  .light.blue { background: #4169e1; color: #4169e1; }
-  .light.yellow { background: #ffd700; color: #ffd700; }
+  .light.red { background: #89b4fa; color: #89b4fa; }
+  .light.green { background: #7dcfff; color: #7dcfff; }
+  .light.blue { background: #74c7ec; color: #74c7ec; }
+  .light.yellow { background: #b4befe; color: #b4befe; }
   .light.white { background: #ffffff; color: #ffffff; }
 
   @keyframes twinkle {
@@ -323,7 +323,7 @@
     50% { opacity: 0.4; transform: scale(0.8); }
   }
 
-  .christmas-star {
+  .ambient-star {
     position: fixed;
     top: 80px;
     left: 50%;
@@ -331,12 +331,12 @@
     font-size: 50px;
     animation: starPulse 2s ease-in-out infinite;
     z-index: 100;
-    filter: drop-shadow(0 0 10px #ffd700);
+    filter: drop-shadow(0 0 10px #7dcfff);
   }
 
   @keyframes starPulse {
-    0%, 100% { transform: translateX(-50%) scale(1); filter: drop-shadow(0 0 10px #ffd700); }
-    50% { transform: translateX(-50%) scale(1.2); filter: drop-shadow(0 0 20px #ffd700); }
+    0%, 100% { transform: translateX(-50%) scale(1); filter: drop-shadow(0 0 10px #7dcfff); }
+    50% { transform: translateX(-50%) scale(1.2); filter: drop-shadow(0 0 20px #7dcfff); }
   }
   </style>
 </head>
@@ -347,14 +347,14 @@
     <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
   </div>
 
-  <!-- Removed: Christmas Lights / Star / Ornaments -->
+  <!-- Removed: legacy lights / star / ornaments -->
   <!-- Floating Musical Notes Layer (was snowflakes) -->
   <div class="leaves" id="leaves"></div>
 
-  <!-- Heart Counter -->
-  <div id="leaf-counter">♥ Hearts: <span id="leaf-count">0</span></div>
+  <!-- Orb Counter -->
+  <div id="leaf-counter">✦ Orbs: <span id="leaf-count">0</span></div>
 
-  <h1>💖 Skyline: Valentine's Jam 💘</h1>
+  <h1>✦ Skyline: Hyprland Chill ✦</h1>
 
   <div class="flex-header">
     <button id="btnInstructions">Show Instructions</button>
@@ -410,17 +410,17 @@
 
   <!-- Colorful Memory Match Game Section -->
   <style>
-    /* Scoped styles to avoid clashing with Skyline app - WINTER ICE THEME */
+    /* Scoped styles to avoid clashing with Skyline app - HYPRLAND CHILL THEME */
     #memory-mini * { box-sizing: border-box; }
     #memory-mini {
-      --bg: linear-gradient(135deg, #ff85a2 0%, #ff6b8a 100%);
-      --card: linear-gradient(135deg, #ffc0cb, #ff85a2);
-      --panel: linear-gradient(135deg, rgba(255,192,203,0.3), rgba(255,133,162,0.3));
-      --accent: #ff4d88;
-      --ink: #fff0f6;
-      --muted: #ffd6e7;
-      --grid: #ff99ac;
-      --ok: linear-gradient(135deg, #ff4d88, #ff6b8a);
+      --bg: linear-gradient(135deg, #0d1a33 0%, #10203f 100%);
+      --card: linear-gradient(135deg, #89b4fa, #7dcfff);
+      --panel: linear-gradient(135deg, rgba(137,180,250,0.22), rgba(125,207,255,0.22));
+      --accent: #89b4fa;
+      --ink: #d9e6ff;
+      --muted: #b7c7e8;
+      --grid: #34456b;
+      --ok: linear-gradient(135deg, #89b4fa, #7dcfff);
       font-family: Arial, sans-serif;
       width: 100%;
       display: grid;
@@ -428,13 +428,13 @@
       padding: 1rem;
     }
     #memory-mini .wrap {
-      background: linear-gradient(135deg, rgba(255,133,162,0.7) 0%, rgba(255,107,138,0.7) 100%);
+      background: linear-gradient(135deg, rgba(17,30,56,0.74) 0%, rgba(13,23,44,0.74) 100%);
       border: 2px solid rgba(255,240,246,0.2);
       border-radius: 16px;
       padding: 16px;
       width: min(880px, 96vw);
       color: var(--ink);
-      box-shadow: 0 8px 32px rgba(255,105,135,0.25);
+      box-shadow: 0 8px 32px rgba(125,207,255,0.18);
       -webkit-backdrop-filter: blur(20px);
       backdrop-filter: blur(20px);
     }
@@ -445,7 +445,7 @@
       line-height: 1.2;
       color: var(--accent);
       font-family: "Press Start 2P", monospace;
-      text-shadow: 0 0 10px rgba(255,255,255,0.5);
+      text-shadow: 0 0 10px rgba(125,207,255,0.4);
     }
     #memory-mini .box {
       background: transparent;
@@ -459,19 +459,19 @@
       display: grid;
       grid-template-columns: repeat(4, 100px);
       gap: 10px;
-      background: linear-gradient(135deg, rgba(224,247,250,0.15), rgba(178,235,242,0.15));
+      background: linear-gradient(135deg, rgba(125,207,255,0.14), rgba(137,180,250,0.14));
       border: 2px solid rgba(255,255,255,0.2);
       padding: 10px;
       border-radius: 10px;
       justify-content: center;
       -webkit-backdrop-filter: blur(15px);
       backdrop-filter: blur(15px);
-      box-shadow: 0 8px 32px rgba(0,188,212,0.2);
+      box-shadow: 0 8px 32px rgba(125,207,255,0.2);
     }
     #memory-mini .card {
       width: 100px;
       height: 100px;
-      background: linear-gradient(135deg, rgba(224,247,250,0.4), rgba(178,235,242,0.4));
+      background: linear-gradient(135deg, rgba(122,162,247,0.25), rgba(125,207,255,0.25));
       border: 2px solid rgba(255,255,255,0.3);
       display: grid;
       place-items: center;
@@ -482,22 +482,22 @@
       -webkit-user-select: none;
       user-select: none;
       transition: transform 0.12s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-      box-shadow: 0 4px 8px rgba(0,188,212,0.2);
+      box-shadow: 0 4px 8px rgba(125,207,255,0.2);
       -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
     }
     #memory-mini .card:hover {
-      border-color: rgba(255,77,136,0.6);
+      border-color: rgba(137,180,250,0.75);
       transform: scale(1.05);
-      box-shadow: 0 6px 12px rgba(255,105,135,0.4);
+      box-shadow: 0 6px 12px rgba(125,207,255,0.35);
     }
     #memory-mini .card:active { transform: scale(0.98); }
     #memory-mini .card.matched {
-      background: linear-gradient(135deg, rgba(0,188,212,0.8), rgba(0,151,167,0.8));
+      background: linear-gradient(135deg, rgba(125,207,255,0.78), rgba(137,180,250,0.78));
       color: #fff;
       cursor: default;
-      border-color: rgba(0,188,212,0.6);
-      box-shadow: 0 0 20px rgba(0,188,212,0.6);
+      border-color: rgba(125,207,255,0.58);
+      box-shadow: 0 0 20px rgba(125,207,255,0.48);
     }
     #memory-mini .side {
       display: grid;
@@ -507,7 +507,7 @@
       min-width: 180px;
     }
     #memory-mini .pill {
-      border: 2px solid rgba(178,235,242,0.5);
+      border: 2px solid rgba(137,180,250,0.5);
       border-radius: 12px;
       padding: 8px 14px;
       font-size: 1rem;
@@ -521,20 +521,20 @@
     }
     #memory-mini #startbtn {
       padding: 10px 16px;
-      background: linear-gradient(135deg, #E0F7FA, #B2EBF2);
-      color: #0097A7;
-      border: 2px solid #00BCD4;
+      background: linear-gradient(135deg, #89b4fa, #7dcfff);
+      color: #0a1020;
+      border: 2px solid #74c7ec;
       font-weight: 700;
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 8px rgba(0,188,212,0.3);
+      box-shadow: 0 4px 8px rgba(125,207,255,0.28);
     }
     #memory-mini #startbtn:hover {
       border-color: var(--accent);
       transform: scale(1.05);
-      box-shadow: 0 6px 16px rgba(0,188,212,0.5);
-      background: linear-gradient(135deg, #B2EBF2, #80DEEA);
+      box-shadow: 0 6px 16px rgba(125,207,255,0.45);
+      background: linear-gradient(135deg, #7dcfff, #89b4fa);
     }
     #memory-mini #startbtn:disabled {
       opacity: 0.6;
@@ -557,9 +557,9 @@
   </style>
 
   <!-- Memory Game HTML -->
-  <section id="memory-mini" aria-label="Cupid’s Memory Match Game">
+  <section id="memory-mini" aria-label="Hypr Memory Match Game">
     <div class="wrap">
-      <h2>💘 Cupid’s Memory Match 💞</h2>
+      <h2>❄ Hypr Memory Match ✦</h2>
       <div class="box">
         <div id="game-container" aria-live="polite" aria-label="Game board">
           <!-- Cards are injected by JS -->
@@ -577,7 +577,7 @@
   <script>
     (function () {
       // Keep original behavior: 12 entries, then duplicated -> 24 cards (4 of each color)
-      const base = ['red','blue','green','purple','orange','pink','red','blue','green','purple','orange','pink'];
+      const base = ['slate','sky','mint','indigo','teal','violet','slate','sky','mint','indigo','teal','violet'];
       let cards = shuffle(base.concat(base)); // 24
       let selected = [];
       let score = 0;
@@ -608,7 +608,7 @@
       }
 
       function createConfetti() {
-        const colors = ['#ff6b8a', '#ff4d88', '#ffc0cb', '#ff85a2', '#ffd6e7', '#ffffff', '#ff99ac'];
+        const colors = ['#89b4fa', '#7dcfff', '#74c7ec', '#b4befe', '#cdd6f4', '#ffffff', '#94e2d5'];
         for (let i = 0; i < 50; i++) {
           setTimeout(() => {
             const confetti = document.createElement('div');
@@ -629,7 +629,7 @@
           const card = document.createElement('div');
           card.className = 'card';
           card.dataset.color = color;
-          card.textContent = '💝';
+          card.textContent = '◈';
           grid.appendChild(card);
         }
       }
@@ -675,7 +675,7 @@
         } else {
           // flip back
           if (a) { 
-            a.textContent = '💝'; 
+            a.textContent = '◈'; 
             a.style.backgroundColor = ''; 
             a.style.opacity = ''; 
             a.style.fontSize = '';
@@ -683,7 +683,7 @@
             a.style.textShadow = '';
           }
           if (b) { 
-            b.textContent = '💝'; 
+            b.textContent = '◈'; 
             b.style.backgroundColor = ''; 
             b.style.opacity = ''; 
             b.style.fontSize = '';
@@ -788,13 +788,13 @@
   // For tieMode: enforce newGuess < previous guess for those still tied
   const tieConstraint = new Map(); // player -> previous (current lowest tied) guess
 
-    // ===== Christmas Snowflakes Animation =====
+    // ===== Floating glyph animation =====
     function spawnLeaves(count=20){
       const container=document.getElementById('leaves');
       if(!container) return;
       for(let i=0;i<count;i++) addLeaf(container);
     }
-    const glyphs=["❤","💖","💘","💝"];
+    const glyphs=["✦","❄","☁","✧"];
     function rand(min,max){return Math.random()*(max-min)+min}
     function addLeaf(container){
       const leaf=document.createElement('span');
@@ -814,7 +814,7 @@
       container.appendChild(leaf);
     }
 
-    // Initialize falling hearts when page loads
+    // Initialize floating glyphs when page loads
     document.addEventListener('DOMContentLoaded', () => { spawnLeaves(30); });
 
     // ===== DOM helpers =====
@@ -1160,10 +1160,10 @@
   </script>
 
   <script>
-    // Global heart collection counter
+    // Global orb collection counter
     window.leafCollectedCount = 0;
 
-    // Click-to-catch: each heart adds +1s to the memory timer and is removed
+    // Click-to-catch: each glyph adds +1s to the memory timer and is removed
     (function(){
       var leavesRoot = document.getElementById('leaves');
       var leafCountEl = document.getElementById('leaf-count');
@@ -1172,7 +1172,7 @@
       function showBonus(x, y) {
         var bonus = document.createElement('div');
         bonus.className = 'time-bonus';
-        bonus.textContent = '+1s ❤️';
+        bonus.textContent = '+1s ✦';
         bonus.style.left = x + 'px';
         bonus.style.top = y + 'px';
         document.body.appendChild(bonus);
