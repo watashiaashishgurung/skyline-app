@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skyline Q&A Flashcards</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg:#0a1020; --card:#121a2f; --ink:#d9e6ff; --muted:#9db0d5; --accent:#89b4fa; --accent-2:#7dcfff; --grid:#26324f; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: linear-gradient(180deg,rgba(10,16,32,.72) 0%,rgba(18,26,47,.70) 45%,rgba(10,16,32,.76) 100%),url("wallpaper/Fantasy-Lake1.png") center/cover fixed no-repeat;
+      font-family: system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,"Noto Sans",Arial,sans-serif;
+      padding: 18px;
+    }
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, rgba(17,30,56,0.74) 0%, rgba(13,23,44,0.74) 100%);
+      border: 2px solid rgba(255,240,246,0.2);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(125,207,255,0.18);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+    }
+    h1 {
+      margin: 0 0 14px 0;
+      text-align: center;
+      font-size: 1rem;
+      line-height: 1.4;
+      color: var(--accent);
+      font-family: "Press Start 2P", monospace;
+      text-shadow: 0 0 10px rgba(125,207,255,0.4);
+    }
+    .deck-layout {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: start;
+    }
+    .deck-stack {
+      width: 220px;
+      height: 140px;
+      position: relative;
+      justify-self: center;
+      margin-top: 12px;
+      margin-bottom: 6px;
+    }
+    .deck-layer {
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      border: 1px solid rgba(137,180,250,0.55);
+      background: linear-gradient(rgba(10,16,32,0.42), rgba(10,16,32,0.42)), url("wallpaper/Fantasy-Lake1.png") center/cover no-repeat;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.35);
+    }
+    .deck-layer:nth-child(1) { transform: translate(10px, 10px) rotate(3deg); opacity: 0.65; }
+    .deck-layer:nth-child(2) { transform: translate(5px, 5px) rotate(1.6deg); opacity: 0.82; }
+    .deck-layer:nth-child(3) { transform: translate(0, 0); }
+    .flashcard {
+      width: min(620px, 100%);
+      min-height: 320px;
+      perspective: 1200px;
+      cursor: pointer;
+      outline: none;
+    }
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      min-height: 320px;
+      transition: transform 0.55s ease;
+      transform-style: preserve-3d;
+    }
+    .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+    .flashcard-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid rgba(137,180,250,0.45);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.34);
+    }
+    .flashcard-front {
+      display: grid;
+      place-items: center;
+      background: linear-gradient(rgba(10,16,32,0.38), rgba(10,16,32,0.52)), url("wallpaper/Fantasy-Lake1.png") center/cover no-repeat;
+      color: #e7f0ff;
+      font-family: "Press Start 2P", monospace;
+      text-align: center;
+      padding: 16px;
+      letter-spacing: 0.5px;
+    }
+    .front-text {
+      font-size: 12px;
+      line-height: 1.7;
+      background: rgba(7, 16, 31, 0.46);
+      border: 1px solid rgba(137,180,250,0.6);
+      border-radius: 12px;
+      padding: 10px 12px;
+      text-transform: uppercase;
+    }
+    .flashcard-back {
+      transform: rotateY(180deg);
+      background: linear-gradient(135deg, rgba(125,207,255,0.14), rgba(137,180,250,0.22));
+      color: var(--ink);
+      padding: 16px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 10px;
+    }
+    .question {
+      font-weight: 700;
+      color: var(--accent-2);
+      line-height: 1.45;
+      max-height: 6.2em;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .answer {
+      color: var(--ink);
+      line-height: 1.75;
+      overflow: auto;
+      white-space: pre-wrap;
+      padding-right: 4px;
+      font-size: 0.98rem;
+    }
+    .side {
+      min-width: 210px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      justify-items: stretch;
+    }
+    .pill {
+      border: 2px solid rgba(137,180,250,0.5);
+      border-radius: 12px;
+      padding: 9px 12px;
+      font-size: .95rem;
+      background: rgba(255,255,255,0.08);
+      text-align: center;
+      color: var(--ink);
+      -webkit-backdrop-filter: blur(15px);
+      backdrop-filter: blur(15px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .controls button {
+      width: 100%;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #89b4fa, #7dcfff);
+      color: #0a1020;
+      border: 2px solid #74c7ec;
+      border-radius: 12px;
+      font-weight: 700;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .controls button:hover {
+      border-color: var(--accent);
+      background: linear-gradient(135deg, #7dcfff, #89b4fa);
+      transform: scale(1.03);
+    }
+    .note { text-align: center; color: var(--muted); font-size: 12px; margin-top: 10px; }
+    .full-article-card {
+      max-width: 960px;
+      margin: 14px auto 0 auto;
+      min-height: 320px;
+      perspective: 1200px;
+      cursor: pointer;
+      outline: none;
+    }
+    .full-article-inner {
+      position: relative;
+      width: 100%;
+      min-height: 320px;
+      transition: transform 0.55s ease;
+      transform-style: preserve-3d;
+    }
+    .full-article-card.revealed .full-article-inner { transform: rotateY(180deg); }
+    .full-article-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid rgba(137,180,250,0.45);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.34);
+    }
+    .full-article-front {
+      display: grid;
+      place-items: center;
+      background: linear-gradient(rgba(10,16,32,0.38), rgba(10,16,32,0.52)), url("wallpaper/Fantasy-Lake1.png") center/cover no-repeat;
+      color: #e7f0ff;
+      font-family: "Press Start 2P", monospace;
+      text-align: center;
+      padding: 18px;
+    }
+    .full-article-front-text {
+      font-size: 12px;
+      line-height: 1.8;
+      background: rgba(7, 16, 31, 0.46);
+      border: 1px solid rgba(137,180,250,0.6);
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-transform: uppercase;
+    }
+    .full-article-back {
+      transform: rotateY(180deg);
+      background: linear-gradient(135deg, rgba(125,207,255,0.12), rgba(137,180,250,0.18));
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+    .full-article-head {
+      background: linear-gradient(rgba(10,16,32,0.38), rgba(10,16,32,0.52)), url("wallpaper/Fantasy-Lake1.png") center/cover no-repeat;
+      padding: 12px 14px;
+      color: #e7f0ff;
+      font-family: "Press Start 2P", monospace;
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 0.4px;
+      border-bottom: 1px solid rgba(137,180,250,0.45);
+      cursor: pointer;
+    }
+    .full-article-body {
+      padding: 14px;
+      max-height: 48vh;
+      overflow: auto;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      color: var(--ink);
+    }
+    @media (max-width: 860px) {
+      .deck-layout { grid-template-columns: 1fr; }
+      .side { width: 100%; grid-template-columns: repeat(2, minmax(120px,1fr)); }
+      .controls { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>✦ Skyline Q&A Flashcards ✦</h1>
+    <div class="deck-layout">
+      <div>
+        <div class="deck-stack" aria-hidden="true">
+          <div class="deck-layer"></div>
+          <div class="deck-layer"></div>
+          <div class="deck-layer"></div>
+        </div>
+        <div class="flashcard" id="flashcard" role="button" tabindex="0" aria-label="Flip flashcard">
+          <div class="flashcard-inner">
+            <div class="flashcard-face flashcard-front">
+              <div class="front-text">Skyline Deck<br>Click to flip</div>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <div class="question" id="flash-question">Loading cards…</div>
+              <div class="answer" id="flash-answer"></div>
+            </div>
+          </div>
+        </div>
+        <div class="note">Front is faced down with wallpaper art. Flip to reveal Q&A.</div>
+      </div>
+      <aside class="side">
+        <p id="flash-progress" class="pill" aria-live="polite">Card 0 / 0</p>
+        <p id="flash-remaining" class="pill" aria-live="polite">Faced down left: 0</p>
+        <div class="controls">
+          <button id="flash-prev">Previous Card</button>
+          <button id="flash-next">Next Card</button>
+          <button id="flash-reset">Face Down All</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="full-article-card" id="full-article-card" aria-label="Open full Skyline Q and A article card">
+    <div class="full-article-inner">
+      <div class="full-article-face full-article-front">
+        <div class="full-article-front-text">Click here to see the full article</div>
+      </div>
+      <div class="full-article-face full-article-back">
+        <div class="full-article-head" id="full-article-head" role="button" tabindex="0" aria-label="Toggle full article card">✦ Full Skyline Q&A Article (One Card) ✦</div>
+        <div class="full-article-body" id="full-article-text">Loading full article…</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const flashcardEl = document.getElementById('flashcard');
+      const questionEl = document.getElementById('flash-question');
+      const answerEl = document.getElementById('flash-answer');
+      const progressEl = document.getElementById('flash-progress');
+      const remainingEl = document.getElementById('flash-remaining');
+      const btnPrev = document.getElementById('flash-prev');
+      const btnNext = document.getElementById('flash-next');
+      const btnReset = document.getElementById('flash-reset');
+      const fullArticleCardEl = document.getElementById('full-article-card');
+      const fullArticleHeadEl = document.getElementById('full-article-head');
+      const fullArticleEl = document.getElementById('full-article-text');
+
+      let cards = [];
+      let currentIndex = 0;
+      let revealedIndexes = new Set();
+
+      const fallbackCards = [
+        {
+          q: 'What is Skyline?',
+          a: 'Skyline is an idea where capital moves toward people who can create more value with it in real time.'
+        },
+        {
+          q: 'What is the core mechanism that makes Skyline work?',
+          a: 'A feedback loop: capital enters, people create value, outcomes are observed, then capital shifts toward effective contributors.'
+        },
+        {
+          q: 'If you had to summarize Skyline in one idea, what would it be?',
+          a: 'Skyline is a system where value is allowed to move.'
+        }
+      ];
+
+      function cleanText(value) {
+        return String(value || '')
+          .replace(/\*\*/g, '')
+          .replace(/\r/g, '')
+          .replace(/[ \t]+\n/g, '\n')
+          .replace(/\n{3,}/g, '\n\n')
+          .trim();
+      }
+
+      function parseQnaMarkdown(markdown) {
+        const src = String(markdown || '');
+        const qRegex = /\*\*Q:\s*([^*]+?)\*\*/g;
+        const matches = [...src.matchAll(qRegex)];
+        const out = [];
+        for (let i = 0; i < matches.length; i++) {
+          const qRaw = cleanText(matches[i][1]);
+          const start = matches[i].index + matches[i][0].length;
+          const end = i + 1 < matches.length ? matches[i + 1].index : src.length;
+          const chunk = src.slice(start, end);
+          const answer = cleanText(chunk
+            .replace(/^\s*[-—]{3,}\s*/gm, '')
+            .replace(/^#+\s+/gm, '')
+          );
+          if (qRaw && answer) out.push({ q: qRaw, a: answer });
+        }
+        return out;
+      }
+
+      function formatAnswerText(answer) {
+        const normalized = String(answer || '')
+          .replace(/\r/g, '')
+          .replace(/\n{3,}/g, '\n\n')
+          .trim();
+
+        const sentenceSplit = normalized
+          .replace(/([.!?])\s+(?=[A-Z"“])/g, '$1\n');
+
+        return sentenceSplit
+          .split('\n')
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => `  ${line}`)
+          .join('\n');
+      }
+
+      function formatFullArticle(markdown) {
+        return String(markdown || '')
+          .replace(/^\s*---\s*$/gm, '')
+          .replace(/^#\s*/gm, '')
+          .replace(/\*\*/g, '')
+          .replace(/\r/g, '')
+          .replace(/\n{3,}/g, '\n\n')
+          .trim();
+      }
+
+      function renderCard() {
+        if (!cards.length) {
+          questionEl.textContent = 'No flashcards found.';
+          answerEl.textContent = 'Add Q&A entries in skyline_qna_article.md using **Q: ...** format.';
+          progressEl.textContent = 'Card 0 / 0';
+          remainingEl.textContent = 'Faced down left: 0';
+          return;
+        }
+
+        const card = cards[currentIndex];
+        questionEl.textContent = card.q;
+        answerEl.textContent = formatAnswerText(card.a);
+        progressEl.textContent = `Card ${currentIndex + 1} / ${cards.length}`;
+        remainingEl.textContent = `Faced down left: ${cards.length - revealedIndexes.size}`;
+      }
+
+      function showFrontFace() {
+        flashcardEl.classList.remove('flipped');
+      }
+
+      function toggleFlip() {
+        if (!cards.length) return;
+        const willFlipOpen = !flashcardEl.classList.contains('flipped');
+        flashcardEl.classList.toggle('flipped');
+        if (willFlipOpen) {
+          revealedIndexes.add(currentIndex);
+          remainingEl.textContent = `Faced down left: ${cards.length - revealedIndexes.size}`;
+        }
+      }
+
+      function nextCard() {
+        if (!cards.length) return;
+        currentIndex = (currentIndex + 1) % cards.length;
+        showFrontFace();
+        renderCard();
+      }
+
+      function previousCard() {
+        if (!cards.length) return;
+        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+        showFrontFace();
+        renderCard();
+      }
+
+      function resetDeck() {
+        revealedIndexes.clear();
+        showFrontFace();
+        if (fullArticleCardEl) {
+          fullArticleCardEl.classList.remove('revealed');
+        }
+        renderCard();
+      }
+
+      async function loadCards() {
+        try {
+          const res = await fetch('skyline_qna_article.md', { cache: 'no-store' });
+          const text = await res.text();
+          const parsed = parseQnaMarkdown(text);
+          cards = parsed.length ? parsed : fallbackCards.slice();
+          if (fullArticleEl) {
+            fullArticleEl.textContent = formatFullArticle(text);
+          }
+        } catch (e) {
+          cards = fallbackCards.slice();
+          if (fullArticleEl) {
+            fullArticleEl.textContent = fallbackCards.map((item) => `Q: ${item.q}\n\n${item.a}`).join('\n\n');
+          }
+        }
+        currentIndex = 0;
+        revealedIndexes.clear();
+        showFrontFace();
+        renderCard();
+      }
+
+      flashcardEl.addEventListener('click', toggleFlip);
+      flashcardEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleFlip();
+        }
+      });
+      btnPrev.addEventListener('click', previousCard);
+      btnNext.addEventListener('click', nextCard);
+      btnReset.addEventListener('click', resetDeck);
+
+      function revealFullArticle() {
+        if (!fullArticleCardEl) return;
+        fullArticleCardEl.classList.add('revealed');
+      }
+
+      function toggleFullArticle() {
+        if (!fullArticleCardEl) return;
+        fullArticleCardEl.classList.toggle('revealed');
+      }
+
+      if (fullArticleCardEl) {
+        fullArticleCardEl.addEventListener('click', (e) => {
+          const clickedFront = e.target && e.target.closest && e.target.closest('.full-article-front');
+          if (clickedFront) revealFullArticle();
+        });
+        fullArticleCardEl.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            revealFullArticle();
+          }
+        });
+      }
+
+      if (fullArticleHeadEl) {
+        fullArticleHeadEl.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleFullArticle();
+        });
+        fullArticleHeadEl.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleFullArticle();
+          }
+        });
+      }
+
+      loadCards();
+    })();
+  </script>
+</body>
+</html>
