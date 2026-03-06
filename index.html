@@ -356,6 +356,24 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-8px); }
   }
+
+  /* Background toggle button */
+  #btnBackgroundToggle {
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    z-index: 1003;
+    font-family: "Press Start 2P", monospace;
+    font-size: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(9, 15, 29, 0.78);
+    border: 1px solid var(--accent-2);
+    color: var(--ink);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 10px rgba(0,0,0,.35);
+  }
   </style>
 </head>
 <body>
@@ -374,6 +392,7 @@
 
   <h1>✦ Skyline: Hyprland Chill ✦</h1>
   <div class="otter" aria-label="otter">🦦</div>
+  <button id="btnBackgroundToggle" type="button">Change Background</button>
 
   <div class="flex-header">
     <button id="btnInstructions">Show Instructions</button>
@@ -849,6 +868,26 @@
       out.textContent += `${prefix}${msg}\n`;
       out.scrollTop = out.scrollHeight;
     };
+
+    // ===== Background toggle =====
+    const backgroundImages = [
+      "wallpaper/widmill.jpg",
+      "wallpaper/herenhuis.jpg",
+      "wallpaper/Fantasy-Lake1.png"
+    ];
+    let backgroundIndex = 0;
+
+    function applyBackground(index){
+      document.body.style.background = `linear-gradient(180deg,rgba(10,16,32,.72) 0%,rgba(18,26,47,.70) 45%,rgba(10,16,32,.76) 100%),url("${backgroundImages[index]}") center/cover fixed no-repeat`;
+    }
+
+    const bgToggleBtn = $("#btnBackgroundToggle");
+    if (bgToggleBtn) {
+      bgToggleBtn.addEventListener("click", () => {
+        backgroundIndex = (backgroundIndex + 1) % backgroundImages.length;
+        applyBackground(backgroundIndex);
+      });
+    }
 
     // ===== UI bindings =====
     $("#btnInstructions").addEventListener("click", () => {
