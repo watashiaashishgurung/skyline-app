@@ -12,7 +12,15 @@
     *{box-sizing:border-box}
   body{margin:0;padding:24px;color:var(--ink);background:linear-gradient(180deg,rgba(10,16,32,.72) 0%,rgba(18,26,47,.70) 45%,rgba(10,16,32,.76) 100%),url("wallpaper/widmill.jpg") center/cover fixed no-repeat;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,"Noto Sans",Arial,sans-serif;overflow-x:hidden}
   h1{font-family:"Press Start 2P",monospace;font-size:20px;text-align:center;margin:0 0 16px;color:var(--accent)}
-    .flex-header{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+    .flex-header{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
+    .demo-controls{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;margin:0 auto 12px;color:var(--muted);font-size:12px}
+    .demo-controls label{margin:0}
+    .demo-controls select{background:#0f1730;color:var(--ink);border:1px solid var(--grid);border-radius:8px;padding:6px 10px}
+    #demoHelp{max-width:980px;text-align:center;color:var(--accent-2)}
+    #btnDemoNext:hover{
+      border-color: #8fd88f;
+      box-shadow: 0 0 14px rgba(108, 209, 123, 0.65);
+    }
     button{background:var(--card);border:1px solid var(--grid);color:var(--ink);padding:10px 14px;border-radius:12px;cursor:pointer}
     button:hover{border-color:var(--accent)}
   .card{max-width:980px;margin:12px auto;background:linear-gradient(160deg,rgba(18,27,52,.58),rgba(11,19,38,.58) 85%);border:1px solid var(--grid);border-radius:16px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
@@ -24,6 +32,9 @@
     #round-info{font-weight:700;margin-bottom:4px}
     #round-note{color:var(--muted);margin-bottom:8px}
     #guesses .row{display:grid;grid-template-columns:1fr 200px;gap:10px;align-items:center;margin:8px 0}
+    .demo-guide-row{display:grid;grid-template-columns:1fr 200px;gap:10px;align-items:start;margin:4px 0 10px}
+    .demo-guide-box{padding:8px 10px;border-radius:10px;border:1px solid var(--accent-2);background:rgba(10,18,36,.66);font-size:11px;line-height:1.4;color:var(--ink);box-shadow:0 4px 10px rgba(0,0,0,.25)}
+    .demo-guide-box b{color:var(--accent-2)}
   .hint{font-size:12px;color:var(--accent-2)}
     #output{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;color:#b9d6ff;margin-top:10px}
     .scoreboard table{width:100%;border-collapse:collapse;margin-top:8px}
@@ -236,6 +247,31 @@
     background: linear-gradient(135deg, #7dcfff, #89b4fa);
   }
 
+  .game-toast {
+    position: fixed;
+    top: 84px;
+    right: 16px;
+    z-index: 2100;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--accent-2);
+    background: rgba(9, 15, 29, 0.92);
+    color: var(--ink);
+    font-family: "Press Start 2P", monospace;
+    font-size: 11px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transform: translateY(-8px);
+    animation: toastInOut 2.2s ease forwards;
+  }
+
+  @keyframes toastInOut {
+    0% { opacity: 0; transform: translateY(-8px); }
+    12% { opacity: 1; transform: translateY(0); }
+    78% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-8px); }
+  }
+
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -352,6 +388,20 @@
     animation: otterFloat 2.4s ease-in-out infinite;
   }
 
+  .otter-story-link {
+    position: fixed;
+    right: 226px;
+    bottom: 36px;
+    z-index: 1002;
+    font-size: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: rgba(9, 15, 29, 0.84);
+    border: 1px solid var(--accent-2);
+    color: var(--ink);
+    box-shadow: 0 4px 10px rgba(0,0,0,.35);
+  }
+
   @keyframes otterFloat {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-8px); }
@@ -392,13 +442,25 @@
 
   <h1>✦ Skyline: Hyprland Chill ✦</h1>
   <div class="otter" aria-label="otter">🦦</div>
+  <button id="btnStoryPopup" class="otter-story-link" type="button">read the story of the legendary heron</button>
   <button id="btnBackgroundToggle" type="button">Change Background</button>
 
   <div class="flex-header">
     <button id="btnInstructions">Show Instructions</button>
     <button id="btnRestartTop">Restart Game</button>
-    <button id="btnStoryPopup">read the story of the legendery heron</button>
+    <button id="btnDemo">Start Demo</button>
+    <button id="btnDemoReset" class="hidden">Reset Demo</button>
+    <button id="btnDemoNext" class="hidden">Next Demo Round</button>
     <button id="btnFlashcardsPopup">open skyline q&a flashcards</button>
+  </div>
+
+  <div class="demo-controls">
+    <label for="demoMode">Demo Mode</label>
+    <select id="demoMode" aria-label="Select demo mode">
+      <option value="manual" selected>Manual</option>
+      <option value="auto">Automatic</option>
+    </select>
+    <div id="demoHelp" class="hint">Manual mode: click Start Demo, then click Next Demo Round to advance.</div>
   </div>
 
   <div id="instructions" class="card hidden">
@@ -826,6 +888,9 @@
   let tiePlayers = [];          // subset of players currently in tie-break
   // For tieMode: enforce newGuess < previous guess for those still tied
   const tieConstraint = new Map(); // player -> previous (current lowest tied) guess
+  let demoActive = false;
+  let demoAutoMode = false;
+  let demoTimer = null;
 
     // ===== Floating glyph animation =====
     function spawnLeaves(count=20){
@@ -869,6 +934,18 @@
       out.scrollTop = out.scrollHeight;
     };
 
+    function showGameToast(message){
+      const toast = document.createElement("div");
+      toast.className = "game-toast";
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        if (toast && toast.parentNode) {
+          toast.parentNode.removeChild(toast);
+        }
+      }, 2300);
+    }
+
     // ===== Background toggle =====
     const backgroundImages = [
       "wallpaper/widmill.jpg",
@@ -896,10 +973,15 @@
       $("#btnInstructions").textContent = hidden ? "Hide Instructions" : "Show Instructions";
     });
     $("#btnRestartTop").addEventListener("click", restartGame);
+    $("#btnDemo").addEventListener("click", runDemoSimulation);
+    $("#btnDemoReset").addEventListener("click", resetDemoSimulation);
+    $("#btnDemoNext").addEventListener("click", advanceDemoRound);
+    $("#demoMode").addEventListener("change", updateDemoHelpText);
     $("#btnSetupPlayers").addEventListener("click", setupPlayers);
     $("#btnStart").addEventListener("click", startGame);
     $("#btnPlay").addEventListener("click", playRound);
     $("#btnReenter").addEventListener("click", () => setupRound(true));
+    updateDemoHelpText();
 
     // Popup window for story
     $("#btnStoryPopup").addEventListener("click", () => {
@@ -1028,6 +1110,16 @@
       const g=$("#guesses"); g.innerHTML="";
       const toPrompt = tieMode ? tiePlayers : baseEligible;
 
+      if (demoActive && !demoAutoMode) {
+        const guideRow = document.createElement("div");
+        guideRow.className = "demo-guide-row";
+        guideRow.innerHTML = `
+          <div class="demo-guide-box"><b>Money:</b> left side shows player names. This demo uses 6 players, and total rounds can run up to player count.</div>
+          <div class="demo-guide-box"><b>Anon:</b> right side is anonymous betting input. In demo mode, bets are generated automatically each round.</div>
+        `;
+        g.appendChild(guideRow);
+      }
+
       toPrompt.forEach((p, i) => {
         const prev = p.lastGuess();
         const needsLower = tieMode && tieConstraint.has(p);
@@ -1037,7 +1129,7 @@
         row.className="row";
         row.innerHTML=`
           <div><b>${p.name}</b>’s guess ${hint}</div>
-          <input type="number" step="1" min="0" ${maxAttr} id="guess${i}" placeholder="e.g. 7" required />
+          <input type="number" step="1" min="0" ${maxAttr} id="guess${i}" placeholder="default 1000" required />
         `;
         g.appendChild(row);
       });
@@ -1060,6 +1152,235 @@
       const allFilled = inputs.length > 0 && inputs.every(i => i.value.trim() !== "");
       $("#btnPlay").disabled = !allFilled;
       $("#btnReenter").disabled = !allFilled;
+    }
+
+    function setDemoButtonRunning(running) {
+      const btn = $("#btnDemo");
+      if (!btn) return;
+      btn.textContent = "Start Demo";
+      btn.disabled = running;
+      btn.setAttribute("aria-pressed", running ? "true" : "false");
+    }
+
+    function setDemoResetVisible(visible) {
+      const btn = $("#btnDemoReset");
+      if (!btn) return;
+      show(btn, visible);
+    }
+
+    function setDemoNextVisible(visible) {
+      const btn = $("#btnDemoNext");
+      if (!btn) return;
+      show(btn, visible);
+    }
+
+    function updateDemoHelpText() {
+      const mode = $("#demoMode") ? $("#demoMode").value : "manual";
+      const help = $("#demoHelp");
+      if (!help) return;
+      if (mode === "auto") {
+        help.textContent = "Automatic mode: click Start Demo to auto-play all rounds. Click Reset Demo to stop.";
+      } else {
+        help.textContent = "Manual mode: click Start Demo, review prerequisites popup, then use Next Demo Round to advance.";
+      }
+    }
+
+    function removeManualDemoPrereqPopup() {
+      const existing = $("#demoPrereqOverlay");
+      if (existing && existing.parentNode) {
+        existing.parentNode.removeChild(existing);
+      }
+    }
+
+    function showManualDemoPrereqPopup(onContinue) {
+      removeManualDemoPrereqPopup();
+      const overlay = document.createElement("div");
+      overlay.id = "demoPrereqOverlay";
+      overlay.className = "game-message-overlay";
+      overlay.innerHTML = `
+        <div class="game-message-box" role="dialog" aria-modal="true" aria-label="Manual demo prerequisites">
+          <div class="game-message-title">Demo Prerequisites</div>
+          <div class="game-message-subtitle">Before rounds start, gather players and agree the default amount.</div>
+          <div class="game-message-subtitle">For this game, default amount is <b>1000</b> (it can be any agreed amount).</div>
+          <div class="game-message-subtitle">On the left side, you can see player names. In this demo there are 6 names, and rounds can run up to the number of players.</div>
+          <div class="game-message-subtitle">On the right side, players enter bets anonymously. In this demo, bets are generated automatically each round.</div>
+          <div class="game-message-subtitle">Then use <b>Next Demo Round</b> to move round by round.</div>
+          <button id="btnManualDemoContinue" class="game-message-button" type="button">Start Rounds</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      const btn = $("#btnManualDemoContinue");
+      if (btn) {
+        btn.addEventListener("click", () => {
+          removeManualDemoPrereqPopup();
+          if (typeof onContinue === "function") {
+            onContinue();
+          }
+        });
+      }
+    }
+
+    function stopDemoSimulation(message = "", level = "ok", silent = false) {
+      demoActive = false;
+      demoAutoMode = false;
+      if (demoTimer) {
+        clearInterval(demoTimer);
+        demoTimer = null;
+      }
+      removeManualDemoPrereqPopup();
+      setDemoButtonRunning(false);
+      setDemoResetVisible(false);
+      setDemoNextVisible(false);
+      if (!silent && message) {
+        log(message, level);
+      }
+      updateDemoHelpText();
+    }
+
+    function resetDemoSimulation() {
+      if (!demoActive) {
+        log("No demo is currently running.", "warn");
+        return;
+      }
+      stopDemoSimulation("Demo reset.", "warn");
+      restartGame();
+    }
+
+    function fillDemoGuesses() {
+      const baseEligible = players.filter(p => p.roundsWon === 0);
+      const activeEligible = tieMode ? tiePlayers : baseEligible;
+      const inputs = [...document.querySelectorAll("#guesses input")];
+      if (inputs.length !== activeEligible.length || inputs.length === 0) {
+        return false;
+      }
+
+      const DEMO_DEFAULT_GUESS = 1000;
+      const DEMO_MIN_GUESS = Math.ceil(DEMO_DEFAULT_GUESS * 0.5); // keep guesses >= 50% of default
+      const DEMO_MAX_GUESS = Math.floor(DEMO_DEFAULT_GUESS * 1.4);
+
+      if (tieMode) {
+        // Tie-break guesses must be lower than previous tied value.
+        activeEligible.forEach((p, i) => {
+          const prevLimit = tieConstraint.get(p);
+          const safeHigh = Number.isFinite(prevLimit) ? prevLimit - 1 : DEMO_MAX_GUESS;
+          const high = Math.max(DEMO_MIN_GUESS, safeHigh);
+          const spread = Math.max(1, Math.floor((high - DEMO_MIN_GUESS) / 3));
+          let val = high - (i * spread) - Math.floor(Math.random() * Math.max(1, Math.floor(spread / 2)));
+          if (val < DEMO_MIN_GUESS) {
+            val = DEMO_MIN_GUESS;
+          }
+          if (Number.isFinite(prevLimit) && val >= prevLimit) {
+            val = Math.max(0, prevLimit - 1);
+          }
+          inputs[i].value = String(val);
+        });
+      } else {
+        const forceTie = activeEligible.length >= 3 && Math.random() < 0.28;
+        const tieVal = Math.floor(Math.random() * (DEMO_MAX_GUESS - DEMO_MIN_GUESS + 1)) + DEMO_MIN_GUESS;
+        activeEligible.forEach((p, i) => {
+          let val;
+          if (forceTie && i < 2) {
+            val = tieVal;
+          } else {
+            val = Math.floor(Math.random() * (DEMO_MAX_GUESS - DEMO_MIN_GUESS + 1)) + DEMO_MIN_GUESS;
+            if (forceTie && val === tieVal) {
+              val = Math.min(DEMO_MAX_GUESS, val + (i + 7));
+            }
+          }
+          inputs[i].value = String(val);
+        });
+      }
+
+      checkAllGuessesEntered();
+      return true;
+    }
+
+    function runDemoSimulation() {
+      if (demoActive) {
+        log("Demo is already running. Click Reset Demo to stop.", "warn");
+        return;
+      }
+
+      restartGame();
+
+      const demoNames = ["Ari", "Noah", "Maya", "Luca", "Rin", "Sora"];
+      players = demoNames.map(n => new Player(n));
+      roundNumber = 1;
+      finalMode = false;
+      tieMode = false;
+      tiePlayers = [];
+      tieConstraint.clear();
+
+      show("#player-setup", false);
+      show("#player-names", false);
+      show("#game-finished", false);
+      show("#game", true);
+      show("#logwrap", true);
+      show("#round-buttons", false);
+
+      demoActive = true;
+      demoAutoMode = ($("#demoMode") ? $("#demoMode").value : "manual") === "auto";
+      log(
+        demoAutoMode
+          ? "🎬 Automatic demo started: rounds will auto-advance."
+          : "🎬 Manual demo started: review prerequisites, then click 'Next Demo Round' to advance.",
+        "ok"
+      );
+      setDemoButtonRunning(true);
+      setDemoResetVisible(true);
+      setDemoNextVisible(!demoAutoMode);
+      updateDemoHelpText();
+
+      if (demoAutoMode) {
+        setupRound();
+        updateChart();
+        demoTimer = setInterval(() => {
+          stepDemoRound();
+        }, 900);
+      } else {
+        setDemoNextVisible(false);
+        showManualDemoPrereqPopup(() => {
+          if (!demoActive || demoAutoMode) {
+            return;
+          }
+          setupRound();
+          updateChart();
+          setDemoNextVisible(true);
+        });
+      }
+    }
+
+    function stepDemoRound() {
+      if (!demoActive) {
+        return;
+      }
+
+      if (!fillDemoGuesses()) {
+        stopDemoSimulation("Demo paused: no active guess inputs.", "warn");
+        return;
+      }
+
+      playRound();
+
+      const completed = players.length > 0 && players.every(p => p.roundsWon > 0);
+      if (completed) {
+        stopDemoSimulation("✅ Demo finished.", "ok");
+      }
+    }
+
+    function advanceDemoRound() {
+      if (!demoActive) {
+        log("Start demo first, then use Next Demo Round.", "warn");
+        return;
+      }
+
+      if (demoAutoMode) {
+        log("Automatic demo is running. Use Reset Demo to stop it.", "warn");
+        return;
+      }
+
+      stepDemoRound();
     }
 
     function playRound(){
@@ -1203,12 +1524,22 @@
         log(`• ${p.name} — Balance: €${p.balance} | Winning round: ${wr}`);
       }
 
+      $("#round-info").textContent = "";
+      $("#round-note").textContent = "";
+      $("#guesses").innerHTML = `
+        <div class="ok"><span class="flag">🏁</span> <b>Game Finished</b></div>
+        <div class="warn">Use "Restart Game" above to play again.</div>
+      `;
+      show("#round-buttons", false);
+
       renderScoreboard();
-      show("#game", false);
-      show("#game-finished", true);
+      show("#game", true);
+      show("#game-finished", false);
+      showGameToast("game finished");
     }
 
     function restartGame(){
+      stopDemoSimulation("", "ok", true);
   players=[]; roundNumber=1; finalMode=false; tieMode=false; tiePlayers=[]; tieConstraint.clear();
       $("#output").textContent="";
       $("#numPlayers").value="";
