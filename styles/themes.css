@@ -1,0 +1,88 @@
+/* Theme variable overrides for Skyline app
+   - Adds two national themes: USA and Belgium
+   - These override CSS variables already used across the page
+*/
+
+body.theme-usa {
+  /* USA: flag colors - blue, white, red */
+  --card: linear-gradient(160deg, rgba(10,24,46,0.64), rgba(6,18,36,0.62));
+  --ink: #ffffff;
+  --muted: #cfe6ff;
+  --accent: #b22234;     /* US flag red */
+  --accent-2: #2b5bb3;   /* US flag blue */
+  --grid: #173252;
+}
+
+body.theme-belgium {
+  /* Belgium: flag colors - black, yellow, red */
+  --card: linear-gradient(160deg, rgba(12,12,12,0.72), rgba(20,20,20,0.7));
+  --ink: #fffdf4;
+  --muted: #f2de5a;      /* warm yellow */
+  --accent: #f1c40f;     /* yellow accent */
+  --accent-2: #c8102e;   /* red accent */
+  --grid: #1a1a1a;
+}
+
+body.theme-worldcup {
+  /* World Cup match: blend USA + Belgium flag colors */
+  --card: linear-gradient(160deg, rgba(0,0,0,0.64), rgba(6,6,6,0.62));
+  --ink: #fffdf4;
+  --muted: rgba(255,255,255,0.85);
+  --accent: #B22234;    /* USA red */
+  --accent-2: #2B5BB3;  /* USA blue */
+  --grid: rgba(255,255,255,0.06);
+
+  /* Background: left = Belgium stripes, overlayed with subtle USA radial */
+  background:
+    linear-gradient(90deg, #000 0% 33%, #FFD700 33% 66%, #EF2B2A 66% 100%),
+    radial-gradient(circle at 82% 22%, rgba(43,91,179,0.66), rgba(178,34,52,0.20));
+  background-blend-mode: overlay, normal;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+/* Small niceties for theme select when present in header */
+.flex-header select {
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--grid);
+}
+
+/* Flag label displayed when cycling flags */
+#flag-label {
+  pointer-events: none;
+  mix-blend-mode: normal;
+}
+
+/* Hide animations and memory game when body has hide-animations or hide-memory class */
+body.hide-animations .leaves,
+body.hide-animations .ambient-ornament,
+body.hide-animations .ambient-lights,
+body.hide-animations .light,
+body.hide-animations .ambient-star,
+body.hide-animations .otter,
+body.hide-animations .otter-story-link,
+body.hide-animations .ground,
+body.hide-animations .net,
+body.hide-animations .leaf,
+body.hide-animations .leaf-hud,
+body.hide-animations .equalizer {
+  display: none !important;
+  animation: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+body.hide-memory #memory-mini { display: none !important; }
+
+/* Global confetti piece (used by JS manager) */
+.confetti-piece {
+  position: fixed;
+  top: -10px;
+  z-index: 1999;
+  pointer-events: none;
+  opacity: 0.95;
+  border-radius: 2px;
+  animation: confettiFall 3s linear forwards;
+  will-change: transform, opacity;
+}
