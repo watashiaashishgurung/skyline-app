@@ -279,20 +279,7 @@
     100% { transform: scale(1); opacity: 1; }
   }
 
-  /* Celebration confetti */
-  .confetti {
-    position: fixed;
-    width: 10px;
-    height: 10px;
-    pointer-events: none;
-    z-index: 1999;
-    animation: confettiFall 3s linear forwards;
-  }
-
-  @keyframes confettiFall {
-    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-  }
+  /* Confetti removed */
 
   /* COMMENTED OUT: Top equalizer (replaces holiday lights) */
   /* .equalizer{position:fixed;top:0;left:0;right:0;height:54px;display:flex;gap:6px;justify-content:space-evenly;align-items:flex-end;z-index:100;pointer-events:none;padding:4px 10px}
@@ -552,7 +539,7 @@
   </style>
   <link rel="stylesheet" href="styles/themes.css">
     </head>
-    <body class="theme-worldcup hide-animations hide-memory">
+    <body class="theme-wind-waves hide-animations hide-memory">
   <!-- COMMENTED OUT: Equalizer (new) -->
   <!-- <div class="equalizer" aria-hidden="true">
     <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
@@ -854,27 +841,10 @@
           </div>
         `;
         document.body.appendChild(overlay);
-        // Keep confetti only, remove sound sequences
-        if (title.includes('Victory') || title.includes('Win')) {
-          createConfetti();
-        }
+        // confetti removed: no animation on victory
       }
 
-      function createConfetti() {
-        const colors = ['#7ed957', '#2fb66a', '#67c96f', '#a7e27c', '#dff4d7', '#ffffff', '#8bdca0'];
-        for (let i = 0; i < 50; i++) {
-          setTimeout(() => {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.animationDelay = Math.random() * 0.5 + 's';
-            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-            document.body.appendChild(confetti);
-            setTimeout(() => confetti.remove(), 3000);
-          }, i * 30);
-        }
-      }
+      // createConfetti removed (no visual celebration)
 
       function renderCards() {
         grid.innerHTML = '';
@@ -1125,83 +1095,9 @@
       });
     }
     
-    // ===== Global Flags Cycler =====
-    (function(){
-      const RESTCOUNTRIES = 'https://restcountries.com/v3.1/all';
-      const FLAG_CDN_W = 'https://flagcdn.com/w1280/';
-      const FLAG_INTERVAL = 4000;
-      let codes = [];
-      let names = {};
-      let idx = 0;
-      let timer = null;
+      /* Flags cycler removed */
 
-      // label for current flag
-      const label = document.createElement('div');
-      label.id = 'flag-label';
-      label.style.cssText = 'position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:1500;padding:8px 12px;border-radius:10px;background:rgba(0,0,0,0.48);color:var(--ink);font-family:system-ui,Segoe UI,Roboto,monospace;font-size:13px;border:1px solid var(--grid);backdrop-filter:blur(6px);pointer-events:none';
-      document.body.appendChild(label);
-
-      function codeToEmoji(code){ if(!code||code.length!==2) return ''; return String.fromCodePoint(code.toUpperCase().charCodeAt(0)+127397, code.toUpperCase().charCodeAt(1)+127397); }
-
-      function showFlag(code, name){
-        if(!code){ label.textContent=''; return; }
-        const src = FLAG_CDN_W + code + '.png';
-        const overlay = 'linear-gradient(180deg,rgba(0,0,0,0.38),rgba(0,0,0,0.38))';
-        const full = overlay + ',url("' + src + '") center/cover fixed no-repeat';
-        const img = new Image();
-        img.onload = function(){ document.body.style.background = full; label.textContent = name || code.toUpperCase(); };
-        img.onerror = function(){ const emoji = codeToEmoji(code); document.body.style.background = overlay + ', linear-gradient(180deg,rgba(10,16,32,.72),rgba(18,26,47,.70))'; label.textContent = (name || code.toUpperCase()) + (emoji ? ' ' + emoji : ''); };
-        img.src = src;
-      }
-
-      function startCycler(){
-        if(timer) clearInterval(timer);
-        if(!codes.length) return;
-        showFlag(codes[idx], names[codes[idx]]);
-        timer = setInterval(()=>{ idx = (idx + 1) % codes.length; showFlag(codes[idx], names[codes[idx]]); }, FLAG_INTERVAL);
-      }
-
-      // Try loading full list from restcountries, fallback to a small curated list
-      fetch(RESTCOUNTRIES).then(r=>r.json()).then(data=>{
-        codes = data.map(c => (c && c.cca2) ? c.cca2.toLowerCase() : null).filter(Boolean).sort();
-        for(const c of data){ if(c && c.cca2){ names[c.cca2.toLowerCase()] = c.name?.common || c.name || c.cca2; } }
-        if(!codes.length) throw new Error('no codes');
-        startCycler();
-      }).catch(err=>{
-        console.warn('Could not fetch country list, using fallback.',err);
-        codes = ['us','be','gb','fr','de','br','ar','es','it','nl','pt','se','no','fi','dk','ch','pl','ua','ru','cn','jp','kr','au','nz','ca','mx','in','za','eg','ng','sa','tr','ir','pk','id','ph'];
-        codes = codes.map(c=>c.toLowerCase());
-        codes.forEach(c=>names[c]=c.toUpperCase());
-        startCycler();
-        });
-      })();
-
-      // ===== Global confetti manager =====
-      (function(){
-        let confettiInterval = null;
-        const COLORS = ['#B22234','#2B5BB3','#FFD700','#F1C40F','#C8102E','#FFFFFF','#7ed957','#ff9a4d'];
-        function makePiece(){
-          const el = document.createElement('div');
-          el.className = 'confetti-piece';
-          const left = Math.random()*100;
-          el.style.left = left + '%';
-          const w = 6 + Math.random()*12; const h = 8 + Math.random()*12;
-          el.style.width = w + 'px'; el.style.height = h + 'px';
-          el.style.background = COLORS[Math.floor(Math.random()*COLORS.length)];
-          el.style.transform = 'translateY(-20vh) rotate(' + Math.floor(Math.random()*360) + 'deg)';
-          el.style.opacity = (0.8 + Math.random()*0.2).toString();
-          el.style.animationDuration = (2 + Math.random()*2.5) + 's';
-          document.body.appendChild(el);
-          setTimeout(()=>{ if(el && el.parentNode) el.parentNode.removeChild(el); }, 6000);
-        }
-        window.startGlobalConfetti = function(burstCount=30, interval=1000){
-          if(confettiInterval) clearInterval(confettiInterval);
-          for(let i=0;i<burstCount;i++) setTimeout(makePiece, i*12);
-          confettiInterval = setInterval(()=>{ for(let i=0;i<Math.max(6,Math.floor(burstCount/4));i++) setTimeout(makePiece, i*30); }, interval);
-        };
-        window.stopGlobalConfetti = function(){ if(confettiInterval){ clearInterval(confettiInterval); confettiInterval=null; } };
-        if(document.body.classList.contains('hide-animations')) window.startGlobalConfetti(40,1200);
-      })();
+      // Global confetti manager removed
 
       // ===== UI bindings =====
     $("#btnInstructions").addEventListener("click", () => {

@@ -48,11 +48,7 @@ body.theme-worldcup {
   border: 1px solid var(--grid);
 }
 
-/* Flag label displayed when cycling flags */
-#flag-label {
-  pointer-events: none;
-  mix-blend-mode: normal;
-}
+/* Flag label removed when flags cycler disabled */
 
 /* Hide animations and memory game when body has hide-animations or hide-memory class */
 body.hide-animations .leaves,
@@ -75,14 +71,57 @@ body.hide-animations .equalizer {
 
 body.hide-memory #memory-mini { display: none !important; }
 
-/* Global confetti piece (used by JS manager) */
-.confetti-piece {
+/* Global confetti piece removed */
+
+/* Wind & Waves theme */
+body.theme-wind-waves {
+  /* Softer oceanic palette (lower contrast) */
+  --card: linear-gradient(160deg, rgba(10,28,40,0.55), rgba(7,32,44,0.55));
+  --ink: #dbeff6;
+  --muted: #94b6c3;
+  --accent: #6aa5bf;
+  --accent-2: #79bfd6;
+  --grid: rgba(46,94,114,0.16);
+  /* gentle ocean background + lake image (softer overlay) */
+  background:
+    linear-gradient(180deg, rgba(10,32,48,0.66) 0%, rgba(6,18,28,0.72) 60%),
+    url("../wallpaper/Fantasy-Lake1.png") center/cover fixed no-repeat;
+  background-blend-mode: overlay;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+/* Subtle wind and wave overlays */
+body.theme-wind-waves::before {
+  content: "";
   position: fixed;
-  top: -10px;
-  z-index: 1999;
+  inset: 0;
   pointer-events: none;
-  opacity: 0.95;
-  border-radius: 2px;
-  animation: confettiFall 3s linear forwards;
-  will-change: transform, opacity;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255,255,255,0.02), transparent 25%),
+    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.02), transparent 25%);
+}
+
+body.theme-wind-waves::after {
+  content: "";
+  position: fixed;
+  left: -10%;
+  right: -10%;
+  bottom: 0;
+  height: 160px;
+  pointer-events: none;
+  z-index: 2;
+  background:
+    linear-gradient(180deg, rgba(46,122,164,0.14) 0%, rgba(46,122,164,0.08) 40%, transparent 100%),
+    radial-gradient(circle at 30% 80%, rgba(255,255,255,0.015), transparent 25%),
+    radial-gradient(circle at 70% 70%, rgba(255,255,255,0.01), transparent 25%);
+  background-size: 800px 160px, 400px 160px, 400px 160px;
+  animation: windWave 18s linear infinite;
+  opacity: 0.45;
+}
+
+@keyframes windWave {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to   { background-position: -800px 0, -400px 0, -200px 0; }
 }
