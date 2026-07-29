@@ -3,15 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Skyline – Winds & Waves Edition</title>
+  <title>Skyline – Hyprland Chill Edition</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
-    :root { --page-zoom: 0.85; }
-    body { zoom: var(--page-zoom); -webkit-text-size-adjust: 100%; }
-    @supports not (zoom:1) {
-      body { transform: scale(var(--page-zoom)); transform-origin: top center; width: 117.65%; }
-    }
+    /* Relaxed Hyprland palette */
     :root { --bg:#0a1020; --card:#121a2f; --ink:#d9e6ff; --muted:#9db0d5; --accent:#89b4fa; --accent-2:#7dcfff; --grid:#26324f; }
     *{box-sizing:border-box}
   body{margin:0;padding:24px;color:var(--ink);background:linear-gradient(180deg,rgba(10,16,32,.72) 0%,rgba(18,26,47,.70) 45%,rgba(10,16,32,.76) 100%),url("wallpaper/codo.jpg") center/cover fixed no-repeat;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,"Noto Sans",Arial,sans-serif;overflow-x:hidden;padding-left:max(24px,env(safe-area-inset-left));padding-right:max(24px,env(safe-area-inset-right));padding-bottom:max(24px,env(safe-area-inset-bottom))}
@@ -20,6 +16,7 @@
     .demo-controls{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;margin:0 auto 12px;color:var(--muted);font-size:12px}
     .demo-controls label{margin:0}
     .demo-controls select{background:#0f1730;color:var(--ink);border:1px solid var(--grid);border-radius:8px;padding:6px 10px}
+    .flex-header select{background:var(--card);color:var(--ink);border:1px solid var(--grid);border-radius:8px;padding:6px 10px;height:38px}
     #demoHelp{max-width:980px;text-align:center;color:var(--accent-2)}
     #btnDemoNext:hover{
       border-color: #8fd88f;
@@ -185,7 +182,7 @@
     100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
   }
 
-  /* Game Over / Victory Overlay - WINDS & WAVES THEME */
+  /* Game Over / Victory Overlay - HYPRLAND CHILL THEME */
   .game-message-overlay {
     position: fixed;
     inset: 0;
@@ -282,20 +279,7 @@
     100% { transform: scale(1); opacity: 1; }
   }
 
-  /* Celebration confetti */
-  .confetti {
-    position: fixed;
-    width: 10px;
-    height: 10px;
-    pointer-events: none;
-    z-index: 1999;
-    animation: confettiFall 3s linear forwards;
-  }
-
-  @keyframes confettiFall {
-    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-  }
+  /* Confetti removed */
 
   /* COMMENTED OUT: Top equalizer (replaces holiday lights) */
   /* .equalizer{position:fixed;top:0;left:0;right:0;height:54px;display:flex;gap:6px;justify-content:space-evenly;align-items:flex-end;z-index:100;pointer-events:none;padding:4px 10px}
@@ -553,66 +537,9 @@
     }
   }
   </style>
-<style id="winds-waves-theme">
-  :root{
-    --bg:#041b2d;--card:#082f49;--ink:#e8fbff;--muted:#a9d8e8;
-    --accent:#6ed7ff;--accent-2:#7ff0df;--grid:#1b708c;
-  }
-  html{scroll-behavior:smooth}
-  body{
-    position:relative;
-    background:
-      radial-gradient(circle at 18% 14%,rgba(151,235,255,.24),transparent 24%),
-      radial-gradient(circle at 80% 8%,rgba(255,255,255,.13),transparent 18%),
-      linear-gradient(180deg,#06192f 0%,#07506f 46%,#06324b 100%);
-    min-height:100vh;
-  }
-  body::before{
-    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-    background:
-      repeating-radial-gradient(ellipse at 50% 115%,transparent 0 38px,rgba(132,232,255,.09) 40px 44px,transparent 46px 76px),
-      linear-gradient(110deg,transparent 0 38%,rgba(255,255,255,.05) 45%,transparent 52%);
-    animation:oceanShimmer 12s ease-in-out infinite alternate;
-  }
-  body::after{
-    content:"";position:fixed;left:-10%;right:-10%;bottom:-42px;height:180px;z-index:1;pointer-events:none;
-    background:
-      radial-gradient(80px 34px at 8% 15%,rgba(143,230,255,.30) 48%,transparent 51%) 0 20px/180px 72px repeat-x,
-      radial-gradient(95px 38px at 15% 10%,rgba(54,168,209,.34) 48%,transparent 51%) 70px 55px/220px 86px repeat-x,
-      linear-gradient(180deg,rgba(23,142,184,.22),rgba(3,43,68,.78));
-    animation:waveMove 10s linear infinite;
-  }
-  @keyframes waveMove{from{background-position:0 20px,70px 55px,0 0}to{background-position:180px 20px,-150px 55px,0 0}}
-  @keyframes oceanShimmer{from{opacity:.65;transform:translateX(-1%)}to{opacity:1;transform:translateX(1%)}}
-  h1{color:#a7efff;text-shadow:0 0 18px rgba(110,215,255,.5);letter-spacing:1px}
-  .card,#memory-mini .wrap{
-    background:linear-gradient(145deg,rgba(5,43,67,.78),rgba(7,76,95,.58));
-    border-color:rgba(126,224,244,.38);
-    box-shadow:0 12px 38px rgba(0,20,35,.42),inset 0 1px 0 rgba(255,255,255,.06);
-    backdrop-filter:blur(12px);
-  }
-  button,#memory-mini #startbtn{
-    background:linear-gradient(135deg,rgba(9,70,96,.95),rgba(10,111,128,.92));
-    border-color:#3bbad4;color:#effeff;box-shadow:0 5px 14px rgba(0,31,50,.3)
-  }
-  button:hover,#memory-mini #startbtn:hover{border-color:#98f4ff;box-shadow:0 0 18px rgba(90,224,255,.48)}
-  input[type="number"],input[type="text"],.demo-controls select{background:rgba(3,35,55,.82);border-color:#247994}
-  #leaf-counter,#bubble-score,.leaf-hud{background:rgba(3,36,56,.78);border-color:#70e2ef;backdrop-filter:blur(8px)}
-  .leaf{filter:drop-shadow(0 5px 8px rgba(58,190,225,.55));animation:seaDrift 5s ease-in-out infinite alternate}
-  @keyframes seaDrift{from{margin-left:-10px;margin-bottom:0}to{margin-left:18px;margin-bottom:14px}}
-  .ground{background:linear-gradient(to top,rgba(29,165,204,.28),rgba(125,235,255,.08),transparent 90%)}
-  .otter{filter:drop-shadow(0 7px 12px rgba(0,0,0,.45));animation:boatFloat 3.2s ease-in-out infinite}
-  @keyframes boatFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(2deg)}}
-  #memory-mini{--accent:#7fe8ff;--ink:#eafcff;--muted:#b8dfe9;--grid:#226f87}
-  #memory-mini #game-container{background:linear-gradient(135deg,rgba(18,130,161,.18),rgba(89,215,218,.12));border-color:rgba(145,237,255,.35)}
-  #memory-mini .card{background:linear-gradient(135deg,rgba(15,91,119,.72),rgba(27,151,166,.52));border-color:rgba(164,239,255,.35)}
-  #memory-mini .card.matched{background:linear-gradient(135deg,rgba(48,181,207,.9),rgba(83,219,201,.86));box-shadow:0 0 22px rgba(91,229,236,.58)}
-  .game-message-box{background:linear-gradient(135deg,rgba(21,126,160,.28),rgba(72,201,200,.18));border-color:#73e8fa}
-  .game-message-button{background:linear-gradient(135deg,#59d0ef,#79efd6);border-color:#9af9f0;color:#043143}
-  canvas{background:rgba(3,35,58,.78)}
-</style>
-</head>
-<body>
+  <link rel="stylesheet" href="styles/themes.css">
+    </head>
+    <body class="theme-wind-waves hide-animations hide-memory">
   <!-- COMMENTED OUT: Equalizer (new) -->
   <!-- <div class="equalizer" aria-hidden="true">
     <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
@@ -624,12 +551,12 @@
   <div class="leaves" id="leaves"></div>
 
   <!-- Orb Counter -->
-  <div id="leaf-counter">💧 Sea Drops: <span id="leaf-count">0</span></div>
+  <div id="leaf-counter">✦ Orbs: <span id="leaf-count">0</span></div>
 
-  <h1>🌊 Skyline: Winds & Waves 🌬️</h1>
-  <div class="otter" aria-label="sailing boat">⛵</div>
-  <button id="btnStoryPopup" class="otter-story-link" type="button">read the Skyline story</button>
-  <button id="btnBackgroundToggle" type="button">Change Tide</button>
+  <h1>✦ Skyline: Hyprland Chill ✦</h1>
+  <div class="otter" aria-label="otter">🦦</div>
+  <button id="btnStoryPopup" class="otter-story-link" type="button">read the story of the legendary heron</button>
+  <button id="btnBackgroundToggle" type="button">Change Background</button>
 
   <div class="flex-header">
     <button id="btnInstructions">Show Instructions</button>
@@ -637,6 +564,7 @@
     <button id="btnDemo">Start Demo</button>
     <button id="btnDemoReset" class="hidden">Reset Demo</button>
     <button id="btnDemoNext" class="hidden">Next Demo Round</button>
+    <button id="btnMemoryPopup">open colorful memory game</button>
     <button id="btnFlashcardsPopup">open skyline q&a flashcards</button>
   </div>
 
@@ -697,7 +625,7 @@
 
   <!-- Colorful Memory Match Game Section -->
   <style>
-    /* Scoped styles to avoid clashing with Skyline app - WINDS & WAVES THEME */
+    /* Scoped styles to avoid clashing with Skyline app - HYPRLAND CHILL THEME */
     #memory-mini * { box-sizing: border-box; }
     #memory-mini {
       --bg: linear-gradient(135deg, #0d2417 0%, #123521 100%);
@@ -868,12 +796,10 @@
     }
   </style>
 
-      <link rel="stylesheet" href="styles/themes.css">
-
-      <!-- Memory Game HTML -->
-  <section id="memory-mini" aria-label="Winds and Waves Memory Match Game">
+  <!-- Memory Game HTML -->
+  <section id="memory-mini" aria-label="Hypr Memory Match Game">
     <div class="wrap">
-      <h2>🌊 Winds & Waves Memory Match ✦</h2>
+      <h2>❄ Hypr Memory Match ✦</h2>
       <div class="box">
         <div id="game-container" aria-live="polite" aria-label="Game board">
           <!-- Cards are injected by JS -->
@@ -890,6 +816,7 @@
   <!-- Memory game (strip SFX calls) -->
   <script>
     (function () {
+      if (document.body && document.body.classList && document.body.classList.contains('hide-memory')) { return; }
       // Keep original behavior: 12 entries, then duplicated -> 24 cards (4 of each color)
       const base = ['slate','sky','mint','indigo','teal','violet','slate','sky','mint','indigo','teal','violet'];
       let cards = shuffle(base.concat(base)); // 24
@@ -915,27 +842,10 @@
           </div>
         `;
         document.body.appendChild(overlay);
-        // Keep confetti only, remove sound sequences
-        if (title.includes('Victory') || title.includes('Win')) {
-          createConfetti();
-        }
+        // confetti removed: no animation on victory
       }
 
-      function createConfetti() {
-        const colors = ['#7ed957', '#2fb66a', '#67c96f', '#a7e27c', '#dff4d7', '#ffffff', '#8bdca0'];
-        for (let i = 0; i < 50; i++) {
-          setTimeout(() => {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.animationDelay = Math.random() * 0.5 + 's';
-            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-            document.body.appendChild(confetti);
-            setTimeout(() => confetti.remove(), 3000);
-          }, i * 30);
-        }
-      }
+      // createConfetti removed (no visual celebration)
 
       function renderCards() {
         grid.innerHTML = '';
@@ -1111,10 +1021,9 @@
       for(let i=0;i<count;i++) addLeaf(container);
     }
     const glyphs=[
-      { symbol: "💧", color: "#77d8ff" },
-      { symbol: "🫧", color: "#c6f4ff" },
-      { symbol: "🍃", color: "#9fe7dd" },
-      { symbol: "🌊", color: "#4db8ff" }
+      { symbol: "🌱", color: "#8bdca0" },
+      { symbol: "🌿", color: "#7ed957" },
+      { symbol: "🪵", color: "#9a7b4f" }
     ];
     function rand(min,max){return Math.random()*(max-min)+min}
     function addLeaf(container){
@@ -1135,8 +1044,12 @@
       container.appendChild(leaf);
     }
 
-    // Initialize floating glyphs when page loads
-    document.addEventListener('DOMContentLoaded', () => { spawnLeaves(30); });
+    // Initialize floating glyphs when page loads (skipped when animations are hidden)
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!document.body.classList.contains('hide-animations')) {
+        spawnLeaves(30);
+      }
+    });
 
     // ===== DOM helpers =====
     const $ = s => document.querySelector(s);
@@ -1165,19 +1078,14 @@
 
     // ===== Background toggle =====
     const backgroundImages = [
-      "none",
-      "none",
-      "none"
-    ];
-    const tideBackgrounds = [
-      "radial-gradient(circle at 18% 18%, rgba(151,235,255,.26), transparent 24%), linear-gradient(180deg,#071b33 0%,#0b5274 48%,#06344f 100%)",
-      "radial-gradient(circle at 78% 15%, rgba(255,255,255,.22), transparent 18%), linear-gradient(160deg,#08243b 0%,#087d8f 52%,#0b3954 100%)",
-      "radial-gradient(circle at 50% 8%, rgba(255,222,164,.24), transparent 22%), linear-gradient(180deg,#16213f 0%,#245b76 50%,#092c46 100%)"
+      "wallpaper/codo.jpg",
+      "wallpaper/herenhuis.jpg",
+      "wallpaper/Fantasy-Lake1.png"
     ];
     let backgroundIndex = 0;
 
     function applyBackground(index){
-      document.body.style.background = tideBackgrounds[index];
+      document.body.style.background = `linear-gradient(180deg,rgba(10,16,32,.72) 0%,rgba(18,26,47,.70) 45%,rgba(10,16,32,.76) 100%),url("${backgroundImages[index]}") center/cover fixed no-repeat`;
     }
 
     const bgToggleBtn = $("#btnBackgroundToggle");
@@ -1187,8 +1095,12 @@
         applyBackground(backgroundIndex);
       });
     }
+    
+      /* Flags cycler removed */
 
-    // ===== UI bindings =====
+      // Global confetti manager removed
+
+      // ===== UI bindings =====
     $("#btnInstructions").addEventListener("click", () => {
       const hidden = $("#instructions").classList.contains("hidden");
       show("#instructions", hidden);
@@ -1223,6 +1135,16 @@
       const top  = Math.max(0, Math.round((screen.height - h) / 2));
       const features = `popup=yes,width=${w},height=${h},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes`;
       window.open(url, "skylineFlashcardsPopup", features);
+    });
+
+    // Popup window for Colorful Memory Game
+    $("#btnMemoryPopup").addEventListener("click", () => {
+      const url = "colorfulmemory/colorful_memory_game.html";
+      const w = 880, h = 680;
+      const left = Math.max(0, Math.round((screen.width - w) / 2));
+      const top  = Math.max(0, Math.round((screen.height - h) / 2));
+      const features = `popup=yes,width=${w},height=${h},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes`;
+      window.open(url, "colorfulMemoryPopup", features);
     });
 
     // ===== Chart setup =====
