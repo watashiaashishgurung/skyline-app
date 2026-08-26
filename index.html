@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Skyline – Winds & Waves Edition</title>
+  <title>Skyline</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
@@ -616,10 +616,10 @@
       radial-gradient(80px 34px at 8% 15%,rgba(143,230,255,.30) 48%,transparent 51%) 0 20px/180px 72px repeat-x,
       radial-gradient(95px 38px at 15% 10%,rgba(54,168,209,.34) 48%,transparent 51%) 70px 55px/220px 86px repeat-x,
       linear-gradient(180deg,rgba(23,142,184,.22),rgba(3,43,68,.78));
-    animation:waveMove 10s linear infinite;
+    animation:none;
   }
-  @keyframes waveMove{from{background-position:0 20px,70px 55px,0 0}to{background-position:180px 20px,-150px 55px,0 0}}
-  @keyframes oceanShimmer{from{opacity:.65;transform:translateX(-1%)}to{opacity:1;transform:translateX(1%)}}
+  
+  
   h1{color:#a7efff;text-shadow:0 0 18px rgba(110,215,255,.5);letter-spacing:1px}
   .card,#memory-mini .wrap{
     background:linear-gradient(145deg,rgba(5,43,67,.78),rgba(7,76,95,.58));
@@ -766,7 +766,7 @@ body > #game-finished.card {
 .skyline-wind-streak:nth-child(5){top:86%;animation-duration:13s;animation-delay:-7s;width:30vw}
 
 /* Main ocean layer gets a slow pulse, but memory section stays untouched */
-body::after { animation:waveMove 10s linear infinite, skylineWaveBreath 5.6s ease-in-out infinite; }
+body::after { animation:none !important; }
 
 /* Motion accessibility */
 @media (prefers-reduced-motion: reduce) {
@@ -779,7 +779,7 @@ body::after { animation:waveMove 10s linear infinite, skylineWaveBreath 5.6s eas
 
 
 <style id="skyline-extras-toggle-css">
-/* Winds & Waves / memory-game feature toggle */
+/* Twilight / memory-game feature toggle */
 #btnSkylineExtras {
   position: fixed;
   top: 18px;
@@ -809,17 +809,16 @@ body.skyline-extras-off #memory-mini,
 body.skyline-extras-off #leaves,
 body.skyline-extras-off #leaf-counter,
 body.skyline-extras-off .otter,
-body.skyline-extras-off #btnBackgroundToggle,
 body.skyline-extras-off .skyline-wind-layer {
   display:none !important;
 }
 
-/* Keep the Winds & Waves memory mini-game out of both demo modes. */
+/* Keep the Twilight memory mini-game out of both demo modes. */
 body.skyline-demo-active #memory-mini {
   display:none !important;
 }
 
-/* Pause the Winds & Waves ambient animation until explicitly enabled. */
+/* Pause the Twilight ambient animation until explicitly enabled. */
 body.skyline-extras-off::before,
 body.skyline-extras-off::after {
   animation:none !important;
@@ -838,9 +837,735 @@ body.skyline-extras-off::after { opacity:.18; }
 }
 </style>
 
+
+<style id="skyline-retro-night-theme">
+:root{
+  --bg:#050a24;
+  --card:#0b1535;
+  --ink:#e8efff;
+  --muted:#9ba9d2;
+  --accent:#5bb8ff;
+  --accent-2:#8d7bff;
+  --grid:#283b78;
+  --retro-amber:#ffb454;
+  --retro-pink:#b36cff;
+  --retro-navy:#05091f;
+}
+
+/* ===== Retro night-sky foundation ===== */
+html{ background:#030718; }
+
+body{
+  min-height:100vh;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 52% 42%,rgba(73,86,191,.18),transparent 28%),
+    radial-gradient(circle at 18% 20%,rgba(86,116,255,.08),transparent 22%),
+    linear-gradient(180deg,#03071a 0%,#071032 44%,#12194a 72%,#080d2b 100%) !important;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,"Noto Sans",Arial,sans-serif;
+}
+
+/* Fine pixel texture inspired by the banner. */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background-image:
+    radial-gradient(circle,rgba(255,255,255,.82) 0 1px,transparent 1.25px),
+    radial-gradient(circle,rgba(109,153,255,.75) 0 1px,transparent 1.25px),
+    radial-gradient(circle,rgba(176,114,255,.58) 0 1px,transparent 1.25px);
+  background-size:137px 137px,191px 191px,263px 263px;
+  background-position:16px 22px,72px 39px,31px 91px;
+  opacity:.48;
+}
+
+/* Replace the old ocean pseudo-layer with a subtle horizon glow. */
+body::after{
+  content:"";
+  position:fixed;
+  left:0;right:0;bottom:0;
+  height:26vh;
+  z-index:0;
+  pointer-events:none;
+  background:
+    linear-gradient(180deg,transparent 0%,rgba(42,52,130,.10) 24%,rgba(4,7,25,.72) 100%);
+  animation:none !important;
+}
+
+/* ===== Banner-style title ===== */
+.skyline-main-title{
+  position:relative;
+  z-index:3;
+  margin:28px auto 22px;
+  width:max-content;
+  max-width:90vw;
+  padding:4px 18px 10px;
+  font-family:"Press Start 2P",monospace;
+  font-size:clamp(20px,3vw,34px);
+  letter-spacing:.22em;
+  color:#93cfff;
+  text-shadow:
+    0 3px 0 #233d89,
+    0 6px 0 #0c163e,
+    0 0 18px rgba(91,184,255,.28);
+  background:linear-gradient(180deg,#a9d9ff 0%,#7aaeff 46%,#8f78ff 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* ===== Main cards ===== */
+.card,
+#logwrap.card,
+#game-finished.card{
+  position:relative;
+  z-index:2;
+  background:
+    linear-gradient(180deg,rgba(12,22,57,.92),rgba(7,14,40,.94)) !important;
+  border:1px solid rgba(91,139,255,.32) !important;
+  border-radius:10px !important;
+  box-shadow:
+    0 10px 24px rgba(0,0,0,.36),
+    inset 0 1px 0 rgba(152,196,255,.07) !important;
+  backdrop-filter:blur(8px);
+}
+
+.card::before,
+#logwrap.card::before{
+  content:"";
+  position:absolute;
+  left:10px;right:10px;top:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,#5bb8ff,transparent);
+  opacity:.42;
+}
+
+/* ===== Buttons ===== */
+button,
+.demo-controls select{
+  font-family:"Press Start 2P",monospace;
+}
+
+button{
+  border-radius:7px !important;
+  border:1px solid #3657a8 !important;
+  background:linear-gradient(180deg,#17275b,#0d183d) !important;
+  color:#dceaff !important;
+  box-shadow:0 4px 0 #060b21,0 7px 14px rgba(0,0,0,.24) !important;
+  transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease,filter .15s ease;
+}
+
+button:hover{
+  transform:translateY(-2px) !important;
+  border-color:#69c6ff !important;
+  box-shadow:0 6px 0 #060b21,0 0 16px rgba(91,184,255,.25) !important;
+  filter:brightness(1.08);
+}
+
+button:active{
+  transform:translateY(2px) !important;
+  box-shadow:0 2px 0 #060b21 !important;
+}
+
+/* Keep the Twilight toggle visually special. */
+#btnSkylineExtras{
+  border:2px solid #ffb454 !important;
+  background:linear-gradient(180deg,#b6575d,#71345f) !important;
+  color:#fff1cf !important;
+  box-shadow:0 4px 0 #32152e,0 0 14px rgba(255,180,84,.16) !important;
+}
+#btnSkylineExtras:hover{
+  border-color:#ffd38d !important;
+  box-shadow:0 6px 0 #32152e,0 0 18px rgba(255,180,84,.34) !important;
+}
+
+/* ===== Inputs ===== */
+input[type="number"],
+input[type="text"],
+.demo-controls select{
+  background:#070f2b !important;
+  color:#eef5ff !important;
+  border:1px solid #304a93 !important;
+  border-radius:6px !important;
+}
+input[type="number"]:focus,
+input[type="text"]:focus,
+.demo-controls select:focus{
+  outline:none;
+  border-color:#5bb8ff !important;
+  box-shadow:0 0 0 2px rgba(91,184,255,.15),0 0 12px rgba(91,184,255,.12) !important;
+}
+
+/* ===== Game labels / rounds ===== */
+#round-info{
+  font-family:"Press Start 2P",monospace;
+  color:#8ecbff;
+  letter-spacing:.05em;
+  text-shadow:0 2px #101d55;
+}
+#round-note{color:#a8b5dd;}
+.hint{color:#8fb9ff !important;}
+
+#guesses .row{
+  padding:9px 10px;
+  border-left:3px solid rgba(91,184,255,.42);
+  background:linear-gradient(90deg,rgba(33,52,116,.18),transparent);
+  border-radius:4px;
+}
+
+/* ===== Scoreboard ===== */
+.scoreboard table{
+  overflow:hidden;
+  border:1px solid rgba(73,104,196,.30);
+}
+.scoreboard th{
+  font-family:"Press Start 2P",monospace;
+  font-size:10px !important;
+  color:#9bd2ff;
+  background:#0c173d;
+}
+.scoreboard td{
+  color:#dce7ff;
+  border-bottom-color:#1e2f68 !important;
+}
+#scoreboard tr.skyline-winner-row{
+  background:linear-gradient(90deg,rgba(255,180,84,.18),rgba(91,184,255,.08),transparent) !important;
+}
+
+/* ===== Log and chart ===== */
+#output{
+  color:#b8d3ff !important;
+  background:rgba(3,8,27,.38);
+  padding:10px;
+  border-radius:5px;
+  border:1px solid rgba(57,87,170,.22);
+}
+canvas{
+  background:rgba(4,10,31,.82) !important;
+  border:1px solid #283f83 !important;
+  border-radius:7px !important;
+}
+
+/* ===== Decorative shooting star ===== */
+.retro-night-decor{
+  position:fixed;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  overflow:hidden;
+}
+.retro-shooting-star{
+  position:absolute;
+  top:13%;
+  right:17%;
+  width:110px;
+  height:2px;
+  transform:rotate(-34deg);
+  transform-origin:right center;
+  background:linear-gradient(90deg,transparent,rgba(77,131,255,.20),#85c8ff 72%,#fff 100%);
+  filter:drop-shadow(0 0 5px #4f8fff);
+  animation:retroMeteor 8s ease-in-out infinite;
+}
+.retro-shooting-star::after{
+  content:"";
+  position:absolute;
+  right:-3px;
+  top:-2px;
+  width:6px;height:6px;
+  background:#fff;
+  box-shadow:0 0 8px #7dcfff;
+}
+@keyframes retroMeteor{
+  0%,68%{opacity:0;transform:translate(120px,-90px) rotate(-34deg) scaleX(.3)}
+  72%{opacity:1}
+  86%{opacity:1;transform:translate(0,0) rotate(-34deg) scaleX(1)}
+  100%{opacity:0;transform:translate(-80px,58px) rotate(-34deg) scaleX(.72)}
+}
+.retro-star{
+  position:absolute;
+  width:3px;height:3px;
+  background:#fff;
+  box-shadow:0 0 8px rgba(125,207,255,.7);
+  animation:retroTwinkle 2.8s ease-in-out infinite;
+}
+.retro-star-1{top:16%;left:17%}
+.retro-star-2{top:28%;left:73%;animation-delay:.8s}
+.retro-star-3{top:38%;left:10%;animation-delay:1.4s}
+.retro-star-4{top:20%;left:54%;animation-delay:2s}
+@keyframes retroTwinkle{0%,100%{opacity:.3;transform:scale(.7)}50%{opacity:1;transform:scale(1.5)}}
+
+/* ===== Pixel skyline along the bottom edge ===== */
+.retro-city-horizon{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  height:92px;
+  z-index:1;
+  pointer-events:none;
+  opacity:.44;
+  background:
+    linear-gradient(90deg,
+      transparent 0 2%,#07102d 2% 5%,transparent 5% 6%,
+      #091437 6% 9%,transparent 9% 10%,
+      #07102d 10% 14%,transparent 14% 15%,
+      #0a1740 15% 18%,transparent 18% 19%,
+      #07102d 19% 23%,transparent 23% 24%,
+      #091437 24% 29%,transparent 29% 30%,
+      #07102d 30% 34%,transparent 34% 35%,
+      #0a1740 35% 40%,transparent 40% 41%,
+      #07102d 41% 46%,transparent 46% 47%,
+      #091437 47% 52%,transparent 52% 53%,
+      #07102d 53% 58%,transparent 58% 59%,
+      #0a1740 59% 63%,transparent 63% 64%,
+      #07102d 64% 69%,transparent 69% 70%,
+      #091437 70% 75%,transparent 75% 76%,
+      #07102d 76% 81%,transparent 81% 82%,
+      #0a1740 82% 87%,transparent 87% 88%,
+      #07102d 88% 94%,transparent 94% 95%,
+      #091437 95% 100%
+    );
+  clip-path:polygon(
+    0 75%,2% 75%,2% 48%,5% 48%,5% 70%,6% 70%,6% 30%,9% 30%,9% 66%,
+    10% 66%,10% 40%,14% 40%,14% 72%,15% 72%,15% 22%,18% 22%,18% 62%,
+    19% 62%,19% 46%,23% 46%,23% 70%,24% 70%,24% 35%,29% 35%,29% 60%,
+    30% 60%,30% 27%,34% 27%,34% 68%,35% 68%,35% 18%,40% 18%,40% 57%,
+    41% 57%,41% 42%,46% 42%,46% 69%,47% 69%,47% 25%,52% 25%,52% 61%,
+    53% 61%,53% 39%,58% 39%,58% 68%,59% 68%,59% 20%,63% 20%,63% 59%,
+    64% 59%,64% 37%,69% 37%,69% 66%,70% 66%,70% 28%,75% 28%,75% 60%,
+    76% 60%,76% 45%,81% 45%,81% 70%,82% 70%,82% 24%,87% 24%,87% 63%,
+    88% 63%,88% 39%,94% 39%,94% 69%,95% 69%,95% 34%,100% 34%,100% 100%,0 100%
+  );
+}
+
+/* Core content stays above decoration. */
+body > h1,
+.flex-header,
+.demo-controls,
+#instructions,
+#player-setup,
+#player-names,
+#game,
+#logwrap,
+#game-finished,
+#memory-mini,
+#windsLinks,
+#leaf-counter,
+.otter{
+  position:relative;
+  z-index:2;
+}
+
+/* Twilight can still add its own objects; hide night-city footer there if desired. */
+body:not(.skyline-extras-off) .retro-city-horizon{opacity:.20}
+
+/* Responsive tweaks */
+@media(max-width:700px){
+  .skyline-main-title{
+    margin-top:58px;
+    font-size:18px;
+    letter-spacing:.12em;
+  }
+  .retro-shooting-star{right:10%;top:10%;width:78px}
+  .retro-city-horizon{height:60px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .retro-shooting-star,.retro-star{animation:none !important}
+}
+</style>
+
+
+<style id="twilight-memory-theme">
+/* ===== Twilight Memory Match ===== */
+#memory-mini{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  min-height:540px;
+  border-radius:18px;
+  padding:2.2rem 1rem;
+  background:
+    radial-gradient(circle at 50% 28%,rgba(95,101,255,.17),transparent 28%),
+    linear-gradient(180deg,rgba(4,8,29,.96),rgba(9,14,45,.97) 52%,rgba(17,22,64,.97));
+}
+
+#memory-mini::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background-image:
+    radial-gradient(circle,rgba(255,255,255,.9) 0 1px,transparent 1.2px),
+    radial-gradient(circle,rgba(126,170,255,.8) 0 1px,transparent 1.3px),
+    radial-gradient(circle,rgba(179,128,255,.65) 0 1px,transparent 1.2px);
+  background-size:97px 97px,151px 151px,211px 211px;
+  background-position:12px 18px,52px 31px,87px 73px;
+  opacity:.58;
+}
+
+#memory-mini .wrap{
+  position:relative;
+  z-index:3;
+  background:
+    linear-gradient(180deg,rgba(12,19,57,.84),rgba(7,12,38,.90)) !important;
+  border:1px solid rgba(109,128,255,.38) !important;
+  box-shadow:
+    0 18px 45px rgba(0,0,0,.46),
+    0 0 40px rgba(92,94,255,.08),
+    inset 0 1px 0 rgba(255,255,255,.05) !important;
+  backdrop-filter:blur(10px);
+}
+
+#memory-mini h2{
+  color:#a9c9ff !important;
+  text-shadow:
+    0 2px 0 #21356f,
+    0 0 14px rgba(128,156,255,.38) !important;
+}
+
+#memory-mini .box{
+  position:relative;
+  z-index:2;
+}
+
+#memory-mini #game-container{
+  background:
+    linear-gradient(180deg,rgba(17,27,76,.68),rgba(8,14,45,.72)) !important;
+  border:1px solid rgba(112,138,255,.40) !important;
+  box-shadow:
+    inset 0 0 24px rgba(67,80,170,.12),
+    0 10px 30px rgba(0,0,0,.28) !important;
+}
+
+#memory-mini .card{
+  background:
+    linear-gradient(145deg,rgba(31,42,106,.86),rgba(17,24,72,.92)) !important;
+  border:1px solid rgba(127,150,255,.36) !important;
+  color:#dce9ff !important;
+  box-shadow:
+    0 4px 10px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.04) !important;
+}
+
+#memory-mini .card:hover{
+  border-color:#8ac8ff !important;
+  box-shadow:
+    0 0 16px rgba(91,184,255,.28),
+    0 7px 15px rgba(0,0,0,.34) !important;
+}
+
+#memory-mini .card.matched{
+  background:
+    linear-gradient(135deg,rgba(89,110,255,.92),rgba(147,97,255,.90)) !important;
+  border-color:#a8c9ff !important;
+  box-shadow:
+    0 0 20px rgba(131,118,255,.52),
+    inset 0 0 12px rgba(255,255,255,.10) !important;
+}
+
+#memory-mini .pill{
+  background:rgba(8,14,44,.78) !important;
+  border:1px solid rgba(120,143,255,.38) !important;
+  color:#dce9ff !important;
+  box-shadow:0 5px 14px rgba(0,0,0,.28) !important;
+}
+
+#memory-mini #startbtn{
+  background:linear-gradient(180deg,#314b9b,#1b2b69) !important;
+  color:#eef5ff !important;
+  border:1px solid #6ca6ff !important;
+  box-shadow:0 5px 0 #0b1235,0 0 12px rgba(91,184,255,.16) !important;
+}
+
+/* Decorative sky layer */
+.twilight-memory-sky{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  overflow:hidden;
+  pointer-events:none;
+}
+
+.tm-star{
+  position:absolute;
+  width:3px;
+  height:3px;
+  background:#fff;
+  box-shadow:0 0 8px rgba(143,190,255,.75);
+  animation:tmTwinkle 2.6s ease-in-out infinite;
+}
+.tm-star-1{left:12%;top:14%}
+.tm-star-2{left:28%;top:25%;animation-delay:.7s}
+.tm-star-3{left:63%;top:13%;animation-delay:1.2s}
+.tm-star-4{left:78%;top:31%;animation-delay:1.8s}
+.tm-star-5{left:88%;top:18%;animation-delay:2.2s}
+@keyframes tmTwinkle{
+  0%,100%{opacity:.25;transform:scale(.8)}
+  50%{opacity:1;transform:scale(1.65)}
+}
+
+.tm-shooting-star{
+  position:absolute;
+  width:90px;
+  height:2px;
+  background:linear-gradient(90deg,transparent,rgba(106,150,255,.2),#8bd0ff 75%,#fff);
+  filter:drop-shadow(0 0 5px #6daaff);
+  transform:rotate(-32deg);
+  animation:tmMeteor 7.6s ease-in-out infinite;
+}
+.tm-shooting-star::after{
+  content:"";
+  position:absolute;
+  right:-2px;
+  top:-2px;
+  width:5px;height:5px;
+  background:#fff;
+  box-shadow:0 0 8px #8ac8ff;
+}
+.tm-shooting-star-1{top:18%;right:10%}
+.tm-shooting-star-2{top:36%;right:35%;animation-delay:3.8s;width:64px;opacity:.75}
+@keyframes tmMeteor{
+  0%,68%{opacity:0;transform:translate(120px,-70px) rotate(-32deg) scaleX(.35)}
+  72%{opacity:1}
+  87%{opacity:1;transform:translate(0,0) rotate(-32deg) scaleX(1)}
+  100%{opacity:0;transform:translate(-70px,46px) rotate(-32deg) scaleX(.72)}
+}
+
+/* Soft pixel-cloud shapes */
+.tm-cloud{
+  position:absolute;
+  height:28px;
+  border-radius:999px;
+  background:rgba(132,146,201,.10);
+  filter:blur(.2px);
+  opacity:.7;
+}
+.tm-cloud::before,
+.tm-cloud::after{
+  content:"";
+  position:absolute;
+  bottom:0;
+  border-radius:50%;
+  background:inherit;
+}
+.tm-cloud::before{width:38px;height:38px;left:18px}
+.tm-cloud::after{width:28px;height:28px;left:52px}
+
+.tm-cloud-1{
+  width:100px;
+  top:30%;
+  left:-120px;
+  animation:tmCloudDrift 28s linear infinite;
+}
+.tm-cloud-2{
+  width:130px;
+  top:58%;
+  left:-160px;
+  opacity:.42;
+  animation:tmCloudDrift 38s linear infinite 8s;
+}
+@keyframes tmCloudDrift{
+  from{transform:translateX(0)}
+  to{transform:translateX(calc(100vw + 320px))}
+}
+
+/* Subtle falling star particles */
+#memory-mini .wrap::after{
+  content:"✦   ·   ✧   ·   ✦";
+  position:absolute;
+  top:-40px;
+  left:8%;
+  right:8%;
+  z-index:0;
+  color:rgba(174,201,255,.18);
+  letter-spacing:5.5rem;
+  font-size:12px;
+  white-space:nowrap;
+  animation:tmFallingStars 9s linear infinite;
+  pointer-events:none;
+}
+@keyframes tmFallingStars{
+  from{transform:translateY(-60px)}
+  to{transform:translateY(560px)}
+}
+
+@media(max-width:700px){
+  #memory-mini{min-height:620px}
+  .tm-cloud-2{top:68%}
+  #memory-mini .wrap::after{letter-spacing:2.5rem}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .tm-star,.tm-shooting-star,.tm-cloud,#memory-mini .wrap::after{
+    animation:none !important;
+  }
+}
+</style>
+
+
+<style id="twilight-global-falling-stars">
+/* Replace wave motion with falling stars */
+.twilight-falling-stars{
+  position:fixed;
+  inset:0;
+  z-index:1;
+  overflow:hidden;
+  pointer-events:none;
+}
+
+.twilight-falling-stars .tfs{
+  position:absolute;
+  top:-10vh;
+  color:rgba(210,225,255,.88);
+  text-shadow:0 0 8px rgba(111,163,255,.75);
+  font-family:monospace;
+  line-height:1;
+  opacity:0;
+  animation:twilightStarFall linear infinite;
+}
+
+.tfs-1{left:5%;font-size:10px;animation-duration:7.5s;animation-delay:-1.2s}
+.tfs-2{left:14%;font-size:7px;animation-duration:10s;animation-delay:-6.1s}
+.tfs-3{left:22%;font-size:12px;animation-duration:8.7s;animation-delay:-3.8s}
+.tfs-4{left:31%;font-size:8px;animation-duration:11.2s;animation-delay:-8.4s}
+.tfs-5{left:40%;font-size:6px;animation-duration:9.4s;animation-delay:-2.7s}
+.tfs-6{left:49%;font-size:11px;animation-duration:7.9s;animation-delay:-5.5s}
+.tfs-7{left:58%;font-size:8px;animation-duration:10.8s;animation-delay:-7.2s}
+.tfs-8{left:67%;font-size:6px;animation-duration:8.2s;animation-delay:-4.1s}
+.tfs-9{left:75%;font-size:12px;animation-duration:11.5s;animation-delay:-9.1s}
+.tfs-10{left:83%;font-size:9px;animation-duration:9.1s;animation-delay:-2s}
+.tfs-11{left:90%;font-size:7px;animation-duration:10.4s;animation-delay:-6.8s}
+.tfs-12{left:96%;font-size:10px;animation-duration:8.5s;animation-delay:-3.2s}
+
+@keyframes twilightStarFall{
+  0%{
+    transform:translate3d(0,-12vh,0) rotate(0deg);
+    opacity:0;
+  }
+  8%{opacity:.9}
+  86%{opacity:.72}
+  100%{
+    transform:translate3d(34px,112vh,0) rotate(220deg);
+    opacity:0;
+  }
+}
+
+/* Ensure no residual ocean/wave pseudo animation is visible. */
+body::after{
+  animation:none !important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .twilight-falling-stars .tfs{animation:none !important;opacity:.35}
+}
+</style>
+
+
+<style id="twilight-collectibles-theme">
+/* ===== Twilight collectible layer ===== */
+#leaf-counter{
+  color:#e7ecff !important;
+  border-color:#8ba8ff !important;
+  background:linear-gradient(180deg,rgba(16,23,67,.92),rgba(7,12,39,.92)) !important;
+  box-shadow:0 0 18px rgba(118,145,255,.18),0 6px 18px rgba(0,0,0,.34) !important;
+}
+
+/* Legacy .leaf structure is retained internally so existing click/timer logic stays stable. */
+.leaf{
+  filter:none !important;
+  text-shadow:0 0 8px rgba(149,188,255,.70);
+}
+
+.leaf.twilight-star-pickup{
+  animation:twilightPickupFall linear infinite !important;
+}
+.leaf.twilight-star-pickup .spin{
+  animation:twilightPickupSparkle 1.8s ease-in-out infinite !important;
+}
+
+.leaf.twilight-ship{
+  font-size:clamp(20px,2.4vw,34px) !important;
+  animation:twilightShipCruise 8s ease-in-out infinite alternate !important;
+}
+.leaf.twilight-ship .spin{
+  animation:twilightShipBob 2.2s ease-in-out infinite !important;
+}
+
+@keyframes twilightPickupFall{
+  0%{transform:translate3d(0,-16vh,0) rotate(0deg);opacity:0}
+  8%{opacity:.95}
+  92%{opacity:.85}
+  100%{transform:translate3d(32px,112vh,0) rotate(240deg);opacity:0}
+}
+@keyframes twilightPickupSparkle{
+  0%,100%{transform:scale(.75) rotate(0deg);filter:drop-shadow(0 0 3px rgba(152,190,255,.45))}
+  50%{transform:scale(1.35) rotate(18deg);filter:drop-shadow(0 0 12px rgba(194,211,255,.95))}
+}
+@keyframes twilightShipCruise{
+  0%{margin-left:-18px;margin-bottom:0}
+  100%{margin-left:28px;margin-bottom:18px}
+}
+@keyframes twilightShipBob{
+  0%,100%{transform:translateY(0) rotate(-6deg)}
+  50%{transform:translateY(-8px) rotate(6deg)}
+}
+
+/* Make the old ambient collectible container feel like a starfield rather than waves. */
+.leaves{
+  background:none !important;
+}
+
+/* Captured sparkle */
+.leaf.captured{
+  opacity:.2 !important;
+  filter:drop-shadow(0 0 14px rgba(206,223,255,.95)) !important;
+  transform:scale(1.8) rotate(45deg) !important;
+}
+
+/* Twilight bonus pop */
+.time-bonus{
+  color:#c9d9ff !important;
+  text-shadow:0 0 10px rgba(133,166,255,.85),0 2px 4px rgba(0,0,0,.6) !important;
+}
+
+
+@media(prefers-reduced-motion:reduce){
+  .leaf.twilight-star-pickup,
+  .leaf.twilight-star-pickup .spin,
+  .leaf.twilight-ship,
+  .leaf.twilight-ship .spin{
+    animation:none !important;
+  }
+}
+</style>
+
 </head>
 <body class="skyline-extras-off">
-  <button id="btnSkylineExtras" type="button" aria-pressed="false">Enable Winds & Waves</button>
+  <div class="retro-night-decor" aria-hidden="true">
+    <span class="retro-shooting-star"></span>
+    <span class="retro-star retro-star-1"></span>
+    <span class="retro-star retro-star-2"></span>
+    <span class="retro-star retro-star-3"></span>
+    <span class="retro-star retro-star-4"></span>
+  </div>
+  <div class="twilight-falling-stars" aria-hidden="true">
+    <span class="tfs tfs-1">✦</span>
+    <span class="tfs tfs-2">·</span>
+    <span class="tfs tfs-3">✧</span>
+    <span class="tfs tfs-4">✦</span>
+    <span class="tfs tfs-5">·</span>
+    <span class="tfs tfs-6">✧</span>
+    <span class="tfs tfs-7">✦</span>
+    <span class="tfs tfs-8">·</span>
+    <span class="tfs tfs-9">✧</span>
+    <span class="tfs tfs-10">✦</span>
+    <span class="tfs tfs-11">·</span>
+    <span class="tfs tfs-12">✧</span>
+  </div>
+  <div class="retro-city-horizon" aria-hidden="true"></div>
+  <button id="btnSkylineExtras" type="button" aria-pressed="false">Enable Twilight</button>
   <div class="skyline-wind-layer" aria-hidden="true"><span class="skyline-wind-streak"></span><span class="skyline-wind-streak"></span><span class="skyline-wind-streak"></span><span class="skyline-wind-streak"></span><span class="skyline-wind-streak"></span></div>
   <!-- COMMENTED OUT: Equalizer (new) -->
   <!-- <div class="equalizer" aria-hidden="true">
@@ -853,16 +1578,14 @@ body.skyline-extras-off::after { opacity:.18; }
   <div class="leaves" id="leaves"></div>
 
   <!-- Orb Counter -->
-  <div id="leaf-counter">💧 Sea Drops: <span id="leaf-count">0</span></div>
+  <div id="leaf-counter">✨ Star Shards: <span id="leaf-count">0</span></div>
 
-  <h1>🌊 Skyline: Winds & Waves 🌬️</h1>
-  <div class="otter" aria-label="sailing boat">⛵</div>
+  <h1 class="skyline-main-title">SKYLINE</h1>
   <div id="windsLinks" class="winds-links hidden">
     <button id="btnStoryPopup" class="otter-story-link" type="button">heron sitting on frog eggs</button>
     <button id="btnReadme" class="readme-button winds-readme-button" type="button">README / GitHub</button>
     <button id="btnFlashcardsPopup" type="button">open skyline q&amp;a flashcards</button>
   </div>
-  <button id="btnBackgroundToggle" type="button">Change Tide</button>
 
   <div class="flex-header">
     <button id="btnInstructions">Show Instructions</button>
@@ -1103,9 +1826,20 @@ body.skyline-extras-off::after { opacity:.18; }
       <link rel="stylesheet" href="styles/themes.css">
 
       <!-- Memory Game HTML -->
-  <section id="memory-mini" aria-label="Winds and Waves Memory Match Game">
+  <section id="memory-mini" aria-label="Twilight Memory Match Game">
+    <div class="twilight-memory-sky" aria-hidden="true">
+      <span class="tm-cloud tm-cloud-1"></span>
+      <span class="tm-cloud tm-cloud-2"></span>
+      <span class="tm-shooting-star tm-shooting-star-1"></span>
+      <span class="tm-shooting-star tm-shooting-star-2"></span>
+      <span class="tm-star tm-star-1"></span>
+      <span class="tm-star tm-star-2"></span>
+      <span class="tm-star tm-star-3"></span>
+      <span class="tm-star tm-star-4"></span>
+      <span class="tm-star tm-star-5"></span>
+    </div>
     <div class="wrap">
-      <h2>🌊 Winds & Waves Memory Match ✦</h2>
+      <h2>🌊 Twilight Memory Match ✦</h2>
       <div class="box">
         <div id="game-container" aria-live="polite" aria-label="Game board">
           <!-- Cards are injected by JS -->
@@ -1343,10 +2077,12 @@ body.skyline-extras-off::after { opacity:.18; }
       for(let i=0;i<count;i++) addLeaf(container);
     }
     const glyphs=[
-      { symbol: "💧", color: "#77d8ff" },
-      { symbol: "🫧", color: "#c6f4ff" },
-      { symbol: "🍃", color: "#9fe7dd" },
-      { symbol: "🌊", color: "#4db8ff" }
+      { symbol: "✦", color: "#d9e7ff", kind: "star" },
+      { symbol: "✧", color: "#9fc8ff", kind: "star" },
+      { symbol: "★", color: "#b9a7ff", kind: "star" },
+      { symbol: "⋆", color: "#ffffff", kind: "star" },
+      { symbol: "🛸", color: "#9fdcff", kind: "ship" },
+      { symbol: "🚀", color: "#b8b5ff", kind: "ship" }
     ];
     function rand(min,max){return Math.random()*(max-min)+min}
     function addLeaf(container){
@@ -1359,6 +2095,7 @@ body.skyline-extras-off::after { opacity:.18; }
       const glyph = glyphs[Math.floor(Math.random()*glyphs.length)];
       spin.textContent=glyph.symbol;
       spin.style.color = glyph.color;
+      leaf.classList.add(glyph.kind === "ship" ? "twilight-ship" : "twilight-star-pickup");
       drift.appendChild(spin); leaf.appendChild(drift);
 
       leaf.style.left = rand(2, 96) + '%';
@@ -1412,13 +2149,6 @@ body.skyline-extras-off::after { opacity:.18; }
       document.body.style.background = tideBackgrounds[index];
     }
 
-    const bgToggleBtn = $("#btnBackgroundToggle");
-    if (bgToggleBtn) {
-      bgToggleBtn.addEventListener("click", () => {
-        backgroundIndex = (backgroundIndex + 1) % backgroundImages.length;
-        applyBackground(backgroundIndex);
-      });
-    }
 
     // ===== UI bindings =====
     $("#btnInstructions").addEventListener("click", () => {
@@ -2036,7 +2766,7 @@ body.skyline-extras-off::after { opacity:.18; }
       function showBonus(x, y) {
         var bonus = document.createElement('div');
         bonus.className = 'time-bonus';
-        bonus.textContent = '+1s 🌿';
+        bonus.textContent = '+1s ✨';
         bonus.style.left = x + 'px';
         bonus.style.top = y + 'px';
         document.body.appendChild(bonus);
@@ -2130,14 +2860,14 @@ body.skyline-extras-off::after { opacity:.18; }
   function setExtras(enabled){
     document.body.classList.toggle('skyline-extras-off', !enabled);
     button.setAttribute('aria-pressed', enabled ? 'true' : 'false');
-    button.textContent = enabled ? 'Hide Winds & Waves' : 'Enable Winds & Waves';
+    button.textContent = enabled ? 'Hide Twilight' : 'Enable Twilight';
 
     const windsLinks = document.getElementById('windsLinks');
     if (windsLinks) {
       windsLinks.classList.toggle('hidden', !enabled);
     }
 
-    // Spawn the floating sea-drop layer only when the experience is first enabled.
+    // Spawn the floating star-shard layer only when the experience is first enabled.
     if (enabled) {
       const leaves = document.getElementById('leaves');
       if (leaves && leaves.children.length === 0 && typeof spawnLeaves === 'function') {
