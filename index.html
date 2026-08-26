@@ -29,6 +29,18 @@
     button:hover{border-color:var(--accent)}
   .card{max-width:980px;margin:12px auto;background:linear-gradient(160deg,rgba(18,27,52,.58),rgba(11,19,38,.58) 85%);border:1px solid var(--grid);border-radius:16px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
     .button-container{margin-top:10px}
+    .readme-button{
+      background:linear-gradient(135deg,#6f42c1,#8b5cf6);
+      border-color:#a78bfa;
+      color:#fff;
+      font-weight:700;
+      box-shadow:0 5px 14px rgba(111,66,193,.32);
+    }
+    .readme-button:hover{
+      border-color:#ddd6fe;
+      box-shadow:0 0 18px rgba(139,92,246,.55);
+    }
+
     label{display:block;margin:10px 0 6px;color:var(--muted)}
   input[type="number"],input[type="text"]{width:100%;background:#0f1730;color:var(--ink);border:1px solid var(--grid);border-radius:10px;padding:10px}
     input[type="number"]:focus,input[type="text"]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(137,180,250,0.2)}
@@ -387,10 +399,28 @@
     animation: otterFloat 2.4s ease-in-out infinite;
   }
 
-  .otter-story-link {
+  .winds-links {
     position: fixed;
-    right: 226px;
-    bottom: 36px;
+    right: 100px;
+    bottom: 30px;
+    z-index: 1002;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .winds-links.hidden { display:none !important; }
+
+  .winds-readme-button {
+    font-size: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+  }
+
+  .otter-story-link {
+    position: static;
     z-index: 1002;
     font-size: 10px;
     padding: 8px 10px;
@@ -495,6 +525,12 @@
       font-size: 40px;
       right: max(10px, env(safe-area-inset-right));
       bottom: max(64px, calc(env(safe-area-inset-bottom) + 50px));
+    }
+    .winds-links {
+      right: max(10px, env(safe-area-inset-right));
+      bottom: max(16px, calc(env(safe-area-inset-bottom) + 8px));
+      max-width: calc(100vw - 20px);
+      gap: 6px;
     }
     .otter-story-link {
       right: max(10px, env(safe-area-inset-right));
@@ -611,8 +647,201 @@
   .game-message-button{background:linear-gradient(135deg,#59d0ef,#79efd6);border-color:#9af9f0;color:#043143}
   canvas{background:rgba(3,35,58,.78)}
 </style>
+
+<style id="skyline-main-animation-upgrade">
+/* ===== Skyline main-app animation upgrade (memory game intentionally excluded) ===== */
+@keyframes skylineCardIn {
+  0% { opacity:0; transform:translateY(28px) scale(.985); filter:blur(4px); }
+  100% { opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
+}
+@keyframes skylineRoundPulse {
+  0% { transform:scale(.94); opacity:.25; text-shadow:0 0 0 rgba(126,232,250,0); }
+  55% { transform:scale(1.06); opacity:1; text-shadow:0 0 24px rgba(126,232,250,.75); }
+  100% { transform:scale(1); opacity:1; text-shadow:0 0 10px rgba(126,232,250,.35); }
+}
+@keyframes skylineRowIn {
+  from { opacity:0; transform:translateX(-24px); }
+  to { opacity:1; transform:translateX(0); }
+}
+@keyframes skylineInputReady {
+  0%,100% { box-shadow:0 0 0 rgba(127,240,223,0); }
+  50% { box-shadow:0 0 18px rgba(127,240,223,.34); }
+}
+@keyframes skylineWinnerGlow {
+  0% { transform:scale(1); box-shadow:0 0 0 rgba(127,240,223,0); }
+  35% { transform:scale(1.02); box-shadow:0 0 24px rgba(127,240,223,.48); }
+  100% { transform:scale(1); box-shadow:0 0 10px rgba(127,240,223,.18); }
+}
+@keyframes skylineScorePop {
+  0% { opacity:.35; transform:translateY(6px) scale(.98); }
+  65% { opacity:1; transform:translateY(-2px) scale(1.015); }
+  100% { opacity:1; transform:translateY(0) scale(1); }
+}
+@keyframes skylineWindSweep {
+  from { transform:translateX(-115vw) skewX(-18deg); opacity:0; }
+  12% { opacity:.34; }
+  88% { opacity:.18; }
+  to { transform:translateX(115vw) skewX(-18deg); opacity:0; }
+}
+@keyframes skylineWaveBreath {
+  0%,100% { transform:translateY(0) scaleY(1); opacity:.55; }
+  50% { transform:translateY(-7px) scaleY(1.06); opacity:.8; }
+}
+
+/* Main Skyline cards only */
+body > .card:not(#memory-mini),
+body > #logwrap.card,
+body > #game-finished.card {
+  animation:skylineCardIn .58s cubic-bezier(.2,.8,.2,1) both;
+}
+
+#round-info.skyline-round-animate {
+  animation:skylineRoundPulse .62s cubic-bezier(.2,.9,.2,1);
+}
+
+#guesses .row {
+  opacity:0;
+  animation:skylineRowIn .42s ease forwards;
+}
+#guesses .row:nth-child(1){animation-delay:.03s}
+#guesses .row:nth-child(2){animation-delay:.07s}
+#guesses .row:nth-child(3){animation-delay:.11s}
+#guesses .row:nth-child(4){animation-delay:.15s}
+#guesses .row:nth-child(5){animation-delay:.19s}
+#guesses .row:nth-child(6){animation-delay:.23s}
+#guesses .row:nth-child(n+7){animation-delay:.27s}
+
+#guesses input[type="number"] {
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease;
+}
+#guesses input[type="number"]:focus {
+  transform:translateY(-2px) scale(1.01);
+}
+#guesses input.skyline-ready {
+  border-color:var(--accent-2);
+  animation:skylineInputReady 1.6s ease-in-out infinite;
+}
+
+#scoreboard.skyline-score-pop {
+  animation:skylineScorePop .5s ease;
+}
+#scoreboard tr.skyline-winner-row {
+  position:relative;
+  background:linear-gradient(90deg,rgba(127,240,223,.15),rgba(110,215,255,.08),transparent);
+  animation:skylineWinnerGlow 1.05s ease;
+}
+#scoreboard tr.skyline-winner-row td:first-child::before {
+  content:"🏆 ";
+}
+
+#btnPlay:not(:disabled) {
+  position:relative; overflow:hidden;
+}
+#btnPlay:not(:disabled)::after {
+  content:""; position:absolute; inset:-2px;
+  background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.22) 45%,transparent 65%);
+  transform:translateX(-130%);
+  animation:skylineButtonSweep 2.4s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes skylineButtonSweep {
+  0%,38% { transform:translateX(-130%); }
+  62%,100% { transform:translateX(130%); }
+}
+
+/* Ambient wind streaks behind main app */
+.skyline-wind-layer {
+  position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+}
+.skyline-wind-streak {
+  position:absolute; left:0; width:28vw; height:2px; border-radius:999px;
+  background:linear-gradient(90deg,transparent,rgba(185,243,255,.55),transparent);
+  filter:blur(.2px);
+  animation:skylineWindSweep linear infinite;
+}
+.skyline-wind-streak:nth-child(1){top:18%;animation-duration:11s;animation-delay:-2s}
+.skyline-wind-streak:nth-child(2){top:34%;animation-duration:14s;animation-delay:-8s;width:38vw}
+.skyline-wind-streak:nth-child(3){top:57%;animation-duration:12s;animation-delay:-5s;width:24vw}
+.skyline-wind-streak:nth-child(4){top:72%;animation-duration:16s;animation-delay:-10s;width:42vw}
+.skyline-wind-streak:nth-child(5){top:86%;animation-duration:13s;animation-delay:-7s;width:30vw}
+
+/* Main ocean layer gets a slow pulse, but memory section stays untouched */
+body::after { animation:waveMove 10s linear infinite, skylineWaveBreath 5.6s ease-in-out infinite; }
+
+/* Motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  body > .card:not(#memory-mini), body > #logwrap.card, body > #game-finished.card,
+  #round-info.skyline-round-animate, #guesses .row, #scoreboard.skyline-score-pop,
+  #scoreboard tr.skyline-winner-row, #guesses input.skyline-ready, .skyline-wind-streak,
+  #btnPlay:not(:disabled)::after, body::after { animation:none !important; }
+}
+</style>
+
+
+<style id="skyline-extras-toggle-css">
+/* Winds & Waves / memory-game feature toggle */
+#btnSkylineExtras {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 3005;
+  padding: 11px 15px;
+  border-radius: 12px;
+  border: 2px solid #ffb454;
+  background: linear-gradient(135deg,#ff7a59,#ffb454);
+  color: #1f1820;
+  font-family: "Press Start 2P", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(255,122,89,.35);
+}
+#btnSkylineExtras:hover {
+  border-color:#ffe2a9;
+  box-shadow:0 0 20px rgba(255,180,84,.68);
+  transform:scale(1.05);
+}
+#btnSkylineExtras[aria-pressed="true"] {
+  background: linear-gradient(135deg,#ffb454,#ff7a59);
+}
+
+/* The page begins as the core Skyline game only. */
+body.skyline-extras-off #memory-mini,
+body.skyline-extras-off #leaves,
+body.skyline-extras-off #leaf-counter,
+body.skyline-extras-off .otter,
+body.skyline-extras-off #btnBackgroundToggle,
+body.skyline-extras-off .skyline-wind-layer {
+  display:none !important;
+}
+
+/* Keep the Winds & Waves memory mini-game out of both demo modes. */
+body.skyline-demo-active #memory-mini {
+  display:none !important;
+}
+
+/* Pause the Winds & Waves ambient animation until explicitly enabled. */
+body.skyline-extras-off::before,
+body.skyline-extras-off::after {
+  animation:none !important;
+}
+body.skyline-extras-off::after { opacity:.18; }
+
+@media (max-width:700px){
+  #btnSkylineExtras {
+    top:max(8px,env(safe-area-inset-top));
+    right:max(8px,env(safe-area-inset-right));
+    max-width:46vw;
+    font-size:8px;
+    line-height:1.35;
+    padding:9px 10px;
+  }
+}
+</style>
+
 </head>
-<body>
+<body class="skyline-extras-off">
+  <button id="btnSkylineExtras" type="button" aria-pressed="false">Enable Winds & Waves</button>
+  <div class="skyline-wind-layer" aria-hidden="true"><span class="skyline-wind-streak"></span><span class="skyline-wind-streak"></span><span class="skyline-wind-streak"></span><span class="skyline-wind-streak"></span><span class="skyline-wind-streak"></span></div>
   <!-- COMMENTED OUT: Equalizer (new) -->
   <!-- <div class="equalizer" aria-hidden="true">
     <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
@@ -628,7 +857,11 @@
 
   <h1>🌊 Skyline: Winds & Waves 🌬️</h1>
   <div class="otter" aria-label="sailing boat">⛵</div>
-  <button id="btnStoryPopup" class="otter-story-link" type="button">read the Skyline story</button>
+  <div id="windsLinks" class="winds-links hidden">
+    <button id="btnStoryPopup" class="otter-story-link" type="button">heron sitting on frog eggs</button>
+    <button id="btnReadme" class="readme-button winds-readme-button" type="button">README / GitHub</button>
+    <button id="btnFlashcardsPopup" type="button">open skyline q&amp;a flashcards</button>
+  </div>
   <button id="btnBackgroundToggle" type="button">Change Tide</button>
 
   <div class="flex-header">
@@ -637,7 +870,6 @@
     <button id="btnDemo">Start Demo</button>
     <button id="btnDemoReset" class="hidden">Reset Demo</button>
     <button id="btnDemoNext" class="hidden">Next Demo Round</button>
-    <button id="btnFlashcardsPopup">open skyline q&a flashcards</button>
   </div>
 
   <div class="demo-controls">
@@ -1205,6 +1437,14 @@
     $("#btnReenter").addEventListener("click", () => setupRound(true));
     updateDemoHelpText();
 
+
+    const readmeBtn = $("#btnReadme");
+    if (readmeBtn) {
+      readmeBtn.addEventListener("click", () => {
+        window.open("https://github.com/watashiaashishgurung/skyline-app/blob/main/README.md", "_blank", "noopener,noreferrer");
+      });
+    }
+
     // Popup window for story
     $("#btnStoryPopup").addEventListener("click", () => {
       const url = "https://watashiaashishgurung.github.io/gitfiles/";
@@ -1445,6 +1685,7 @@
 
     function stopDemoSimulation(message = "", level = "ok", silent = false) {
       demoActive = false;
+      document.body.classList.remove("skyline-demo-active");
       demoAutoMode = false;
       if (demoTimer) {
         clearInterval(demoTimer);
@@ -1479,7 +1720,7 @@
 
       const DEMO_DEFAULT_GUESS = 1000;
       const DEMO_MIN_GUESS = Math.ceil(DEMO_DEFAULT_GUESS * 0.5); // keep guesses >= 50% of default
-      const DEMO_MAX_GUESS = Math.floor(DEMO_DEFAULT_GUESS * 1.4);
+      const DEMO_MAX_GUESS = DEMO_DEFAULT_GUESS; // demo guesses are capped at 1000
 
       if (tieMode) {
         // Tie-break guesses must be lower than previous tied value.
@@ -1542,6 +1783,7 @@
       show("#round-buttons", false);
 
       demoActive = true;
+      document.body.classList.add("skyline-demo-active");
       demoAutoMode = ($("#demoMode") ? $("#demoMode").value : "manual") === "auto";
       log(
         demoAutoMode
@@ -1824,5 +2066,93 @@
       });
     })();
   </script>
+
+<script id="skyline-main-animation-js">
+(function(){
+  function replayClass(el, cls){
+    if(!el) return;
+    el.classList.remove(cls);
+    void el.offsetWidth;
+    el.classList.add(cls);
+  }
+
+  function animateRound(){
+    replayClass(document.getElementById('round-info'), 'skyline-round-animate');
+  }
+
+  function refreshReadyInputs(){
+    document.querySelectorAll('#guesses input[type="number"]').forEach(function(input){
+      input.classList.toggle('skyline-ready', input.value.trim() !== '');
+    });
+  }
+
+  document.addEventListener('input', function(e){
+    if(e.target && e.target.matches('#guesses input[type="number"]')) refreshReadyInputs();
+  });
+
+  document.addEventListener('click', function(e){
+    if(e.target && (e.target.id === 'btnPlay' || e.target.id === 'btnReenter' || e.target.id === 'btnDemoNext')){
+      setTimeout(animateRound, 20);
+      setTimeout(refreshReadyInputs, 40);
+    }
+  });
+
+  // Observe round and scoreboard changes made by the existing Skyline game logic.
+  var round = document.getElementById('round-info');
+  if(round){
+    new MutationObserver(function(){ animateRound(); }).observe(round,{childList:true,subtree:true,characterData:true});
+  }
+
+  var board = document.getElementById('scoreboard');
+  if(board){
+    new MutationObserver(function(){
+      replayClass(board,'skyline-score-pop');
+      var winnerRoundText = document.getElementById('round-info')?.textContent || '';
+      board.querySelectorAll('tr.skyline-winner-row').forEach(function(r){r.classList.remove('skyline-winner-row')});
+      // Highlight rows that have a winning-round value instead of '-'.
+      board.querySelectorAll('tbody tr').forEach(function(row){
+        var cells=row.querySelectorAll('td');
+        if(cells.length >= 4 && cells[3].textContent.trim() !== '-') row.classList.add('skyline-winner-row');
+      });
+    }).observe(board,{childList:true,subtree:true});
+  }
+
+  refreshReadyInputs();
+})();
+</script>
+
+
+<script id="skyline-extras-toggle-js">
+(function(){
+  const button = document.getElementById('btnSkylineExtras');
+  if (!button) return;
+
+  function setExtras(enabled){
+    document.body.classList.toggle('skyline-extras-off', !enabled);
+    button.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+    button.textContent = enabled ? 'Hide Winds & Waves' : 'Enable Winds & Waves';
+
+    const windsLinks = document.getElementById('windsLinks');
+    if (windsLinks) {
+      windsLinks.classList.toggle('hidden', !enabled);
+    }
+
+    // Spawn the floating sea-drop layer only when the experience is first enabled.
+    if (enabled) {
+      const leaves = document.getElementById('leaves');
+      if (leaves && leaves.children.length === 0 && typeof spawnLeaves === 'function') {
+        spawnLeaves(30);
+      }
+    }
+  }
+
+  button.addEventListener('click', function(){
+    setExtras(document.body.classList.contains('skyline-extras-off'));
+  });
+
+  setExtras(false);
+})();
+</script>
+
 </body>
 </html>

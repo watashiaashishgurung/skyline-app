@@ -1,80 +1,79 @@
-# Skyline: Offline Edition
+<p align="center">
+  <img src="assets/logo/skylinebanner.png" alt="Skyline Logo Blue BG" width="180" style="display:block; width:100%; height:auto;"/>
+</p>
 
-Skyline is a quick, local (offline) party / classroom game: each round every player still “in” secretly chooses a non‑negative integer. The **lowest unique** guess wins the round. A player can only win once; when all but one have won a special final round is triggered and the game ends.
+## **Project Skyline**
+<details>
+  <summary> Table of Contents</summary>
+  <ul>
+    <li><a href="#1-context">1. Context</a></li>
+    <li><a href="#2-introduction">2. Introduction</a></li>
+    <li>
+      <a href="#3-personal-story">3. Personal Story</a>
+      <ul>
+        <li><a href="#31-how-this-algorithm-helps">3.1 How This Algorithm Helps</a></li>
+        <li><a href="#32-recommended-use">3.2 Recommended Use</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#4-skyline-project-goal-and-implementation">4. Skyline Project: Goal and Implementation</a>
+      <ul>
+        <li><a href="#41-project-goal">4.1 Project Goal</a></li>
+        <li>
+          <a href="#42-technical-implementation">4.2 Technical Implementation</a>
+          <ul>
+            <li><a href="#421-containerization-with-docker">4.2.1 Containerization with Docker</a></li>
+            <li><a href="#422-deployment-with-kubernetes">4.2.2 Deployment with Kubernetes</a></li>
+            <li><a href="#423-future-enhancements">4.2.3 Future Enhancements</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</details>
 
-* **Live Demo:** [GitHub Pages Deployment](https://watashiaashishgurung.github.io/skyline-app/)
-* **Created by:** watashiaashishgurung (2024–2025)
+## **1. Context**
+The **Skyline** project was born out of a desire to empower individuals on the lower rungs of the economic ladder by providing them with a unique and engaging way to enhance their financial capacity. At its core, the project embodies a commitment to fostering personal growth, responsible decision-making, and access to better educational opportunities. Inspired by the "Parable of the Talents," the game leverages modern gamification techniques to instill a sense of purpose and accountability, ensuring that every decision made within the game has a meaningful impact.
 
----
+In an age where economic inequality is prevalent, **Skyline** aims to bridge this gap by offering players a platform to simulate financial responsibility, develop critical skills, and gain insights into real-world scenarios—all in a fun and supportive environment. The game serves as a safe haven for players to experiment with financial strategies and decision-making while also supporting the broader goal of eradicating economic disparities.
 
-## 🎮 How to Play
-1. Enter the number of players (2–100).
-2. Provide each player name.
-3. Eligible players (those who have not yet won) enter a guess.
-4. The lowest unique guess wins the round; that player “locks in” a win and stops guessing future rounds.
-5. Everyone pays the winning guess; the winner receives the whole pot (players × winning guess) and balances adjust.
-6. If *no* unique guesses appear, only tied players must re‑enter with a **strictly lower** number (auto‑enforced).
-7. When only one player hasn’t won yet a labeled **Final Round** appears; that player submits a single bet and the game ends with a recap.
+## **2. Introduction**
+**Skyline** is an innovative and highly engaging game designed to redefine the way players approach financial management and personal development. Through an immersive gaming experience, players are guided to build their financial acumen by making strategic decisions, monitoring their resources, and contributing to the overall game ecosystem.
 
----
+The game uniquely combines entertainment with education, encouraging players to focus on their potential and channel their talents into building a brighter future for themselves and their communities. By eliminating distractions such as "black money" and unnecessary financial concerns, **Skyline** ensures that players can fully concentrate on their journey towards growth and success.
 
-## ✨ Current Feature Set
-* **Real‑Time Guess Graph (NEW)** – A smooth animated line chart (Chart.js) plotting every player’s guesses per round for at‑a‑glance trends and pacing. Colors auto‑assign and gaps are spanned where a player no longer guesses.
-* **Redo / Re‑Entry Logic** – Automatic detection of “no unique guess” rounds; affected players are forced to input a strictly lower follow‑up guess (input `max` limits plus inline hints).
-* **Final Round Auto Detection** – When a single player remains without a win, UI switches to a special final round banner.
-* **Pot & Balance Tracking** – All balances update each round (everyone pays; winner receives cumulative pot) with a scoreboard showing wins, balances, and winning round number.
-* **Game Log** – Scrollable, emoji‑tagged event log (wins, warnings, re‑entry notices) for transparency and teaching moments.
-* **Responsive Retro UI** – Compact pixel/arcade inspired headings, dark theme, keyboard friendly.
-* **Offline Friendly** – Pure client‑side logic; load once and keep playing (only external dependency is Chart.js via CDN).
-* **Safe Name Handling** – Player names are HTML‑escaped before display.
-* **One‑Click Restart** – Clean reset restores initial state and destroys the old chart.
-
----
-
-## 🆕 What’s New (Latest Update)
-| Area | Update |
-|------|--------|
-| Visualization | Added live multi‑player line graph of guesses for “smooth” visual tracking round‑by‑round. |
-| UX | Dynamic hints & input caps during re‑entry rounds (must guess lower than previous). |
-| Flow | Automatic switch into clearly labeled Final Round when only one player left. |
-| Validation | Stricter integer / non‑negative checks and enforcement of redo constraints. |
-| Stability | Minor bug fixes around: (a) clearing redo constraints after a successful round, (b) chart teardown on restart, (c) preventing empty name submissions, (d) ensuring balances update consistently in final round, (e) corrected sudden death (final lone player) resolution logic. |
-| Accessibility | Improved button labels / contrast and scroll anchoring of log output. |
-
-> Tip: If you want fully offline usage without network, download `index.html` and bundle a local copy of Chart.js; otherwise the CDN link is fine when cached.
-
----
-
-## 📊 Balances & Scoring
-Balances start at 0. Each round:
-* Every player (including the winner) pays the winning guess (balance −= guess).
-* Winner receives the pot (guess × player count).
-* Net effect for the winner that round: `(+ guess * players) - guess`.
-
-The scoreboard shows:
-* Player name
-* Rounds Won (0/1)
-* Current Balance (€)
-* The round number they achieved their win
+With a strong emphasis on aligning with capitalistic principles, the game seeks to refresh players' perspectives, demonstrating how intellectual and financial well-being can coexist harmoniously. **Skyline** is not just a game—it’s a movement towards a more equitable, opportunity-driven society.
 
 ---
 
-## 🚀 Quick Start (Local)
-Just open `index.html` in any modern browser (Chrome, Firefox, Edge, Safari). No build step, no server.
+# **3. Personal Story**
+
+After I went bankrupt back in the days, it was a **hard knock life** for me. In my lowest moments, I discovered the power of imagination and began to see **beautiful things in the most humble places**. But along with that beauty, I also came face-to-face with the harsh realities of poverty. 
+
+Poverty, I realized, is the root of all imagination—both **good and evil**. It pushes people to dream, to create, and to hope, but it also can lead to despair, corruption, and unfair practices. 
+
+This is why I created this algorithm: **to help you rise out of the most uncomfortable situations**. With commitment and dedication, this tool can be a shield against **unfair practices**—those rigged systems where one person owns the whole block, playing monopoly with lives, while others are trapped in situations beyond their control, like landing on the square that sends you to jail.
+
+### **3.1 How This Algorithm Helps**
+This algorithm is designed to provide you with **time** and **security**, empowering you to:
+- Build on your talents
+- Hone your best practices
+- Progress at your own pace
+
+If played responsibly, it becomes a tool for growth and opportunity—a way to **imagine a better future and make it real**.
+
+### **3.2 Recommended Use**
+The frequency of playing this game is up to you, but I recommend a **monthly pace**. This provides a balanced rhythm, allowing you to focus on steady progress without feeling overwhelmed. However, you have the freedom to adjust the pace to suit your goals and lifestyle.
 
 ---
 
-## 🛠 Tech Notes
-* Single self‑contained HTML file with inline `<script>`.
-* Uses [Chart.js 4.x] via CDN for the guess timeline.
-* Lightweight state model with a `Player` class array; no framework required.
-* Graceful restart fully clears object references and destroys the chart instance to avoid stale datasets.
+**Remember:** The key is **commitment** and **dedication**. With these values, you can unlock the full potential of this algorithm and take control of your journey. Let this tool be your partner in building a future where your imagination and hard work pave the way for success.
 
 ---
 
-## 📄 License
-See [LICENSE](LICENSE). Free to use, remix, and share.
+# **4. Skyline Project: Goal and Implementation**
 
----
+## **4.1 Project Goal**
+The primary goal of the **Skyline Project** is to promote **digital literacy** by engaging individuals in a practical and interactive way. By immersing users in a gamified system that mirrors real-world scenarios, the project empowers participants to learn critical skills for managing financial resources responsibly.
 
-Enjoy & share with friends. Feedback / issues welcome!
+
