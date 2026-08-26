@@ -2,7 +2,9 @@
   <img src="assets/logo/skylinebanner.png" alt="Skyline Logo Blue BG" width="180" style="display:block; width:100%; height:auto;"/>
 </p>
 
-## **Project Skyline**
+ [**🌃 Live Demo**](https://watashiaashishgurung.github.io/skyline-app/)
+## **Project Skyline** 
+
 <details>
   <summary> Table of Contents</summary>
   <ul>
